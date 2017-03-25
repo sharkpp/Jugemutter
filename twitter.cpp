@@ -7,10 +7,6 @@ Twitter::Twitter(QObject *parent)
 {
     setReplyHandler(new QOAuthHttpServerReplyHandler(this));
 
-    setModifyParametersFunction([&](Stage stage, QVariantMap* data) {
-        qDebug() << "stage:" << (int)stage << data;
-    });
-
     // https://dev.twitter.com/oauth/reference/post/oauth/request_token
     setTemporaryCredentialsUrl(QUrl("https://api.twitter.com/oauth/request_token"));
 

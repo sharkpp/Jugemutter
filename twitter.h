@@ -36,8 +36,6 @@ signals:
     void tweeted(const QString& tweetId);
 
 private slots:
-    void handleAuthorizeWithBrowser(QUrl url);
-    void tweetFinished();
 
 protected:
 };

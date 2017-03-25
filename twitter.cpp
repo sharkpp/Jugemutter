@@ -20,10 +20,21 @@ Twitter::Twitter(QObject *parent)
     // https://dev.twitter.com/oauth/reference/post/oauth/access_token
     setTokenCredentialsUrl(QUrl("https://api.twitter.com/oauth/access_token"));
 
-    QObject::connect(this, &QAbstractOAuth::authorizeWithBrowser,
-                     this, &Twitter::handleAuthorizeWithBrowser);
+    connect(this, &QAbstractOAuth::authorizeWithBrowser, [=](QUrl url) {
+        qDebug() << __FUNCTION__ << __LINE__ << url;
+        QUrlQuery query(url);
 
-    QObject::connect(this, &QOAuth1::granted, this, &Twitter::authenticated);
+        //query.addQueryItem("force_login", "true");
+
+        //if (!screenName.isEmpty()) {
+        //    query.addQueryItem("screen_name", screenName);
+        //}
+
+        url.setQuery(query);
+        QDesktopServices::openUrl(url);
+    });
+
+    connect(this, &QOAuth1::granted, this, &Twitter::authenticated);
 
     qDebug() << QString("TWITTER_APP_KEY='%1'").arg(STR_(TWITTER_APP_KEY));
     qDebug() << QString("TWITTER_APP_SECRET='%1'").arg(STR_(TWITTER_APP_SECRET));
@@ -39,21 +50,6 @@ Twitter::Twitter(QObject *parent)
     setClientSharedSecret(STR_(TWITTER_APP_SECRET));
 
      grant();
-}
-
-void Twitter::handleAuthorizeWithBrowser(QUrl url)
-{
-qDebug() << __FUNCTION__ << __LINE__ << url;
-    QUrlQuery query(url);
-
-    //query.addQueryItem("force_login", "true");
-
-    //if (!screenName.isEmpty()) {
-    //    query.addQueryItem("screen_name", screenName);
-    //}
-
-    url.setQuery(query);
-    QDesktopServices::openUrl(url);
 }
 
 const QString Twitter::serialize() const
@@ -104,40 +100,37 @@ bool Twitter::tweet(const QString& text)
     url.setQuery(query);
     QNetworkReply *reply = post(url);
 
-    connect(reply, &QNetworkReply::finished, this, &Twitter::tweetFinished);
-}
+    connect(reply, &QNetworkReply::finished, this, [=](){
+        auto reply_ = qobject_cast<QNetworkReply*>(sender());
 
-void Twitter::tweetFinished()
-{
-    auto reply = qobject_cast<QNetworkReply*>(sender());
+        qDebug() << "finished tweet";
 
-    qDebug() << "finished tweet";
+        // {\n    \"errors\": [\n        {\n            \"code\": 170,\n            \"message\": \"Missing required parameter: status.\"\n        }\n    ]\n}\n
 
-    // {\n    \"errors\": [\n        {\n            \"code\": 170,\n            \"message\": \"Missing required parameter: status.\"\n        }\n    ]\n}\n
+        QJsonParseError parseError;
+        const auto resultJson = reply_->readAll();
+        const auto resultDoc = QJsonDocument::fromJson(resultJson, &parseError);
+        if (parseError.error) {
+            qDebug() << QString(resultJson);
+            qCritical() << "Twitter::tweet() finished Error at:" << parseError.offset
+                        << parseError.errorString();
+            return;
+        }
+        else if (!resultDoc.isObject()) {
+            qDebug() << QString(resultJson);
+            return;
+        }
 
-    QJsonParseError parseError;
-    const auto resultJson = reply->readAll();
-    const auto resultDoc = QJsonDocument::fromJson(resultJson, &parseError);
-    if (parseError.error) {
-        qDebug() << QString(resultJson);
-        qCritical() << "Twitter::tweet() finished Error at:" << parseError.offset
-                    << parseError.errorString();
-        return;
-    }
-    else if (!resultDoc.isObject()) {
-        qDebug() << QString(resultJson);
-        return;
-    }
+        const auto result = resultDoc.object();
+        if (!result.value("id_str").isUndefined()) {
+            qDebug() << resultDoc.toJson();
+            return;
+        }
 
-    const auto result = resultDoc.object();
-    if (!result.value("id_str").isUndefined()) {
-        qDebug() << resultDoc.toJson();
-        return;
-    }
+        qDebug() << "***\n" << resultDoc.toJson();
 
-    qDebug() << "***\n" << resultDoc.toJson();
+        const auto tweetId = result.value("id_str").toString();
 
-    const auto tweetId = result.value("id_str").toString();
-
-    Q_EMIT tweeted(tweetId);
+        Q_EMIT tweeted(tweetId);
+    });
 }

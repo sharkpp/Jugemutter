@@ -31,3 +31,6 @@ HEADERS  += mainwindow.h \
     twitter.h
 
 FORMS    += mainwindow.ui
+
+DISTFILES += \
+    README.md

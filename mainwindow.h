@@ -27,6 +27,8 @@ private slots:
     void handleTwitterAuthenticated();
     void on_tweetButton_clicked();
 
+    void on_tweetEditor_textChanged();
+
 private:
     Ui::MainWindow *ui;
     Twitter *twitter; // Twitter access class

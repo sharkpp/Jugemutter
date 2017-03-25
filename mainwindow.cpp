@@ -11,7 +11,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+#ifndef QT_NO_DEBUG
     ui->tweetEditor->setPlainText("書き込みてすと #qtjp");
+    on_tweetEditor_textChanged();
+#endif
 
     connect(twitter, &Twitter::authenticated, this, &MainWindow::handleTwitterAuthenticated);
 
@@ -76,4 +79,9 @@ void MainWindow::on_tweetButton_clicked()
     twitter->tweet(tweetText);
 
     return;
+}
+
+void MainWindow::on_tweetEditor_textChanged()
+{
+    ui->textLength->setText(QString("%1").arg( ui->tweetEditor->toPlainText().size() ));
 }

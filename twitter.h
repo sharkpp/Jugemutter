@@ -38,6 +38,7 @@ signals:
 private slots:
 
 protected:
+    QOAuthHttpServerReplyHandler *httpReplyHandler;
 };
 
 #endif // TWITTER_H

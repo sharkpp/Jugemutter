@@ -4,8 +4,10 @@
 #define STR_(x) STR__(x) // うーむ、
 
 Twitter::Twitter(QObject *parent)
+    : httpReplyHandler(nullptr)
 {
-    setReplyHandler(new QOAuthHttpServerReplyHandler(this));
+    // 実行するとすぐにポートを開きに行くので遅延させる
+    //setReplyHandler(new QOAuthHttpServerReplyHandler(this));
 
     // https://dev.twitter.com/oauth/reference/post/oauth/request_token
     setTemporaryCredentialsUrl(QUrl("https://api.twitter.com/oauth/request_token"));
@@ -32,6 +34,10 @@ Twitter::Twitter(QObject *parent)
 
     connect(this, &QOAuth1::granted, this, &Twitter::authenticated);
 
+    connect(this, &QOAuth1::requestFailed, [=](const Error error) {
+        qDebug() << "QOAuth1::requestFailed" << (int)error;
+    });
+
     qDebug() << QString("TWITTER_APP_KEY='%1'").arg(STR_(TWITTER_APP_KEY));
     qDebug() << QString("TWITTER_APP_SECRET='%1'").arg(STR_(TWITTER_APP_SECRET));
 
@@ -44,8 +50,6 @@ Twitter::Twitter(QObject *parent)
     // > qmake ... DEFINES+=TWITTER_APP_SECRET="{App secret}"
     // --> https://apps.twitter.com/app/{App key}/keys
     setClientSharedSecret(STR_(TWITTER_APP_SECRET));
-
-     grant();
 }
 
 const QString Twitter::serialize() const
@@ -74,6 +78,13 @@ void Twitter::deserialize(const QString& tokenAndTokenSecret)
 
 void Twitter::authenticate()
 {
+    // ポートをここでオープン
+    if (!httpReplyHandler) {
+        httpReplyHandler = new QOAuthHttpServerReplyHandler(this);
+        setReplyHandler(httpReplyHandler);
+    }
+
+    // 認証処理開始
     grant();
 }
 

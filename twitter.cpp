@@ -159,4 +159,6 @@ bool Twitter::tweet(const QString& text)
 
         Q_EMIT tweeted(tweetId);
     });
+
+    return true;
 }

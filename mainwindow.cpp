@@ -3,8 +3,6 @@
 #include "twitter.h"
 #include <QMessageBox>
 
-const QString tokenFileName = "Jugemutter.token"; // @todo あとで設定ファイルなりにする
-
 MainWindow::ResetConfigInfo::ResetConfigInfo()
     : resetNeed(false)
     , lazyTimerId(-1)

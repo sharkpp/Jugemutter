@@ -97,6 +97,22 @@ void Twitter::authenticate()
     // ポートをここでオープン
     if (!httpReplyHandler) {
         httpReplyHandler = new QOAuthHttpServerReplyHandler(this);
+        const QString messageHtml
+                = QString("<style>" \
+                        "html, body { padding: 0; margin: 0; } " \
+                        "body { background-color: #f5f8fb; padding: 1em; } " \
+                        "body > div { vertical-align: middle; text-align: center; margin: auto 0; }" \
+                    "</style>" \
+                    "<div><h1>%1</h1><div>%2</div></div>")
+                .arg(qApp->applicationName())
+                .arg("コールバックを受け取りました。<br />このページは閉じていただいて問題ありません。");
+        // https://bugreports.qt.io/browse/QTBUG-59725 が修正されるまでこのまま
+        const QString postfixTag = "</body></html>";
+        const int fixedPaddingSize = messageHtml.toUtf8().length() - messageHtml.length() - postfixTag.length();
+        httpReplyHandler->setCallbackText(messageHtml + postfixTag + QString(fixedPaddingSize, '*'));
+        // 本来は
+        //httpReplyHandler->setCallbackText(messageHtml);
+        // このようにしたかった
         setReplyHandler(httpReplyHandler);
     }
 

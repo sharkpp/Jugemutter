@@ -30,13 +30,14 @@ protected: // method
     void saveConfig();
     void resetConfig();
 
+    QString getTweetRawText() const;
+
 protected: // event
     bool event(QEvent* ev);
 
 private slots:
     void handleTwitterAuthenticated();
     void on_tweetButton_clicked();
-
     void on_tweetEditor_textChanged();
 
 private:

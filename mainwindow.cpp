@@ -12,49 +12,51 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 #ifndef QT_NO_DEBUG
-    ui->tweetEditor->setPlainText("書き込みてすと #qtjp");
+    ui->tweetEditor->setPlainText("てすてす");
     on_tweetEditor_textChanged();
 #endif
 
     connect(twitter, &Twitter::authenticated, this, &MainWindow::handleTwitterAuthenticated);
 
-    tokensLoad();
+    loadConfig();
 }
 
 MainWindow::~MainWindow()
 {
-    tokensSave();
+    saveConfig();
+
     delete ui;
 }
 
-void MainWindow::tokensLoad()
+void MainWindow::loadConfig()
 {
-    QFile file(QFileInfo(QDir::homePath(), tokenFileName).filePath());
-    file.open(QIODevice::ReadOnly);
-    QDataStream in(&file);
+    QSettings settings;
 
-    QMap<QString, QString> tokenAndService;
-    in >> tokenAndService;
+    settings.beginGroup("mainWindow");
+    resize(settings.value("size", QSize(400, 400)).toSize());
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
 
-    QMap<QString, QString>::const_iterator ite = tokenAndService.constBegin();
-    while (ite != tokenAndService.constEnd()) {
-        if (ite.key() == "twitter") {
-            twitter->deserialize(ite.value());
-        }
-        ++ite;
+    settings.beginGroup("twitter");
+    QVariant serialized = settings.value("0");
+    if (serialized.isValid()) {
+        twitter->deserialize(serialized.toString());
     }
+    settings.endGroup();
 }
 
-void MainWindow::tokensSave()
+void MainWindow::saveConfig()
 {
-    QMap<QString, QString> tokenAndService;
+    QSettings settings;
 
-    tokenAndService.insert("twitter", twitter->serialize());
+    settings.beginGroup("mainWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
 
-    QFile file(QFileInfo(QDir::homePath(), tokenFileName).filePath());
-    file.open(QIODevice::WriteOnly);
-    QDataStream out(&file);
-    out << tokenAndService;
+    settings.beginGroup("twitter");
+    settings.setValue("0", twitter->serialize());
+    settings.endGroup();
 }
 
 void MainWindow::handleTwitterAuthenticated()

@@ -20,8 +20,8 @@ public:
 
 protected:
 
-    void tokensLoad();
-    void tokensSave();
+    void loadConfig();
+    void saveConfig();
 
 private slots:
     void handleTwitterAuthenticated();

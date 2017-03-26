@@ -19,7 +19,7 @@ public:
     const QString serialize() const;
 
     // set session saved data
-    void deserialize(const QString& tokenAndTokenSecret);
+    void deserialize(const QString& data);
 
     // OAuth authentication method
     void authenticate();

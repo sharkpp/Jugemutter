@@ -3,6 +3,8 @@
 #define STR__(x) #x
 #define STR_(x) STR__(x) // うーむ、
 
+static const int dataStreamVersion = QDataStream::Qt_5_8;
+
 Twitter::Twitter(QObject *parent)
     : httpReplyHandler(nullptr)
 {
@@ -22,7 +24,7 @@ Twitter::Twitter(QObject *parent)
         qDebug() << __FUNCTION__ << __LINE__ << url;
         QUrlQuery query(url);
 
-        //query.addQueryItem("force_login", "true");
+        query.addQueryItem("force_login", "true");
 
         //if (!screenName.isEmpty()) {
         //    query.addQueryItem("screen_name", screenName);
@@ -54,26 +56,40 @@ Twitter::Twitter(QObject *parent)
 
 const QString Twitter::serialize() const
 {
-    if (QAbstractOAuth::Status::Granted != status()) {
-        return "";
+    QMap<QString, QString> serialized;
+    QByteArray dataBytes;
+    QDataStream out(&dataBytes, QIODevice::WriteOnly);
+    out.setVersion(dataStreamVersion);
+
+    if (QAbstractOAuth::Status::Granted == status()) {
+        serialized.insert("token", token());
+        serialized.insert("tokenSecret", tokenSecret());
     }
-    return token() + ":" + tokenSecret();
+
+    out << serialized;
+
+    return dataBytes.toBase64();
 }
 
-void Twitter::deserialize(const QString& tokenAndTokenSecret)
+void Twitter::deserialize(const QString& data)
 {
-    if (tokenAndTokenSecret.isEmpty()) {
+    if (data.isEmpty()) {
         return;
     }
 
-    QStringList splitedTokenAndTokenSecret = tokenAndTokenSecret.split(':');
+    QMap<QString, QString> deserialized;
+    QByteArray dataBytes = QByteArray::fromBase64(data.toUtf8());
+    QDataStream in(&dataBytes, QIODevice::ReadOnly);
+    in.setVersion(dataStreamVersion);
+    in >> deserialized;
 
-    if (splitedTokenAndTokenSecret.count() < 2) {
-        return;
+    QString userToken       = deserialized.value("token");
+    QString userTokenSecret = deserialized.value("tokenSecret");
+    if (!userToken.isEmpty() &&
+        !userTokenSecret.isEmpty()) {
+        setTokenCredentials(userToken, userTokenSecret);
+        setStatus(QAbstractOAuth::Status::Granted);
     }
-
-    setTokenCredentials(splitedTokenAndTokenSecret[0], splitedTokenAndTokenSecret[1]);
-    setStatus(QAbstractOAuth::Status::Granted);
 }
 
 void Twitter::authenticate()
@@ -91,7 +107,10 @@ void Twitter::authenticate()
 // OAuth check authentication method
 bool Twitter::isAuthenticated() const
 {
-    return !token().isEmpty() && !tokenSecret().isEmpty();
+    return
+        !token().isEmpty() &&
+        !tokenSecret().isEmpty() &&
+        QAbstractOAuth::Status::Granted == status();
 }
 
 bool Twitter::tweet(const QString& text)

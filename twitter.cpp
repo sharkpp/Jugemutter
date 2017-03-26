@@ -73,10 +73,6 @@ const QString Twitter::serialize() const
 
 void Twitter::deserialize(const QString& data)
 {
-    if (data.isEmpty()) {
-        return;
-    }
-
     QMap<QString, QString> deserialized;
     QByteArray dataBytes = QByteArray::fromBase64(data.toUtf8());
     QDataStream in(&dataBytes, QIODevice::ReadOnly);
@@ -85,8 +81,12 @@ void Twitter::deserialize(const QString& data)
 
     QString userToken       = deserialized.value("token");
     QString userTokenSecret = deserialized.value("tokenSecret");
-    if (!userToken.isEmpty() &&
-        !userTokenSecret.isEmpty()) {
+    if (userToken.isEmpty() ||
+        userTokenSecret.isEmpty()) {
+        setTokenCredentials("", "");
+        setStatus(QAbstractOAuth::Status::NotAuthenticated);
+    }
+    else {
         setTokenCredentials(userToken, userTokenSecret);
         setStatus(QAbstractOAuth::Status::Granted);
     }

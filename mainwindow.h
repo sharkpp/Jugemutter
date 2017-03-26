@@ -14,14 +14,24 @@ class MainWindow
 {
     Q_OBJECT
 
+    struct ResetConfigInfo {
+        ResetConfigInfo();
+        //
+        bool resetNeed;
+        int  lazyTimerId;
+    };
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-protected:
-
+protected: // method
     void loadConfig();
     void saveConfig();
+    void resetConfig();
+
+protected: // event
+    bool event(QEvent* ev);
 
 private slots:
     void handleTwitterAuthenticated();
@@ -31,6 +41,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    ResetConfigInfo resetConfigInfo;
     Twitter *twitter; // Twitter access class
     QString tweetQueue; // queued tweet
 };

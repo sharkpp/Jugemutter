@@ -1,8 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "twitter.h"
+#include <QMessageBox>
 
 const QString tokenFileName = "Jugemutter.token"; // @todo あとで設定ファイルなりにする
+
+MainWindow::ResetConfigInfo::ResetConfigInfo()
+    : resetNeed(false)
+    , lazyTimerId(-1)
+{
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +26,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(twitter, &Twitter::authenticated, this, &MainWindow::handleTwitterAuthenticated);
 
     loadConfig();
+
+    if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) {
+        resetConfigInfo.resetNeed = true;
+    }
 }
 
 MainWindow::~MainWindow()
@@ -57,6 +68,42 @@ void MainWindow::saveConfig()
     settings.beginGroup("twitter");
     settings.setValue("0", twitter->serialize());
     settings.endGroup();
+}
+
+void MainWindow::resetConfig()
+{
+    twitter->deserialize("");
+}
+
+bool MainWindow::event(QEvent* ev)
+{
+    QTimerEvent *timerEvent_;
+
+    if (QEvent::Show == ev->type() &&
+        resetConfigInfo.resetNeed)
+    {
+        // なんでか showEvent() が飛んでこない...
+        resetConfigInfo.resetNeed = false;
+        resetConfigInfo.lazyTimerId = startTimer(50);
+    }
+
+    if (QEvent::Timer == ev->type() &&
+        nullptr != (timerEvent_ = static_cast<QTimerEvent*>(ev)) &&
+        resetConfigInfo.lazyTimerId == timerEvent_->timerId())
+    {
+        killTimer(timerEvent_->timerId());
+        resetConfigInfo.lazyTimerId = -1;
+        //
+        QMessageBox cfgResetMsg;
+        cfgResetMsg.setText("設定を初期化しますか？");
+        cfgResetMsg.setStandardButtons(QMessageBox::Reset | QMessageBox::No);
+        cfgResetMsg.setDefaultButton(QMessageBox::No);
+        if (QMessageBox::No != cfgResetMsg.exec()) {
+            resetConfig();
+        }
+    }
+
+    return QMainWindow::event(ev);
 }
 
 void MainWindow::handleTwitterAuthenticated()

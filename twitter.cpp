@@ -6,7 +6,8 @@
 static const int dataStreamVersion = QDataStream::Qt_5_8;
 
 Twitter::Twitter(QObject *parent)
-    : httpReplyHandler(nullptr)
+    : QOAuth1(parent)
+    , httpReplyHandler(nullptr)
 {
     // 実行するとすぐにポートを開きに行くので遅延させる
     //setReplyHandler(new QOAuthHttpServerReplyHandler(this));

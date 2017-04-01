@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 #ifndef QT_NO_DEBUG
-    ui->tweetEditor->setPlainText("abcdef");
+    //ui->tweetEditor->setPlainText("abcdef");
 #endif
 
     connect(twitter, &Twitter::authenticated, this, &MainWindow::handleTwitterAuthenticated);

@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    twitter.cpp
+    twitter.cpp \
+    tweetpreview.cpp
 
 HEADERS  += mainwindow.h \
-    twitter.h
+    twitter.h \
+    tweetpreview.h
 
 FORMS    += mainwindow.ui
 

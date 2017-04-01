@@ -20,7 +20,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTextEdit" name="tweetEditor"/>
+         <widget class="TweetPreview" name="tweetEditor"/>
         </item>
        </layout>
       </item>
@@ -94,6 +94,13 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>TweetPreview</class>
+   <extends>QTextEdit</extends>
+   <header>tweetpreview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

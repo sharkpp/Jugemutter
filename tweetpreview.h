@@ -10,21 +10,25 @@
 //class QKeyEvent;
 
 class TweetPreview
-    : public QTextEdit
+    : public QWidget
 {
     Q_OBJECT
 
 public:
     explicit TweetPreview(QWidget *parent = 0);
 
+    QString toPlainText() const;
+
 protected: // method
-    QString getTweetRawText() const;
 
 protected: // event
     void keyPressEvent(QKeyEvent *e);
+    void paintEvent(QPaintEvent *event) override;
 
 private slots:
-    void on_textChanged();
+
+private:
+    QString rawTweet;
 };
 
 #endif // TWEETPREVIEW_H

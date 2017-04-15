@@ -20,9 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->tweetEditor->setPlainText("abcdef");
 #endif
 
-    ui->textPrefix->setPlaceholderText("各ツイートの先頭へ追加するテキスト");
-    ui->textPostfix->setPlaceholderText("各ツイートの末尾へ追加するテキスト");
-
     connect(twitter, &Twitter::authenticated, this,
             &MainWindow::handleTwitterAuthenticated);
 

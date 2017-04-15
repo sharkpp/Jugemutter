@@ -94,6 +94,9 @@
           <property name="plainText">
            <string/>
           </property>
+          <property name="placeholderText">
+           <string>各ツイートの先頭へ追加するテキスト</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -160,6 +163,9 @@
           </property>
           <property name="plainText">
            <string/>
+          </property>
+          <property name="placeholderText">
+           <string>各ツイートの末尾へ追加するテキスト</string>
           </property>
          </widget>
         </item>

@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->tweetEditor->setPlainText("abcdef");
 #endif
 
-    ui->textPrefix->setPlaceholderText("各ツイートの先頭に追加するテキストを入力してください");
-    ui->textPostfix->setPlaceholderText("各ツイートの末尾に追加するテキストを入力してください");
+    ui->textPrefix->setPlaceholderText("各ツイートの先頭へ追加するテキスト");
+    ui->textPostfix->setPlaceholderText("各ツイートの末尾へ追加するテキスト");
 
     connect(twitter, &Twitter::authenticated, this,
             &MainWindow::handleTwitterAuthenticated);
@@ -115,10 +115,10 @@ void MainWindow::handleTwitterAuthenticated()
     }
 }
 
+// ツイート投稿
 void MainWindow::on_tweetButton_clicked()
 {
     QString tweetText = ui->tweetEditor->toPlainText();
-//    tweetButton->;
 
     // まずは認証済みかチェック
     if (!twitter->isAuthenticated()) {

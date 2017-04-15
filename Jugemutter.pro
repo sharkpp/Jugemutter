@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     twitter.cpp \
-    autosizetextedit.cpp
+    autosizetextedit.cpp \
+    textcounterlabel.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
-    autosizetextedit.h
+    autosizetextedit.h \
+    textcounterlabel.h
 
 FORMS    += mainwindow.ui
 

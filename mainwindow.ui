@@ -97,7 +97,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="textPrefixLength">
+         <widget class="TextCounterLabel" name="textPrefixLength">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -118,6 +118,9 @@
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+          </property>
+          <property name="buddy">
+           <cstring>textPrefix</cstring>
           </property>
          </widget>
         </item>
@@ -161,7 +164,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="textPostfixLength">
+         <widget class="TextCounterLabel" name="textPostfixLength">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -182,6 +185,9 @@
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+          </property>
+          <property name="buddy">
+           <cstring>textPostfix</cstring>
           </property>
          </widget>
         </item>
@@ -333,6 +339,11 @@
    <class>AutoSizeTextEdit</class>
    <extends>QPlainTextEdit</extends>
    <header>autosizetextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TextCounterLabel</class>
+   <extends>QLabel</extends>
+   <header>textcounterlabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

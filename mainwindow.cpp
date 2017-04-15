@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->tweetEditor->setPlainText("abcdef");
 #endif
 
-    connect(twitter, &Twitter::authenticated, this, &MainWindow::handleTwitterAuthenticated);
+    connect(twitter, &Twitter::authenticated, this,
+            &MainWindow::handleTwitterAuthenticated);
 
     loadConfig();
 

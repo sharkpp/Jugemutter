@@ -37,8 +37,6 @@ private slots:
     void handleTwitterAuthenticated();
     void on_tweetButton_clicked();
 
-//    void on_tweetPostfix_textChanged();
-
 private:
     Ui::MainWindow *ui;
     ResetConfigInfo resetConfigInfo;

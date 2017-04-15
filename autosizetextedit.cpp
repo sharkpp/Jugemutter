@@ -7,6 +7,7 @@ AutoSizeTextEdit::AutoSizeTextEdit(QWidget *parent)
 {
     connect(this, &QPlainTextEdit::textChanged, this, &AutoSizeTextEdit::on_textChanged);
 
+    // 高さを固定サイズに
     setSizePolicy(sizePolicy().horizontalPolicy(), QSizePolicy::Fixed);
 
     // サイズ計算

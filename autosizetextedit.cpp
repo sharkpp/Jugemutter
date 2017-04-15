@@ -1,10 +1,13 @@
 #include "autosizetextedit.h"
 #include <QDebug>
+#include <algorithm>
 
 AutoSizeTextEdit::AutoSizeTextEdit(QWidget *parent)
     : QPlainTextEdit(parent)
 {
     connect(this, &QPlainTextEdit::textChanged, this, &AutoSizeTextEdit::on_textChanged);
+
+    setSizePolicy(sizePolicy().horizontalPolicy(), QSizePolicy::Fixed);
 
     // サイズ計算
     on_textChanged();
@@ -18,5 +21,13 @@ void AutoSizeTextEdit::on_textChanged()
 
     qDebug() << document()->size();
 
-    setMinimumHeight(document()->size().height());
+    //const QMargins margins = contentsMargins();
+
+    int widgetHeight
+            = 6
+            + (std::min)((int)document()->size().height(), 3) * fontMetrics().height()
+            + 6;
+
+    setMinimumHeight(widgetHeight);
+    setMaximumHeight(widgetHeight);
 }

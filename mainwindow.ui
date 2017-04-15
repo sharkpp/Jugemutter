@@ -91,6 +91,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="plainText">
+           <string/>
+          </property>
          </widget>
         </item>
         <item>
@@ -114,7 +117,7 @@
            <enum>Qt::PlainText</enum>
           </property>
           <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
           </property>
          </widget>
         </item>
@@ -152,6 +155,9 @@
             <height>20</height>
            </size>
           </property>
+          <property name="plainText">
+           <string/>
+          </property>
          </widget>
         </item>
         <item>
@@ -175,7 +181,7 @@
            <enum>Qt::PlainText</enum>
           </property>
           <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
           </property>
          </widget>
         </item>

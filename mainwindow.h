@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class Twitter;
+//class TwitterTextSplitter;
 
 namespace Ui {
 class MainWindow;

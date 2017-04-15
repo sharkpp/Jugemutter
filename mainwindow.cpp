@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "twitter.h"
+#include "twittertextsplitter.h"
 #include <QMessageBox>
 
 MainWindow::ResetConfigInfo::ResetConfigInfo()
@@ -117,6 +118,23 @@ void MainWindow::on_tweetButton_clicked()
 {
     QString tweetText = ui->tweetEditor->toPlainText();
 
+    TwitterTextSplitter splitter;
+
+    splitter.setPrefix( ui->textPrefix->toPlainText() );
+    splitter.setText( tweetText );
+    splitter.setPostfix( ui->textPostfix->toPlainText() );
+
+    QList<SplittedItem> items = splitter.split();
+
+//    qDebug() << items;
+
+    QString msg;
+    QList<SplittedItem>::iterator i;
+    for (i = items.begin(); i != items.end(); ++i)
+        msg += QString("[%1]\n").arg(i->toString());
+    QMessageBox::information(this, "", msg);
+
+return;
     // まずは認証済みかチェック
     if (!twitter->isAuthenticated()) {
         tweetQueue = tweetText;

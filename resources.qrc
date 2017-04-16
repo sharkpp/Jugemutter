@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="setting.svg">resources/material_icons/ic_settings_white_48px.svg</file>
+    </qresource>
+</RCC>

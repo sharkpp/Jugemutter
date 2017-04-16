@@ -40,3 +40,6 @@ FORMS    += mainwindow.ui
 
 DISTFILES += \
     README.md
+
+RESOURCES += \
+    resources.qrc

@@ -27,16 +27,20 @@ public:
     ~MainWindow();
 
 protected: // method
+    // 設定関連
     void loadConfig();
     void saveConfig();
     void resetConfig();
+    // 画面初期化関連
+    void initToolbar();
 
 protected: // event
     bool event(QEvent* ev);
 
 private slots:
-    void handleTwitterAuthenticated();
+    void on_twitter_authenticated();
     void on_tweetButton_clicked();
+    void on_setting_clicked();
 
 private:
     Ui::MainWindow *ui;

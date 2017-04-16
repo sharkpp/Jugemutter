@@ -22,13 +22,15 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     connect(twitter, &Twitter::authenticated, this,
-            &MainWindow::handleTwitterAuthenticated);
+            &MainWindow::on_twitter_authenticated);
 
     loadConfig();
 
     if (QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier)) {
         resetConfigInfo.resetNeed = true;
     }
+
+    initToolbar();
 }
 
 MainWindow::~MainWindow()
@@ -74,6 +76,18 @@ void MainWindow::resetConfig()
     twitter->deserialize("");
 }
 
+void MainWindow::initToolbar()
+{
+    QToolBar *tb = ui->accountList;
+
+    QWidget* empty = new QWidget();
+    empty->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    tb->addWidget(empty);
+
+    tb->addAction(QIcon(":/icons/setting.svg"),
+                  "設定", this, &MainWindow::on_setting_clicked);
+}
+
 bool MainWindow::event(QEvent* ev)
 {
     QTimerEvent *timerEvent_;
@@ -106,7 +120,7 @@ bool MainWindow::event(QEvent* ev)
 }
 
 // ツイッターの認証通知
-void MainWindow::handleTwitterAuthenticated()
+void MainWindow::on_twitter_authenticated()
 {
     if (!tweetQueue.isEmpty()) {
         twitter->tweet(tweetQueue);
@@ -145,4 +159,10 @@ return;
     twitter->tweet(tweetText);
 
     return;
+}
+
+void MainWindow::on_setting_clicked()
+{
+    //QMessageBox::information(this, "", "on_setting_clicked");
+    qDebug() << "MainWindow::on_setting_clicked";
 }

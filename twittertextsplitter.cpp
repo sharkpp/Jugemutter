@@ -77,33 +77,6 @@ TwitterTextSplitter::TwitterTextSplitter()
 
 }
 
-QList<SplittedItem> TwitterTextSplitter::split()
-{
-    QList<SplittedItem> r;
-
-    int maxSplitSize = 140
-                     - (m_prefix.size()  ? m_prefix.size()  + 1 : 0)
-                     - (m_postfix.size() ? m_postfix.size() + 1 : 0);
-
-    int textLen = m_text.size();
-
-    for (int offset = 0; offset < textLen; ) {
-        SplittedItem item;
-        if (!m_prefix.isEmpty()) {
-            item.setPrefix(m_prefix);
-        }
-        if (!m_postfix.isEmpty()) {
-            item.setPostfix(m_postfix);
-        }
-        item.setText(m_text.mid(offset, maxSplitSize));
-        offset += maxSplitSize;
-
-        r.push_back(item);
-    }
-
-    return r;
-}
-
 QString TwitterTextSplitter::prefix() const
 {
     return m_prefix;
@@ -132,4 +105,46 @@ QString TwitterTextSplitter::text() const
 void TwitterTextSplitter::setText(const QString &text)
 {
     m_text = text;
+}
+
+QList<SplittedItem> TwitterTextSplitter::split()
+{
+    QList<SplittedItem> r;
+
+    int maxSplitSize = 140
+                     - (m_prefix.size()  ? m_prefix.size()  + 1 : 0)
+                     - (m_postfix.size() ? m_postfix.size() + 1 : 0);
+
+    int textLen = m_text.size();
+
+    QRegExp findTerminate("(。|、|，|,|\\.|\n| )");
+    qDebug() << "maxSplitSize" << maxSplitSize;
+    qDebug() << "textLen" << textLen;
+
+    for (int offset = 0; offset < textLen; ) {
+        SplittedItem item;
+        if (!m_prefix.isEmpty()) {
+            item.setPrefix(m_prefix);
+        }
+        if (!m_postfix.isEmpty()) {
+            item.setPostfix(m_postfix);
+        }
+
+        QString trimText = m_text.mid(offset, maxSplitSize);
+
+        // テスト：ケツから句読点を探す
+        int trimPos = trimText.lastIndexOf(findTerminate);
+qDebug() << "trimText.size()" << trimText.size() << "trimPos" << trimPos;
+        //if (maxSplitSize / 2 < trimText.size() - trimPod) {
+        if (trimPos) {
+            trimText = trimText.mid(0, trimPos + 1);
+        }
+
+        item.setText(trimText);
+        offset += trimText.size();
+
+        r.push_back(item);
+    }
+
+    return r;
 }

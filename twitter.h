@@ -29,20 +29,35 @@ public:
 
   // account info
 
-    QString id() const;
+    const QString &id() const;
+
+    const QString &screenName() const;
+
+    const QString &name() const;
+
+    const QIcon &icon() const;
 
   // API call
 
     bool tweet(const QString& text);
 
+protected:
+
+    void verifyCredentials(bool include_entities = false, bool skip_status = true, bool include_email = true);
+
 signals:
     void authenticated();
+    void verified();
     void tweeted(const QString& tweetId);
 
 private slots:
 
 protected:
     QOAuthHttpServerReplyHandler *httpReplyHandler;
+    QString m_id;
+    QString m_screenName;
+    QString m_name;
+    QIcon m_icon;
 };
 
 #endif // TWITTER_H

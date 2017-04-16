@@ -37,6 +37,10 @@ Twitter::Twitter(QObject *parent)
 
     connect(this, &QOAuth1::granted, this, &Twitter::authenticated);
 
+    connect(this, &QOAuth1::granted, this, [=]() {
+        verifyCredentials();
+    });
+
     connect(this, &QOAuth1::requestFailed, [=](const Error error) {
         qDebug() << "QOAuth1::requestFailed" << (int)error;
     });
@@ -57,7 +61,7 @@ Twitter::Twitter(QObject *parent)
 
 const QString Twitter::serialize() const
 {
-    QMap<QString, QString> serialized;
+    QMap<QString, QVariant> serialized;
     QByteArray dataBytes;
     QDataStream out(&dataBytes, QIODevice::WriteOnly);
     out.setVersion(dataStreamVersion);
@@ -67,6 +71,11 @@ const QString Twitter::serialize() const
         serialized.insert("tokenSecret", tokenSecret());
     }
 
+    serialized.insert("id", m_id);
+    serialized.insert("name", m_name);
+    serialized.insert("screenName", m_screenName);
+    serialized.insert("profileImage", m_icon);
+
     out << serialized;
 
     return dataBytes.toBase64();
@@ -74,14 +83,19 @@ const QString Twitter::serialize() const
 
 void Twitter::deserialize(const QString& data)
 {
-    QMap<QString, QString> deserialized;
+    QMap<QString, QVariant> deserialized;
     QByteArray dataBytes = QByteArray::fromBase64(data.toUtf8());
     QDataStream in(&dataBytes, QIODevice::ReadOnly);
     in.setVersion(dataStreamVersion);
     in >> deserialized;
 
-    QString userToken       = deserialized.value("token");
-    QString userTokenSecret = deserialized.value("tokenSecret");
+    m_id = deserialized.value("id").toString();
+    m_name = deserialized.value("name").toString();
+    m_screenName = deserialized.value("screenName").toString();
+    m_icon = deserialized.value("profileImage").value<QIcon>();
+
+    QString userToken       = deserialized.value("token").toString();
+    QString userTokenSecret = deserialized.value("tokenSecret").toString();
     if (userToken.isEmpty() ||
         userTokenSecret.isEmpty()) {
         setTokenCredentials("", "");
@@ -110,9 +124,9 @@ void Twitter::authenticate()
         // https://bugreports.qt.io/browse/QTBUG-59725 が修正されるまでこのまま
         const QString postfixTag = "</body></html>";
         const int fixedPaddingSize = messageHtml.toUtf8().length() - messageHtml.length() - postfixTag.length();
-        httpReplyHandler->setCallbackText(messageHtml + postfixTag + QString(fixedPaddingSize, '*'));
+        //httpReplyHandler->setCallbackText(messageHtml + postfixTag + QString(fixedPaddingSize, '*'));
         // 本来は
-        //httpReplyHandler->setCallbackText(messageHtml);
+        httpReplyHandler->setCallbackText(messageHtml);
         // このようにしたかった
         setReplyHandler(httpReplyHandler);
     }
@@ -130,9 +144,24 @@ bool Twitter::isAuthenticated() const
             QAbstractOAuth::Status::Granted == status();
 }
 
-QString Twitter::id() const
+const QString &Twitter::id() const
 {
-    return "";
+    return m_id;
+}
+
+const QString &Twitter::screenName() const
+{
+    return m_screenName;
+}
+
+const QString &Twitter::name() const
+{
+    return m_name;
+}
+
+const QIcon &Twitter::icon() const
+{
+    return m_icon;
 }
 
 bool Twitter::tweet(const QString& text)
@@ -170,7 +199,7 @@ bool Twitter::tweet(const QString& text)
         }
 
         const auto result = resultDoc.object();
-        if (!result.value("id_str").isUndefined()) {
+        if (result.value("id_str").isUndefined()) {
             qDebug() << resultDoc.toJson();
             return;
         }
@@ -183,4 +212,72 @@ bool Twitter::tweet(const QString& text)
     });
 
     return true;
+}
+
+void Twitter::verifyCredentials(bool include_entities, bool skip_status, bool include_email)
+{
+    // https://dev.twitter.com/rest/reference/get/account/verify_credentials
+    QUrl url("https://api.twitter.com/1.1/account/verify_credentials.json");
+    QUrlQuery query(url);
+
+    QVariantMap data;
+    query.addQueryItem("include_entities", include_entities ? "true" : "false");
+    query.addQueryItem("skip_status", skip_status ? "true" : "false");
+    query.addQueryItem("include_email", include_email ? "true" : "false");
+
+    url.setQuery(query);
+
+    QNetworkReply *reply = get(url);
+    connect(reply, &QNetworkReply::finished, this, [=](){
+        auto reply_ = qobject_cast<QNetworkReply*>(sender());
+
+        qDebug() << "verifyCredentials finished";
+
+        QJsonParseError parseError;
+        const auto resultJson = reply_->readAll();
+        const auto resultDoc = QJsonDocument::fromJson(resultJson, &parseError);
+        if (parseError.error) {
+            qDebug() << QString(resultJson);
+            qCritical() << "Twitter::tweet() finished Error at:" << parseError.offset
+                        << parseError.errorString();
+            return;
+        }
+        else if (!resultDoc.isObject()) {
+            qDebug() << "!resultDoc.isObject()\n" << QString(resultJson);
+            return;
+        }
+
+        const auto result = resultDoc.object();
+        if (result.value("id_str").isUndefined() ||
+            result.value("name").isUndefined() ||
+            result.value("screen_name").isUndefined() ||
+            result.value("profile_image_url_https").isUndefined()) {
+            qDebug() << "!result.value(\"id_str\").isUndefined()\n" << resultDoc.toJson();
+            return;
+        }
+
+        qDebug() << "***\n" << resultDoc.toJson();
+
+        m_id = result.value("id_str").toString();
+        m_screenName = result.value("screen_name").toString();
+        m_name = result.value("name").toString();
+        const auto profileImageUrlHttps = result.value("profile_image_url_https").toString();
+
+        qDebug() << m_id;
+        qDebug() << profileImageUrlHttps;
+
+        // アイコン取得
+        QNetworkAccessManager *netManager = networkAccessManager();
+        QNetworkRequest reqIcon;
+        reqIcon.setUrl(QUrl(profileImageUrlHttps));
+        QNetworkReply *replyIcon = netManager->get(reqIcon);
+        connect(replyIcon, &QNetworkReply::finished, this, [=](){
+
+            QImage profileImage;
+            profileImage.loadFromData(replyIcon->readAll());
+            m_icon = QIcon(QPixmap::fromImage(profileImage));
+
+            Q_EMIT verified();
+        });
+    });
 }

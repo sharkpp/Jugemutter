@@ -88,7 +88,7 @@ void MainWindow::initToolbar()
 
 void MainWindow::addAccount(Twitter *twitter)
 {
-    QAction *action = new QAction(QIcon(":/icons/setting.svg"), twitter->id(), this);
+    QAction *action = new QAction(twitter->icon(), twitter->name() + "\n" + twitter->screenName(), this);
     connect(action, &QAction::triggered,
             this, &MainWindow::on_acountSelect_clicked);
     action->setCheckable(true);
@@ -131,6 +131,8 @@ void MainWindow::loadConfig()
             Twitter *twitter = new Twitter(this);
             connect(twitter, &Twitter::authenticated,
                     this, &MainWindow::on_twitter_authenticated);
+            connect(twitter, &Twitter::verified,
+                    this, &MainWindow::on_twitter_verified);
             twitter->deserialize(serialized.toString());
             addAccount(twitter);
         }
@@ -205,6 +207,10 @@ bool MainWindow::event(QEvent* ev)
 
 // ツイッターの認証通知
 void MainWindow::on_twitter_authenticated()
+{    
+}
+
+void MainWindow::on_twitter_verified()
 {
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
 
@@ -224,7 +230,6 @@ void MainWindow::on_twitter_authenticated()
 
         return;
     }
-
 }
 
 // ツイート投稿
@@ -268,6 +273,8 @@ void MainWindow::on_acountAdd_clicked()
         currentTwitter = new Twitter(this);
         connect(currentTwitter, &Twitter::authenticated, this,
                 &MainWindow::on_twitter_authenticated);
+        connect(currentTwitter, &Twitter::verified,
+                this, &MainWindow::on_twitter_verified);
     }
     currentTwitter->authenticate();
 }

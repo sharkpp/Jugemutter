@@ -51,6 +51,7 @@ protected: // event
 
 private slots:
     void on_twitter_authenticated();
+    void on_twitter_verified();
     void on_tweetButton_clicked();
     void on_acountAdd_clicked();
     void on_acountSelect_clicked(bool checked);

@@ -4,7 +4,6 @@
 #include <QMainWindow>
 
 class Twitter;
-//class TwitterTextSplitter;
 
 namespace Ui {
 class MainWindow;
@@ -14,6 +13,17 @@ class MainWindow
     : public QMainWindow
 {
     Q_OBJECT
+
+    friend struct SearchAccountInfoByAction;
+    friend struct SearchAccountInfoByTwitter;
+    friend struct SearchAccountInfoByTwitterId;
+
+    struct AccountInfo {
+        AccountInfo();
+        //
+        QAction* action;
+        Twitter* twitter;
+    };
 
     struct ResetConfigInfo {
         ResetConfigInfo();
@@ -27,12 +37,14 @@ public:
     ~MainWindow();
 
 protected: // method
+    // UI関連
+    void initToolbar();
+    void addAccount(Twitter *twitter);
+    void selectAccount(Twitter *twitter);
     // 設定関連
     void loadConfig();
     void saveConfig();
     void resetConfig();
-    // 画面初期化関連
-    void initToolbar();
 
 protected: // event
     bool event(QEvent* ev);
@@ -40,12 +52,16 @@ protected: // event
 private slots:
     void on_twitter_authenticated();
     void on_tweetButton_clicked();
+    void on_acountAdd_clicked();
+    void on_acountSelect_clicked(bool checked);
     void on_setting_clicked();
 
 private:
     Ui::MainWindow *ui;
+    QAction *actionAccountAdd;
     ResetConfigInfo resetConfigInfo;
-    Twitter *twitter; // Twitter access class
+    QList<AccountInfo> twitters; // Twitter access class
+    Twitter* currentTwitter;
     QString tweetQueue; // queued tweet
 };
 

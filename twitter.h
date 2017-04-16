@@ -27,6 +27,10 @@ public:
     // OAuth check authentication method
     bool isAuthenticated() const;
 
+  // account info
+
+    QString id() const;
+
   // API call
 
     bool tweet(const QString& text);

@@ -127,7 +127,12 @@ bool Twitter::isAuthenticated() const
     return
         !token().isEmpty() &&
         !tokenSecret().isEmpty() &&
-        QAbstractOAuth::Status::Granted == status();
+            QAbstractOAuth::Status::Granted == status();
+}
+
+QString Twitter::id() const
+{
+    return "";
 }
 
 bool Twitter::tweet(const QString& text)

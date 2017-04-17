@@ -39,7 +39,7 @@ public:
 
   // API call
 
-    bool tweet(const QString& text);
+    bool tweet(const QString& text, const QString &inReplyToStatusId = "");
 
 protected:
 

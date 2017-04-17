@@ -113,6 +113,20 @@ void MainWindow::selectAccount(Twitter *twitter)
     ui->tweetButton->setEnabled(true);
 }
 
+Twitter *MainWindow::newTwitter(QObject *parent)
+{
+    Twitter *twitter = new Twitter(parent);
+
+    connect(twitter, &Twitter::authenticated,
+            this, &MainWindow::on_twitter_authenticated);
+    connect(twitter, &Twitter::verified,
+            this, &MainWindow::on_twitter_verified);
+    connect(twitter, &Twitter::tweeted,
+            this, &MainWindow::on_twitter_tweeted);
+
+    return twitter;
+}
+
 void MainWindow::loadConfig()
 {
     QSettings settings;
@@ -128,11 +142,7 @@ void MainWindow::loadConfig()
          accountIndex < accountNum; ++accountIndex) {
         QVariant serialized = settings.value(QString("%1").arg(accountIndex));
         if (serialized.isValid()) {
-            Twitter *twitter = new Twitter(this);
-            connect(twitter, &Twitter::authenticated,
-                    this, &MainWindow::on_twitter_authenticated);
-            connect(twitter, &Twitter::verified,
-                    this, &MainWindow::on_twitter_verified);
+            Twitter *twitter = newTwitter(this);
             twitter->deserialize(serialized.toString());
             addAccount(twitter);
         }
@@ -208,6 +218,8 @@ bool MainWindow::event(QEvent* ev)
 // ツイッターの認証通知
 void MainWindow::on_twitter_authenticated()
 {    
+    qDebug() << QString(">>USER_TOKEN='%1'").arg(currentTwitter->token());
+    qDebug() << QString(">>USER_TOKEN_SECRET='%1'").arg(currentTwitter->tokenSecret());
 }
 
 void MainWindow::on_twitter_verified()
@@ -232,49 +244,64 @@ void MainWindow::on_twitter_verified()
     }
 }
 
+void MainWindow::on_twitter_tweeted(const QString &tweetId)
+{
+    qDebug() << "add tweet" << tweetId;
+
+    if (tweetQueue.isEmpty()) {
+        QMessageBox::information(this, qAppName(), "投稿を完了しました。");
+        return;
+    }
+
+    // まだ残りがあれば投稿する
+
+    QString tweetText = tweetQueue.front().toString();
+    tweetQueue.pop_front();
+
+    currentTwitter->tweet(tweetText, tweetId);
+}
+
 // ツイート投稿
 void MainWindow::on_tweetButton_clicked()
 {
-    QString tweetText = ui->tweetEditor->toPlainText();
+    tweetQueue.clear();
+
+    // まずは認証済みかチェック
+    if (!currentTwitter ||
+        !currentTwitter->isAuthenticated()) {
+        return;
+    }
 
     TwitterTextSplitter splitter;
 
     splitter.setPrefix( ui->textPrefix->toPlainText() );
-    splitter.setText( tweetText );
+    splitter.setText( ui->tweetEditor->toPlainText() );
     splitter.setPostfix( ui->textPostfix->toPlainText() );
 
-    QList<SplittedItem> items = splitter.split();
-
-//    qDebug() << items;
-
-    QString msg;
-    QList<SplittedItem>::iterator i;
-    for (i = items.begin(); i != items.end(); ++i)
-        msg += QString("[%1]\n").arg(i->toString());
-    QMessageBox::information(this, "", msg);
-
-return;
-    // まずは認証済みかチェック
-    /*if (!twitter->isAuthenticated()) {
-        tweetQueue = tweetText;
-        twitter->authenticate();
+    tweetQueue = splitter.split();
+    if (tweetQueue.isEmpty()) {
         return;
     }
 
-    twitter->tweet(tweetText);
-*/
-    return;
+#if 1
+    QString msg;
+    QList<SplittedItem>::iterator i;
+    for (i = tweetQueue.begin(); i != tweetQueue.end(); ++i)
+        msg += QString("[%1]\n").arg(i->toString());
+    QMessageBox::information(this, "", msg);
+#endif
+
+    QString tweetText = tweetQueue.front().toString();
+    tweetQueue.pop_front();
+
+    currentTwitter->tweet(tweetText);
 }
 
 // アカウント追加
 void MainWindow::on_acountAdd_clicked()
 {
     if (!currentTwitter) {
-        currentTwitter = new Twitter(this);
-        connect(currentTwitter, &Twitter::authenticated, this,
-                &MainWindow::on_twitter_authenticated);
-        connect(currentTwitter, &Twitter::verified,
-                this, &MainWindow::on_twitter_verified);
+        currentTwitter = newTwitter(this);
     }
     currentTwitter->authenticate();
 }

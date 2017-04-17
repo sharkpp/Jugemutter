@@ -102,6 +102,8 @@ void Twitter::deserialize(const QString& data)
         setStatus(QAbstractOAuth::Status::NotAuthenticated);
     }
     else {
+        qDebug() << QString("USER_TOKEN='%1'").arg(userToken);
+        qDebug() << QString("USER_TOKEN_SECRET='%1'").arg(userTokenSecret);
         setTokenCredentials(userToken, userTokenSecret);
         setStatus(QAbstractOAuth::Status::Granted);
     }
@@ -164,19 +166,21 @@ const QIcon &Twitter::icon() const
     return m_icon;
 }
 
-bool Twitter::tweet(const QString& text)
+bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
 {
     // https://dev.twitter.com/rest/reference/post/statuses/update
     QUrl url("https://api.twitter.com/1.1/statuses/update.json");
     QUrlQuery query(url);
 
     QVariantMap data;
-    //data.insert("status", text);
-    query.addQueryItem("status", text); // required, 140 char
+    data.insert("status", text);
+    if (!inReplyToStatusId.isEmpty()) {
+        data.insert("in_reply_to_status_id", inReplyToStatusId);
+    }
 
     url.setQuery(query);
-    QNetworkReply *reply = post(url);
 
+    QNetworkReply *reply = post(url, data);
     connect(reply, &QNetworkReply::finished, this, [=](){
         auto reply_ = qobject_cast<QNetworkReply*>(sender());
 
@@ -194,7 +198,7 @@ bool Twitter::tweet(const QString& text)
             return;
         }
         else if (!resultDoc.isObject()) {
-            qDebug() << QString(resultJson);
+            qDebug() << QString(resultJson).replace(QRegExp(" +"), " ");
             return;
         }
 
@@ -204,7 +208,7 @@ bool Twitter::tweet(const QString& text)
             return;
         }
 
-        qDebug() << "***\n" << resultDoc.toJson();
+        qDebug() << "***\n" << QString(resultDoc.toJson()).replace(QRegExp(" +"), " ");
 
         const auto tweetId = result.value("id_str").toString();
 
@@ -243,7 +247,7 @@ void Twitter::verifyCredentials(bool include_entities, bool skip_status, bool in
             return;
         }
         else if (!resultDoc.isObject()) {
-            qDebug() << "!resultDoc.isObject()\n" << QString(resultJson);
+            qDebug() << "!resultDoc.isObject()\n" << QString(resultJson).replace(QRegExp(" +"), " ");
             return;
         }
 
@@ -256,7 +260,7 @@ void Twitter::verifyCredentials(bool include_entities, bool skip_status, bool in
             return;
         }
 
-        qDebug() << "***\n" << resultDoc.toJson();
+        qDebug() << "***\n" << QString(resultDoc.toJson()).replace(QRegExp(" +"), " ");
 
         m_id = result.value("id_str").toString();
         m_screenName = result.value("screen_name").toString();

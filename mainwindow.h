@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "twittertextsplitter.h"
 
 class Twitter;
 
@@ -41,6 +42,7 @@ protected: // method
     void initToolbar();
     void addAccount(Twitter *twitter);
     void selectAccount(Twitter *twitter);
+    Twitter *newTwitter(QObject *parent);
     // 設定関連
     void loadConfig();
     void saveConfig();
@@ -52,6 +54,7 @@ protected: // event
 private slots:
     void on_twitter_authenticated();
     void on_twitter_verified();
+    void on_twitter_tweeted(const QString& tweetId);
     void on_tweetButton_clicked();
     void on_acountAdd_clicked();
     void on_acountSelect_clicked(bool checked);
@@ -63,7 +66,7 @@ private:
     ResetConfigInfo resetConfigInfo;
     QList<AccountInfo> twitters; // Twitter access class
     Twitter* currentTwitter;
-    QString tweetQueue; // queued tweet
+    QList<SplittedItem> tweetQueue; // queued tweet
 };
 
 #endif // MAINWINDOW_H

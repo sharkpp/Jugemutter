@@ -133,11 +133,13 @@ QList<SplittedItem> TwitterTextSplitter::split()
         QString trimText = m_text.mid(offset, maxSplitSize);
 
         // テスト：ケツから句読点を探す
-        int trimPos = trimText.lastIndexOf(findTerminate);
+        if (offset + maxSplitSize < textLen) {
+            int trimPos = trimText.lastIndexOf(findTerminate);
 qDebug() << "trimText.size()" << trimText.size() << "trimPos" << trimPos;
-        //if (maxSplitSize / 2 < trimText.size() - trimPod) {
-        if (trimPos) {
-            trimText = trimText.mid(0, trimPos + 1);
+            //if (maxSplitSize / 2 < trimText.size() - trimPod) {
+            if (0 < trimPos) {
+                trimText = trimText.mid(0, trimPos + 1);
+            }
         }
 
         item.setText(trimText);

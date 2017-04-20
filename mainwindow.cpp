@@ -342,3 +342,13 @@ void MainWindow::on_setting_clicked()
     //QMessageBox::information(this, "", "on_setting_clicked");
     qDebug() << "MainWindow::on_setting_clicked";
 }
+
+void MainWindow::on_textPrefix_textChanged()
+{
+    ui->tweetEditor->setPrefix(ui->textPrefix->toPlainText());
+}
+
+void MainWindow::on_textPostfix_textChanged()
+{
+    ui->tweetEditor->setPostfix(ui->textPostfix->toPlainText());
+}

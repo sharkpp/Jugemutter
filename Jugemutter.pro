@@ -28,13 +28,15 @@ SOURCES += main.cpp\
     twitter.cpp \
     autosizetextedit.cpp \
     textcounterlabel.cpp \
-    twittertextsplitter.cpp
+    twittertextsplitter.cpp \
+    tweettextedit.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
     autosizetextedit.h \
     textcounterlabel.h \
-    twittertextsplitter.h
+    twittertextsplitter.h \
+    tweettextedit.h
 
 FORMS    += mainwindow.ui
 

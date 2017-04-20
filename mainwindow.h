@@ -59,6 +59,8 @@ private slots:
     void on_acountAdd_clicked();
     void on_acountSelect_clicked(bool checked);
     void on_setting_clicked();
+    void on_textPrefix_textChanged();
+    void on_textPostfix_textChanged();
 
 private:
     Ui::MainWindow *ui;

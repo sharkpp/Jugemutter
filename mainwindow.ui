@@ -137,6 +137,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="placeholderText">
+         <string>ツイート内容</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -249,7 +252,7 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QLabel" name="textLength">
+           <widget class="QLabel" name="textLengthLAbel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -271,7 +274,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="text">
+           <widget class="QLabel" name="textLength">
             <property name="text">
              <string>0</string>
             </property>

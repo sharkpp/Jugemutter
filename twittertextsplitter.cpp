@@ -70,9 +70,18 @@ void SplittedItem::setText(const QString &text)
     m_text = text;
 }
 
+int SplittedItem::size() const
+{
+    return (m_prefix.isEmpty() ? 0 : m_prefix.size() + 1)
+        +  m_text.size()
+        +  (m_postfix.isEmpty() ? 0 : 1 + m_postfix.size());
+
+}
+
 ////////////////
 
 TwitterTextSplitter::TwitterTextSplitter()
+    : m_totalLength(-1)
 {
 
 }
@@ -111,6 +120,8 @@ QList<SplittedItem> TwitterTextSplitter::split()
 {
     QList<SplittedItem> r;
 
+    m_totalLength = 0;
+
     int maxSplitSize = 140
                      - (m_prefix.size()  ? m_prefix.size()  + 1 : 0)
                      - (m_postfix.size() ? m_postfix.size() + 1 : 0);
@@ -145,8 +156,15 @@ qDebug() << "trimText.size()" << trimText.size() << "trimPos" << trimPos;
         item.setText(trimText);
         offset += trimText.size();
 
+        m_totalLength += item.size();
+
         r.push_back(item);
     }
 
     return r;
+}
+
+int TwitterTextSplitter::size() const
+{
+    return m_totalLength;
 }

@@ -30,6 +30,8 @@ public:
     QString text() const;
     void setText(const QString &text);
 
+    int size() const;
+
 protected:
     QString m_prefix;
     QString m_postfix;
@@ -62,10 +64,13 @@ public:
 
     QList<SplittedItem> split();
 
+    int size() const;
+
 protected:
     QString m_prefix;
     QString m_postfix;
     QString m_text;
+    int m_totalLength;
 };
 
 #endif // TWITTERTEXTSPLITTER_H

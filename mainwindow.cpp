@@ -127,6 +127,23 @@ Twitter *MainWindow::newTwitter(QObject *parent)
     return twitter;
 }
 
+void MainWindow::updateSplitStatus()
+{
+    TwitterTextSplitter splitter;
+
+    QString text = ui->tweetEditor->toPlainText();
+
+    splitter.setPrefix( ui->textPrefix->toPlainText() );
+    splitter.setText( text );
+    splitter.setPostfix( ui->textPostfix->toPlainText() );
+
+    tweetQueue = splitter.split();
+
+    ui->partitionCount->setText(QString("%1").arg(tweetQueue.size()));
+    ui->textLength->setText(QString("%1").arg(text.size()));
+    ui->totalLength->setText(QString("%1").arg(splitter.size()));
+}
+
 void MainWindow::loadConfig()
 {
     QSettings settings;
@@ -346,9 +363,16 @@ void MainWindow::on_setting_clicked()
 void MainWindow::on_textPrefix_textChanged()
 {
     ui->tweetEditor->setPrefix(ui->textPrefix->toPlainText());
+    updateSplitStatus();
 }
 
 void MainWindow::on_textPostfix_textChanged()
 {
     ui->tweetEditor->setPostfix(ui->textPostfix->toPlainText());
+    updateSplitStatus();
+}
+
+void MainWindow::on_tweetEditor_textChanged()
+{
+    updateSplitStatus();
 }

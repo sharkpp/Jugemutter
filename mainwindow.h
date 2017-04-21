@@ -43,6 +43,7 @@ protected: // method
     void addAccount(Twitter *twitter);
     void selectAccount(Twitter *twitter);
     Twitter *newTwitter(QObject *parent);
+    void updateSplitStatus();
     // 設定関連
     void loadConfig();
     void saveConfig();
@@ -61,6 +62,7 @@ private slots:
     void on_setting_clicked();
     void on_textPrefix_textChanged();
     void on_textPostfix_textChanged();
+    void on_tweetEditor_textChanged();
 
 private:
     Ui::MainWindow *ui;

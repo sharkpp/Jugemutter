@@ -30,7 +30,7 @@ void TweetTextEdit::updateHighlight()
     formatOdd.setForeground (QColor(0,0,0));
     formatOdd.setBackground (QColor(255,255,255));
     formatEven.setForeground(QColor(0,0,0));
-    formatEven.setBackground(QColor(225,225,225));
+    formatEven.setBackground(QColor(220,236,246));
     bool odd = false;
 
     for (QList<SplittedItem>::iterator

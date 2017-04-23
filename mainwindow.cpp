@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "twitter.h"
 #include "twittertextsplitter.h"
+#include "accountadddialog.h"
 #include <QMessageBox>
 #include <algorithm>
 
@@ -47,6 +48,7 @@ MainWindow::ResetConfigInfo::ResetConfigInfo()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , accountAddDialog(new AccountAddDialog(this))
     , currentTwitter(nullptr)
 {
     ui->setupUi(this);
@@ -66,6 +68,7 @@ MainWindow::~MainWindow()
 {
     saveConfig();
 
+    delete accountAddDialog;
     delete ui;
 }
 
@@ -320,7 +323,14 @@ void MainWindow::on_acountAdd_clicked()
     if (!currentTwitter) {
         currentTwitter = newTwitter(this);
     }
-    currentTwitter->authenticate();
+
+    // ※ currentTwitter->authenticate(); も中で行う
+
+    if (!accountAddDialog->popup(currentTwitter)) {
+        // 認証キャンセル
+        delete currentTwitter;
+        currentTwitter = nullptr;
+    }
 }
 
 // 登録済みのどれかのアカウントを選択

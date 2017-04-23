@@ -5,6 +5,7 @@
 #include "twittertextsplitter.h"
 
 class Twitter;
+class AccountAddDialog;
 
 namespace Ui {
 class MainWindow;
@@ -66,6 +67,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    AccountAddDialog* accountAddDialog;
     QAction *actionAccountAdd;
     ResetConfigInfo resetConfigInfo;
     QList<AccountInfo> twitters; // Twitter access class

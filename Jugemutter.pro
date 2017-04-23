@@ -29,16 +29,19 @@ SOURCES += main.cpp\
     autosizetextedit.cpp \
     textcounterlabel.cpp \
     twittertextsplitter.cpp \
-    tweettextedit.cpp
+    tweettextedit.cpp \
+    accountadddialog.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
     autosizetextedit.h \
     textcounterlabel.h \
     twittertextsplitter.h \
-    tweettextedit.h
+    tweettextedit.h \
+    accountadddialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    accountadddialog.ui
 
 DISTFILES += \
     README.md

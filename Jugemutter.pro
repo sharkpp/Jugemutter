@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     textcounterlabel.cpp \
     twittertextsplitter.cpp \
     tweettextedit.cpp \
-    accountadddialog.cpp
+    viewnormaleditor.cpp \
+    accountaddpopup.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
@@ -38,10 +39,12 @@ HEADERS  += mainwindow.h \
     textcounterlabel.h \
     twittertextsplitter.h \
     tweettextedit.h \
-    accountadddialog.h
+    viewnormaleditor.h \
+    accountaddpopup.h
 
 FORMS    += mainwindow.ui \
-    accountadddialog.ui
+    viewnormaleditor.ui \
+    accountaddpopup.ui
 
 DISTFILES += \
     README.md

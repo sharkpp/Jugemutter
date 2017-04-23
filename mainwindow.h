@@ -2,10 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "twittertextsplitter.h"
+
+class QFrame;
 
 class Twitter;
-class AccountAddDialog;
+class ViewNormalEditor;
 
 namespace Ui {
 class MainWindow;
@@ -16,15 +17,17 @@ class MainWindow
 {
     Q_OBJECT
 
-    friend struct SearchAccountInfoByAction;
-    friend struct SearchAccountInfoByTwitter;
-    friend struct SearchAccountInfoByTwitterId;
+    friend struct SearchButtonInfoByAction;
+    friend struct SearchButtonInfoByTwitter;
+    friend struct SearchButtonInfoByTwitterId;
 
-    struct AccountInfo {
-        AccountInfo();
+    struct ButtonInfo {
+        ButtonInfo();
+        ButtonInfo(QAction *action_, QFrame *frame_);
         //
-        QAction* action;
-        Twitter* twitter;
+        QAction *action;
+        QFrame *frame;
+        Twitter *twitter;
     };
 
     struct ResetConfigInfo {
@@ -41,10 +44,10 @@ public:
 protected: // method
     // UI関連
     void initToolbar();
-    void addAccount(Twitter *twitter);
-    void selectAccount(Twitter *twitter);
+    void addButton(const ButtonInfo &button, QAction *actionBefore = nullptr);
+    ButtonInfo addAccount(Twitter *twitter);
+    void buttonSelect(QAction *action);
     Twitter *newTwitter(QObject *parent);
-    void updateSplitStatus();
     // 設定関連
     void loadConfig();
     void saveConfig();
@@ -56,23 +59,18 @@ protected: // event
 private slots:
     void on_twitter_authenticated();
     void on_twitter_verified();
-    void on_twitter_tweeted(const QString& tweetId);
-    void on_tweetButton_clicked();
     void on_acountAdd_clicked();
     void on_acountSelect_clicked(bool checked);
     void on_setting_clicked();
-    void on_textPrefix_textChanged();
-    void on_textPostfix_textChanged();
-    void on_tweetEditor_textChanged();
 
 private:
     Ui::MainWindow *ui;
-    AccountAddDialog* accountAddDialog;
+    QFrame* welcomeView;
+    ViewNormalEditor* editorView;
     QAction *actionAccountAdd;
     ResetConfigInfo resetConfigInfo;
-    QList<AccountInfo> twitters; // Twitter access class
+    QList<ButtonInfo> buttons; // Twitter access class
     Twitter* currentTwitter;
-    QList<SplittedItem> tweetQueue; // queued tweet
 };
 
 #endif // MAINWINDOW_H

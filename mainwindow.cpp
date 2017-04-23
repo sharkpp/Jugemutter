@@ -2,39 +2,48 @@
 #include "ui_mainwindow.h"
 #include "twitter.h"
 #include "twittertextsplitter.h"
-#include "accountadddialog.h"
+#include "accountaddpopup.h"
+#include "viewnormaleditor.h"
 #include <QMessageBox>
 #include <algorithm>
 
-struct SearchAccountInfoByAction {
+struct SearchButtonInfoByAction {
     QAction *action_;
-    SearchAccountInfoByAction(QAction *action) : action_(action) {
+    SearchButtonInfoByAction(QAction *action) : action_(action) {
     }
-    bool operator()(const MainWindow::AccountInfo& info) const {
+    bool operator()(const MainWindow::ButtonInfo& info) const {
       return info.action == action_;
     }
 };
 
-struct SearchAccountInfoByTwitter {
+struct SearchButtonInfoByTwitter {
     Twitter *twitter_;
-    SearchAccountInfoByTwitter(Twitter *twitter) : twitter_(twitter) {
+    SearchButtonInfoByTwitter(Twitter *twitter) : twitter_(twitter) {
     }
-    bool operator()(const MainWindow::AccountInfo& info) const {
-      return info.twitter == twitter_;
+    bool operator()(const MainWindow::ButtonInfo& button) const {
+      return button.twitter && button.twitter == twitter_;
     }
 };
 
-struct SearchAccountInfoByTwitterId {
+struct SearchButtonInfoByTwitterId {
     Twitter *twitter_;
-    SearchAccountInfoByTwitterId(Twitter *twitter) : twitter_(twitter) {
+    SearchButtonInfoByTwitterId(Twitter *twitter) : twitter_(twitter) {
     }
-    bool operator()(const MainWindow::AccountInfo& info) const {
-      return info.twitter->id() == twitter_->id();
+    bool operator()(const MainWindow::ButtonInfo& button) const {
+      return button.twitter && button.twitter->id() == twitter_->id();
     }
 };
 
-MainWindow::AccountInfo::AccountInfo()
+MainWindow::ButtonInfo::ButtonInfo()
     : action(nullptr)
+    , frame(nullptr)
+    , twitter(nullptr)
+{
+}
+
+MainWindow::ButtonInfo::ButtonInfo(QAction *action_, QFrame *frame_)
+    : action(action_)
+    , frame(frame_)
     , twitter(nullptr)
 {
 }
@@ -48,10 +57,11 @@ MainWindow::ResetConfigInfo::ResetConfigInfo()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , accountAddDialog(new AccountAddDialog(this))
     , currentTwitter(nullptr)
 {
     ui->setupUi(this);
+    ui->pageContainer->addWidget(welcomeView = new QFrame(this));
+    ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
     initToolbar();
 
     loadConfig();
@@ -68,52 +78,101 @@ MainWindow::~MainWindow()
 {
     saveConfig();
 
-    delete accountAddDialog;
+    delete editorView;
+    delete welcomeView;
     delete ui;
 }
 
 void MainWindow::initToolbar()
 {
     QToolBar *tb = ui->accountList;
+    QAction *action;
 
-    actionAccountAdd
-        = tb->addAction(QIcon(":/icons/add.svg"),
-                        "アカウントの追加", this, &MainWindow::on_acountAdd_clicked);
+    // 追加
+    action = actionAccountAdd = new QAction(QIcon(":/icons/add.svg"), "アカウントの追加", this);
+    connect(action, &QAction::triggered,
+            this, &MainWindow::on_acountAdd_clicked);
+    addButton(ButtonInfo(action, welcomeView));
 
     // スペーサー
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     tb->addWidget(spacer);
 
-    tb->addAction(QIcon(":/icons/setting.svg"),
-                  "設定", this, &MainWindow::on_setting_clicked);
+    // 設定
+    action = new QAction(QIcon(":/icons/setting.svg"), "設定", this);
+    action->setCheckable(true);
+    connect(action, &QAction::triggered,
+            this, &MainWindow::on_setting_clicked);
+    addButton(ButtonInfo(action, welcomeView));
 }
 
-void MainWindow::addAccount(Twitter *twitter)
+void MainWindow::addButton(const ButtonInfo &button, QAction *actionBefore)
 {
-    QAction *action = new QAction(twitter->icon(), twitter->name() + "\n" + twitter->screenName(), this);
+    QToolBar *tb = ui->accountList;
+
+    if (actionBefore) {
+        tb->insertAction(actionBefore, button.action);
+        //
+        QList<ButtonInfo>::iterator
+                ite = std::find_if(buttons.begin(), buttons.end(),
+                                   SearchButtonInfoByAction(actionBefore));
+        if (buttons.end() != ite) {
+            buttons.insert(ite, button);
+        }
+        else {
+            buttons.push_back(button);
+        }
+    }
+    else {
+        tb->addAction(button.action);
+        buttons.push_back(button);
+    }
+}
+
+MainWindow::ButtonInfo MainWindow::addAccount(Twitter *twitter)
+{
+/*    QAction *actionBefore = nullptr;
+    QList<ButtonInfo>::iterator
+            ite = std::find_if(buttons.begin(), buttons.end(),
+                               SearchButtonInfoByAction(actionAccountAdd));
+    if (buttons.begin() != ite) {
+        ite--;
+        actionBefore = ite->action;
+    }*/
+
+
+    // 最後のアカウントの次に追加
+    QAction *action = new QAction(twitter->icon(),
+                                  twitter->name() + "\n" + twitter->screenName(), this);
+    action->setCheckable(true);
     connect(action, &QAction::triggered,
             this, &MainWindow::on_acountSelect_clicked);
-    action->setCheckable(true);
-    ui->accountList->insertAction(actionAccountAdd, action);
 
-    AccountInfo info;
-    info.twitter = twitter;
-    info.action = action;
-    twitters.push_back(info);
+    ButtonInfo button(action, editorView);
+    button.twitter = twitter;
+
+    addButton(button, actionAccountAdd);
+
+    return button;
 }
 
-void MainWindow::selectAccount(Twitter *twitter)
+void MainWindow::buttonSelect(QAction *action)
 {
-    for (QList<AccountInfo>::iterator
-            ite = twitters.begin(),
-            last= twitters.end();
+    for (QList<ButtonInfo>::iterator
+            ite = buttons.begin(),
+            last= buttons.end();
         ite != last; ++ite) {
-        ite->action->setChecked( ite->twitter == twitter );
+        ite->action->setChecked( ite->action == action );
+        if (ite->twitter &&
+            ite->action == action) {
+            ViewNormalEditor *frame = qobject_cast<ViewNormalEditor*>( ite->frame );
+            if (frame) {
+                frame->setAccount(ite->twitter);
+                ui->pageContainer->setCurrentWidget(ite->frame);
+            }
+        }
     }
-    currentTwitter = twitter;
-
-    ui->tweetButton->setEnabled(true);
 }
 
 Twitter *MainWindow::newTwitter(QObject *parent)
@@ -124,27 +183,8 @@ Twitter *MainWindow::newTwitter(QObject *parent)
             this, &MainWindow::on_twitter_authenticated);
     connect(twitter, &Twitter::verified,
             this, &MainWindow::on_twitter_verified);
-    connect(twitter, &Twitter::tweeted,
-            this, &MainWindow::on_twitter_tweeted);
 
     return twitter;
-}
-
-void MainWindow::updateSplitStatus()
-{
-    TwitterTextSplitter splitter;
-
-    QString text = ui->tweetEditor->toPlainText();
-
-    splitter.setPrefix( ui->textPrefix->toPlainText() );
-    splitter.setText( text );
-    splitter.setPostfix( ui->textPostfix->toPlainText() );
-
-    tweetQueue = splitter.split();
-
-    ui->partitionCount->setText(QString("%1").arg(tweetQueue.size()));
-    ui->textLength->setText(QString("%1").arg(text.size()));
-    ui->totalLength->setText(QString("%1").arg(splitter.size()));
 }
 
 void MainWindow::loadConfig()
@@ -180,27 +220,38 @@ void MainWindow::saveConfig()
     settings.endGroup();
 
     settings.beginGroup("twitter");
-    settings.setValue("num", QString("%1").arg(twitters.size()));
-    int accountIndex = 0;
-    for (QList<AccountInfo>::iterator
-            ite = twitters.begin(),
-            last= twitters.end();
+    int accountIndex = 0, accountNum = 0;
+    for (QList<ButtonInfo>::iterator
+            ite = buttons.begin(),
+            last= buttons.end();
         ite != last; ++ite, ++accountIndex) {
-        settings.setValue(QString("%1").arg(accountIndex), ite->twitter->serialize());
+        if (ite->twitter) {
+            settings.setValue(QString("%1").arg(accountIndex),
+                              ite->twitter->serialize());
+            accountNum++;
+        }
     }
+    settings.setValue("num", QString("%1").arg(accountNum));
     settings.endGroup();
 }
 
 void MainWindow::resetConfig()
 {
-    for (QList<AccountInfo>::iterator
-            ite = twitters.begin(),
-            last= twitters.end();
-        ite != last; ++ite) {
-        ui->accountList->removeAction(ite->action);
-        delete ite->twitter;
+    for (QList<ButtonInfo>::iterator
+            ite = buttons.begin(),
+            last= buttons.end();
+        ite != last; ) {
+        if (!ite->twitter) {
+            ++ite;
+        }
+        else {
+            ButtonInfo button = *ite;
+            ui->accountList->removeAction(button.action);
+            delete button.twitter;
+            ite = buttons.erase(ite);
+            last= buttons.end();
+        }
     }
-    twitters.clear();
     currentTwitter = nullptr;
 }
 
@@ -238,98 +289,39 @@ bool MainWindow::event(QEvent* ev)
 // ツイッターの認証通知
 void MainWindow::on_twitter_authenticated()
 {    
-    qDebug() << QString(">>USER_TOKEN='%1'").arg(currentTwitter->token());
-    qDebug() << QString(">>USER_TOKEN_SECRET='%1'").arg(currentTwitter->tokenSecret());
+    Twitter *twitter = qobject_cast<Twitter*>( sender() );
+    qDebug() << QString(">>USER_TOKEN='%1'").arg(twitter->token());
+    qDebug() << QString(">>USER_TOKEN_SECRET='%1'").arg(twitter->tokenSecret());
 }
 
 void MainWindow::on_twitter_verified()
 {
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
 
-    if (twitter == currentTwitter) {
-        // すでに登録済みのアカウントかどうかのチェック
-        QList<AccountInfo>::iterator
-                ite = std::find_if(twitters.begin(), twitters.end(),
-                                   SearchAccountInfoByTwitterId(twitter));
-        if (twitters.end() != ite) {
-            // すでに登録済みっぽい
-            return;
-        }
-
-        addAccount(twitter);
-
-        selectAccount(twitter);
-
-        return;
-    }
-}
-
-void MainWindow::on_twitter_tweeted(const QString &tweetId)
-{
-    qDebug() << "add tweet" << tweetId;
-
-    if (tweetQueue.isEmpty()) {
-        QMessageBox::information(this, qAppName(), "投稿を完了しました。");
+    // すでに登録済みのアカウントかどうかのチェック
+    QList<ButtonInfo>::iterator
+            ite = std::find_if(buttons.begin(), buttons.end(),
+                               SearchButtonInfoByTwitterId(twitter));
+    if (buttons.end() != ite) {
+        // すでに登録済みっぽい
         return;
     }
 
-    // まだ残りがあれば投稿する
-
-    QString tweetText = tweetQueue.front().toString();
-    tweetQueue.pop_front();
-
-    currentTwitter->tweet(tweetText, tweetId);
-}
-
-// ツイート投稿
-void MainWindow::on_tweetButton_clicked()
-{
-    tweetQueue.clear();
-
-    // まずは認証済みかチェック
-    if (!currentTwitter ||
-        !currentTwitter->isAuthenticated()) {
-        return;
-    }
-
-    TwitterTextSplitter splitter;
-
-    splitter.setPrefix( ui->textPrefix->toPlainText() );
-    splitter.setText( ui->tweetEditor->toPlainText() );
-    splitter.setPostfix( ui->textPostfix->toPlainText() );
-
-    tweetQueue = splitter.split();
-    if (tweetQueue.isEmpty()) {
-        return;
-    }
-
-#if 1
-    QString msg;
-    QList<SplittedItem>::iterator i;
-    for (i = tweetQueue.begin(); i != tweetQueue.end(); ++i)
-        msg += QString("[%1]\n").arg(i->toString());
-    QMessageBox::information(this, "", msg);
-#endif
-
-    QString tweetText = tweetQueue.front().toString();
-    tweetQueue.pop_front();
-
-    currentTwitter->tweet(tweetText);
+    ButtonInfo button = addAccount(twitter);
+    buttonSelect(button.action);
 }
 
 // アカウント追加
 void MainWindow::on_acountAdd_clicked()
 {
-    if (!currentTwitter) {
-        currentTwitter = newTwitter(this);
-    }
+    AccountAddPopup popup(this);
 
     // ※ currentTwitter->authenticate(); も中で行う
 
-    if (!accountAddDialog->popup(currentTwitter)) {
-        // 認証キャンセル
-        delete currentTwitter;
-        currentTwitter = nullptr;
+    if (popup.exec()) {
+        Twitter *twitter = popup.account();
+        ButtonInfo button = addAccount(twitter);
+        buttonSelect(button.action);
     }
 }
 
@@ -343,24 +335,24 @@ void MainWindow::on_acountSelect_clicked(bool checked)
         return;
     }
 
-    ui->tweetButton->setEnabled(false);
-
     if (!action) {
         // 誰も選択していない？
-        if (twitters.isEmpty()) {
+        if (buttons.isEmpty() ||
+            !buttons.front().twitter) {
             return;
         }
-        action = twitters.front().action;
+        action = buttons.front().action;
     }
 
-    QList<AccountInfo>::iterator
-            ite = std::find_if(twitters.begin(), twitters.end(),
-                               SearchAccountInfoByAction(action));
-    if (twitters.end() == ite) {
+    QList<ButtonInfo>::iterator
+            ite = std::find_if(buttons.begin(), buttons.end(),
+                               SearchButtonInfoByAction(action));
+    if (buttons.end() == ite ||
+        !ite->twitter) {
         return;
     }
 
-    selectAccount(ite->twitter);
+    buttonSelect(ite->action);
 }
 
 // 設定
@@ -368,21 +360,7 @@ void MainWindow::on_setting_clicked()
 {
     //QMessageBox::information(this, "", "on_setting_clicked");
     qDebug() << "MainWindow::on_setting_clicked";
-}
 
-void MainWindow::on_textPrefix_textChanged()
-{
-    ui->tweetEditor->setPrefix(ui->textPrefix->toPlainText());
-    updateSplitStatus();
-}
-
-void MainWindow::on_textPostfix_textChanged()
-{
-    ui->tweetEditor->setPostfix(ui->textPostfix->toPlainText());
-    updateSplitStatus();
-}
-
-void MainWindow::on_tweetEditor_textChanged()
-{
-    updateSplitStatus();
+    buttonSelect(nullptr);
+    ui->pageContainer->setCurrentWidget(welcomeView);
 }

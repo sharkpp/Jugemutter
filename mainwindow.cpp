@@ -57,6 +57,10 @@ MainWindow::ResetConfigInfo::ResetConfigInfo()
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , welcomeView(nullptr)
+    , editorView(nullptr)
+    , actionAccountAdd(nullptr)
+    , actionSetting(nullptr)
     , currentTwitter(nullptr)
 {
     ui->setupUi(this);
@@ -100,7 +104,7 @@ void MainWindow::initToolbar()
     tb->addWidget(spacer);
 
     // 設定
-    action = new QAction(QIcon(":/icons/setting.svg"), "設定", this);
+    action = actionSetting = new QAction(QIcon(":/icons/setting.svg"), "設定", this);
     action->setCheckable(true);
     connect(action, &QAction::triggered,
             this, &MainWindow::on_setting_clicked);
@@ -361,6 +365,6 @@ void MainWindow::on_setting_clicked()
     //QMessageBox::information(this, "", "on_setting_clicked");
     qDebug() << "MainWindow::on_setting_clicked";
 
-    buttonSelect(nullptr);
+    buttonSelect(actionSetting);
     ui->pageContainer->setCurrentWidget(welcomeView);
 }

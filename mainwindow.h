@@ -68,6 +68,7 @@ private:
     QFrame* welcomeView;
     ViewNormalEditor* editorView;
     QAction *actionAccountAdd;
+    QAction *actionSetting;
     ResetConfigInfo resetConfigInfo;
     QList<ButtonInfo> buttons; // Twitter access class
     Twitter* currentTwitter;

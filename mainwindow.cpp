@@ -96,7 +96,7 @@ void MainWindow::initToolbar()
     QAction *action;
 
     // 追加
-    action = actionAccountAdd = new QAction(QIcon(":/icons/add.svg"), "アカウントの追加", this);
+    action = actionAccountAdd = new QAction(QIcon(":/icons.white/add.svg"), "アカウントの追加", this);
     connect(action, &QAction::triggered,
             this, &MainWindow::on_acountAdd_clicked);
     addButton(ButtonInfo(action, welcomeView));
@@ -107,7 +107,7 @@ void MainWindow::initToolbar()
     tb->addWidget(spacer);
 
     // 設定
-    action = actionSetting = new QAction(QIcon(":/icons/settings.svg"), "設定", this);
+    action = actionSetting = new QAction(QIcon(":/icons.white/settings.svg"), "設定", this);
     action->setCheckable(true);
     connect(action, &QAction::triggered,
             this, &MainWindow::on_setting_clicked);

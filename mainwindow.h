@@ -7,6 +7,7 @@ class QFrame;
 
 class Twitter;
 class ViewNormalEditor;
+class ViewSetting;
 
 namespace Ui {
 class MainWindow;
@@ -67,6 +68,7 @@ private:
     Ui::MainWindow *ui;
     QFrame* welcomeView;
     ViewNormalEditor* editorView;
+    ViewSetting* settingView;
     QAction *actionAccountAdd;
     QAction *actionSetting;
     ResetConfigInfo resetConfigInfo;

@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     twittertextsplitter.cpp \
     tweettextedit.cpp \
     viewnormaleditor.cpp \
-    accountaddpopup.cpp
+    accountaddpopup.cpp \
+    viewsetting.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
@@ -40,11 +41,13 @@ HEADERS  += mainwindow.h \
     twittertextsplitter.h \
     tweettextedit.h \
     viewnormaleditor.h \
-    accountaddpopup.h
+    accountaddpopup.h \
+    viewsetting.h
 
 FORMS    += mainwindow.ui \
     viewnormaleditor.ui \
-    accountaddpopup.ui
+    accountaddpopup.ui \
+    viewsetting.ui
 
 DISTFILES += \
     README.md

@@ -4,6 +4,7 @@
 #include "twittertextsplitter.h"
 #include "accountaddpopup.h"
 #include "viewnormaleditor.h"
+#include "viewsetting.h"
 #include <QMessageBox>
 #include <algorithm>
 
@@ -59,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , welcomeView(nullptr)
     , editorView(nullptr)
+    , settingView(nullptr)
     , actionAccountAdd(nullptr)
     , actionSetting(nullptr)
     , currentTwitter(nullptr)
@@ -66,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->pageContainer->addWidget(welcomeView = new QFrame(this));
     ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
+    ui->pageContainer->addWidget(settingView = new ViewSetting(this));
     initToolbar();
 
     loadConfig();
@@ -104,7 +107,7 @@ void MainWindow::initToolbar()
     tb->addWidget(spacer);
 
     // 設定
-    action = actionSetting = new QAction(QIcon(":/icons/setting.svg"), "設定", this);
+    action = actionSetting = new QAction(QIcon(":/icons/settings.svg"), "設定", this);
     action->setCheckable(true);
     connect(action, &QAction::triggered,
             this, &MainWindow::on_setting_clicked);
@@ -366,5 +369,5 @@ void MainWindow::on_setting_clicked()
     qDebug() << "MainWindow::on_setting_clicked";
 
     buttonSelect(actionSetting);
-    ui->pageContainer->setCurrentWidget(welcomeView);
+    ui->pageContainer->setCurrentWidget(settingView);
 }

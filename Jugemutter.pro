@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     viewsetting.cpp \
     pageselector.cpp \
     viewsettingaccountpage.cpp \
-    viewsettinggeneralpage.cpp
+    viewsettinggeneralpage.cpp \
+    accountmodel.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
@@ -48,7 +49,8 @@ HEADERS  += mainwindow.h \
     viewsetting.h \
     pageselector.h \
     viewsettingaccountpage.h \
-    viewsettinggeneralpage.h
+    viewsettinggeneralpage.h \
+    accountmodel.h
 
 FORMS    += mainwindow.ui \
     viewnormaleditor.ui \

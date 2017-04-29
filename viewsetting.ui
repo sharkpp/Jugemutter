@@ -20,6 +20,9 @@
    <enum>QFrame::Raised</enum>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -33,7 +36,20 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QToolBar" name="pageSelector">
+    <widget class="PageSelector" name="pageSelector">
+     <property name="styleSheet">
+      <string notr="true">QToolBar {
+	icon-size: 32px;
+}
+QToolButton {
+	padding: 2px;
+	margin: 0;
+	spacing: 0;
+	width: 56px;
+	height: 48px;
+}
+</string>
+     </property>
      <property name="movable">
       <bool>false</bool>
      </property>
@@ -53,6 +69,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PageSelector</class>
+   <extends>QToolBar</extends>
+   <header>pageselector.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

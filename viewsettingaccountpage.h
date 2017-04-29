@@ -17,6 +17,9 @@ public:
     explicit ViewSettingAccountPage(QWidget *parent = 0);
     ~ViewSettingAccountPage();
 
+private slots:
+    void on_account_dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int> ());
+
 private:
     Ui::ViewSettingAccountPage *ui;
 };

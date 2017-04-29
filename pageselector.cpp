@@ -3,19 +3,31 @@
 
 struct SearchButtonInfoByAction {
     QAction *action_;
-    SearchButtonInfoByAction(QAction *action) : action_(action) {
+    SearchButtonInfoByAction(QAction *action)
+        : action_(action) {
     }
-    bool operator()(const PageSelectorButton* info) const {
-      return info->action() == action_;
+    bool operator()(const PageSelectorButton* button) const {
+      return button->action() == action_;
     }
 };
 
 struct SearchButtonInfoByView {
     QWidget *view_;
-    SearchButtonInfoByView(QWidget *view) : view_(view) {
+    SearchButtonInfoByView(QWidget *view)
+        : view_(view) {
     }
-    bool operator()(const PageSelectorButton* info) const {
-      return info->view() == view_;
+    bool operator()(const PageSelectorButton* button) const {
+      return button->view() == view_;
+    }
+};
+
+struct SearchButtonInfoByDocument {
+    PageSelectorDocument *document_;
+    SearchButtonInfoByDocument(PageSelectorDocument *document)
+        : document_(document) {
+    }
+    bool operator()(const PageSelectorButton* button) const {
+      return button->document() == document_;
     }
 };
 
@@ -122,11 +134,14 @@ QAction *PageSelector::addSpacer(QAction *before)
 
 QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDocument* document)
 {
+    if (view && document) { // checkable(= page selectable), when valid view and document present
+        action->setCheckable(true);
+    }
+
     addAction(action);
 
     PageSelectorButton *button
-            = new PageSelectorButton(this, action, view,
-                                     document ? document : new PageSelectorDocument(this));
+            = new PageSelectorButton(this, action, view, document);
     m_buttons.push_back(button);
 
     return action;
@@ -134,11 +149,14 @@ QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDoc
 
 QAction *PageSelector::insertButton(QAction *before, QAction *action, QWidget *view, PageSelectorDocument* document)
 {
+    if (document && document) { // checkable(= page selectable), when valid view and document present
+        action->setCheckable(true);
+    }
+
     insertAction(before, action);
 
     PageSelectorButton *button
-            = new PageSelectorButton(this, action, view,
-                                     document ? document : new PageSelectorDocument(this));
+            = new PageSelectorButton(this, action, view, document);
     QList<PageSelectorButton *>::iterator
             ite = std::find_if(m_buttons.begin(), m_buttons.end(),
                                SearchButtonInfoByAction(before));
@@ -152,34 +170,51 @@ QAction *PageSelector::insertButton(QAction *before, QAction *action, QWidget *v
     return action;
 }
 
+void PageSelector::removeButton(QAction *action)
+{
+    QList<PageSelectorButton *>::iterator
+            ite = std::find_if(m_buttons.begin(), m_buttons.end(),
+                               SearchButtonInfoByAction(action));
+    if (m_buttons.end() == ite) {
+        return;
+    }
+
+    removeAction((*ite)->action());
+
+    m_buttons.erase(ite);
+}
+
+void PageSelector::removeButton(PageSelectorDocument *document)
+{
+    QList<PageSelectorButton *>::iterator
+            ite = std::find_if(m_buttons.begin(), m_buttons.end(),
+                               SearchButtonInfoByDocument(document));
+    if (m_buttons.end() == ite) {
+        return;
+    }
+
+    removeAction((*ite)->action());
+
+    m_buttons.erase(ite);
+
+}
+
+void PageSelector::removeButtons(QList<QAction *> actions)
+{
+    for (auto action : actions) {
+        removeButton(action);
+    }
+}
+
+void PageSelector::removeButtons(QList<PageSelectorDocument *> documents)
+{
+    for (auto document : documents) {
+        removeButton(document);
+    }
+}
+
 void PageSelector::setCurrentButton(PageSelectorButton *currentButton)
 {
-//    QAction* selectedAction = nullptr;
-//
-//    for (auto button : m_buttons ) {
-//        if (!button.action->isCheckable()) {
-//            continue;
-//        }
-//        bool selected = currentButton && button.action == currentButton->action;
-//        button.action->setChecked( selected );
-//        if (selected) {
-//            selectedAction = button.action;
-//            if (m_buddy) {
-//                if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
-//                    container->setCurrentWidget(button.view);
-//                }
-//            }
-//        }
-//    }
-//
-//    if (selectedAction) {
-//        emit actionTriggered(selectedAction);
-//    }
-//    else if (m_buddy) {
-//        if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
-//            container->setCurrentWidget(nullptr);
-//        }
-//    }
     if (currentButton) {
         emit actionTriggered(currentButton->action());
     }
@@ -208,6 +243,20 @@ void PageSelector::setCurrentView(QWidget *currentView)
     }
 
     setCurrentButton(m_selected);
+}
+
+QList<PageSelectorDocument *> PageSelector::documents() const
+{
+    QList<PageSelectorDocument *> results;
+
+    for (auto button : m_buttons) {
+        if (button->action()->isCheckable() &&
+            button->document()) {
+            results.push_back(button->document());
+        }
+    }
+
+    return results;
 }
 
 PageSelectorDocument *PageSelector::documentAt(QAction *action) const

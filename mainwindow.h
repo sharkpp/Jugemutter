@@ -34,19 +34,6 @@ class MainWindow
 {
     Q_OBJECT
 
-    friend struct SearchButtonInfoByAction;
-    friend struct SearchButtonInfoByTwitter;
-    friend struct SearchButtonInfoByTwitterId;
-
-    struct ButtonInfo {
-        ButtonInfo();
-        ButtonInfo(QAction *action_, QFrame *frame_);
-        //
-        QAction *action;
-        QFrame *frame;
-        Twitter *twitter;
-    };
-
     struct ResetConfigInfo {
         ResetConfigInfo();
         //
@@ -61,9 +48,7 @@ public:
 protected: // method
     // UI関連
     void initToolbar();
-    void addButton(const ButtonInfo &button, QAction *actionBefore = nullptr);
     QAction *addAccount(Twitter *twitter);
-    void buttonSelect(QAction *action);
     Twitter *newTwitter(QObject *parent);
     // 設定関連
     void loadConfig();
@@ -86,7 +71,6 @@ private:
     QAction *actionAccountAdd;
     QAction *actionSetting;
     ResetConfigInfo resetConfigInfo;
-    QList<ButtonInfo> buttons; // Twitter access class
     Twitter* currentTwitter;
 };
 

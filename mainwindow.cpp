@@ -9,30 +9,17 @@
 #include <QMessageBox>
 #include <algorithm>
 
-struct SearchButtonInfoByAction {
-    QAction *action_;
-    SearchButtonInfoByAction(QAction *action) : action_(action) {
-    }
-    bool operator()(const MainWindow::ButtonInfo& info) const {
-      return info.action == action_;
-    }
-};
-
-struct SearchButtonInfoByTwitter {
+struct SearchDocumentByTwitterId {
     Twitter *twitter_;
-    SearchButtonInfoByTwitter(Twitter *twitter) : twitter_(twitter) {
-    }
-    bool operator()(const MainWindow::ButtonInfo& button) const {
-      return button.twitter && button.twitter == twitter_;
-    }
-};
-
-struct SearchButtonInfoByTwitterId {
-    Twitter *twitter_;
-    SearchButtonInfoByTwitterId(Twitter *twitter) : twitter_(twitter) {
-    }
-    bool operator()(const MainWindow::ButtonInfo& button) const {
-      return button.twitter && button.twitter->id() == twitter_->id();
+    SearchDocumentByTwitterId(Twitter *twitter)
+        : twitter_(twitter)
+    { }
+    bool operator()(const PageSelectorDocument* document) const {
+      if (const EditorPageDocument *document_
+              = qobject_cast<const EditorPageDocument*>(document)) {
+          return document_->twitter()->id() == twitter_->id();
+      }
+      return false;
     }
 };
 
@@ -186,19 +173,15 @@ void MainWindow::saveConfig()
 
 void MainWindow::resetConfig()
 {
-    for (QList<ButtonInfo>::iterator
-            ite = buttons.begin(),
-            last= buttons.end();
-        ite != last; ) {
-        if (!ite->twitter) {
-            ++ite;
-        }
-        else {
-            ButtonInfo button = *ite;
-            ui->accountList->removeAction(button.action);
-            delete button.twitter;
-            ite = buttons.erase(ite);
-            last= buttons.end();
+    QList<PageSelectorDocument*> documents
+            = ui->accountList->documents();
+    for (auto document : documents) {
+        if (EditorPageDocument *document_
+                    = qobject_cast<EditorPageDocument*>( document )) {
+            Twitter *twitter = document_->twitter();
+            document_->setTwitter(nullptr);
+            delete twitter;
+            ui->accountList->removeButton(document);
         }
     }
     currentTwitter = nullptr;
@@ -248,10 +231,11 @@ void MainWindow::on_twitter_verified()
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
 
     // すでに登録済みのアカウントかどうかのチェック
-    QList<ButtonInfo>::iterator
-            ite = std::find_if(buttons.begin(), buttons.end(),
-                               SearchButtonInfoByTwitterId(twitter));
-    if (buttons.end() != ite) {
+    QList<PageSelectorDocument*> documents = ui->accountList->documents();
+    QList<PageSelectorDocument*>::iterator
+            ite = std::find_if(documents.begin(), documents.end(),
+                               SearchDocumentByTwitterId(twitter));
+    if (documents.end() != ite) {
         // すでに登録済みっぽい
         return;
     }

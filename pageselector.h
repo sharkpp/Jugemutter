@@ -40,8 +40,11 @@ class PageSelector
 {
     Q_OBJECT
 
-    //friend struct SearchButtonInfoByAction;
-    //friend struct SearchButtonInfoByView;
+    void addAction(QAction *action);
+    void addActions(QList<QAction *> actions);
+    void insertAction(QAction *before, QAction *action);
+    void insertActions(QAction *before, QList<QAction *> actions);
+    void removeAction(QAction *action);
 
 public:
     PageSelector(QWidget *parent = 0);

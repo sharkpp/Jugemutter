@@ -138,7 +138,7 @@ QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDoc
         action->setCheckable(true);
     }
 
-    addAction(action);
+    QToolBar::addAction(action);
 
     PageSelectorButton *button
             = new PageSelectorButton(this, action, view, document);
@@ -153,7 +153,7 @@ QAction *PageSelector::insertButton(QAction *before, QAction *action, QWidget *v
         action->setCheckable(true);
     }
 
-    insertAction(before, action);
+    QToolBar::insertAction(before, action);
 
     PageSelectorButton *button
             = new PageSelectorButton(this, action, view, document);
@@ -179,7 +179,7 @@ void PageSelector::removeButton(QAction *action)
         return;
     }
 
-    removeAction((*ite)->action());
+    QToolBar::removeAction((*ite)->action());
 
     m_buttons.erase(ite);
 }
@@ -193,7 +193,7 @@ void PageSelector::removeButton(PageSelectorDocument *document)
         return;
     }
 
-    removeAction((*ite)->action());
+    QToolBar::removeAction((*ite)->action());
 
     m_buttons.erase(ite);
 

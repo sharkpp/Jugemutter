@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     tweettextedit.cpp \
     viewnormaleditor.cpp \
     accountaddpopup.cpp \
-    viewsetting.cpp
+    viewsetting.cpp \
+    pageselector.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     tweettextedit.h \
     viewnormaleditor.h \
     accountaddpopup.h \
-    viewsetting.h
+    viewsetting.h \
+    pageselector.h
 
 FORMS    += mainwindow.ui \
     viewnormaleditor.ui \

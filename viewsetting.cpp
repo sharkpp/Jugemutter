@@ -26,4 +26,15 @@ void ViewSetting::initToolbar()
     action = new QAction(QIcon(":/icons.black/people.svg"), "アカウント", this);
     action->setCheckable(true);
     tb->addAction(action);
+
+    connect(tb, &QToolBar::actionTriggered,
+            this, &ViewSetting::on_pageSelect_actionTriggered);
 }
+
+void ViewSetting::on_pageSelect_actionTriggered(QAction *action)
+{
+    QToolBar *tb = ui->pageSelector;
+
+}
+
+

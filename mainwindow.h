@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "pageselector.h"
 
 class QFrame;
 
@@ -12,6 +13,21 @@ class ViewSetting;
 namespace Ui {
 class MainWindow;
 }
+
+class EditorPageDocument
+    : public PageSelectorDocument
+{
+    Q_OBJECT
+
+public:
+    EditorPageDocument(QObject* parent = nullptr);
+
+    Twitter *twitter() const;
+    void setTwitter(Twitter *twitter);
+
+private:
+    Twitter *m_twitter;
+};
 
 class MainWindow
     : public QMainWindow
@@ -46,7 +62,7 @@ protected: // method
     // UI関連
     void initToolbar();
     void addButton(const ButtonInfo &button, QAction *actionBefore = nullptr);
-    ButtonInfo addAccount(Twitter *twitter);
+    QAction *addAccount(Twitter *twitter);
     void buttonSelect(QAction *action);
     Twitter *newTwitter(QObject *parent);
     // 設定関連
@@ -60,9 +76,7 @@ protected: // event
 private slots:
     void on_twitter_authenticated();
     void on_twitter_verified();
-    void on_acountAdd_clicked();
-    void on_acountSelect_clicked(bool checked);
-    void on_setting_clicked();
+    void on_accountList_actionTriggered(QAction *action);
 
 private:
     Ui::MainWindow *ui;

@@ -19,6 +19,7 @@ protected:
     void initToolbar();
 
 private slots:
+    void on_pageSelect_actionTriggered(QAction *action);
 
 private:
     Ui::ViewSetting *ui;

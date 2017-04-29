@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QToolBar" name="accountList">
+     <widget class="PageSelector" name="accountList">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -94,6 +94,13 @@ background-color: rgb(64, 64, 64);
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>PageSelector</class>
+   <extends>QToolBar</extends>
+   <header>pageselector.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -1,11 +1,30 @@
 #include "viewsetting.h"
 #include "ui_viewsetting.h"
+#include "viewsettinggeneralpage.h"
+#include "viewsettingaccountpage.h"
 
-ViewSetting::ViewSetting(QWidget *parent) :
-    QFrame(parent),
-    ui(new Ui::ViewSetting)
+//---------------------------------------------------------
+// SettingPageDocument
+//---------------------------------------------------------
+
+SettingPageDocument::SettingPageDocument(QObject *parent)
+    : PageSelectorDocument(parent)
+{
+}
+
+//---------------------------------------------------------
+// ViewSetting
+//---------------------------------------------------------
+
+ViewSetting::ViewSetting(QWidget *parent)
+    : QFrame(parent)
+    , ui(new Ui::ViewSetting)
+    , settings(new SettingPageDocument(this))
 {
     ui->setupUi(this);
+    ui->pageSelector->setBuddy(ui->pageContainer);
+    ui->pageContainer->addWidget(generalPage = new ViewSettingGeneralPage(this));
+    ui->pageContainer->addWidget(accountPage = new ViewSettingAccountPage(this));
     initToolbar();
 }
 
@@ -16,25 +35,14 @@ ViewSetting::~ViewSetting()
 
 void ViewSetting::initToolbar()
 {
-    QToolBar *tb = ui->pageSelector;
+    PageSelector *tb = ui->pageSelector;
     QAction *action;
 
+    // 追加
     action = new QAction(QIcon(":/icons.black/settings.svg"), "一般", this);
-    action->setCheckable(true);
-    tb->addAction(action);
+    tb->addButton(action, generalPage, settings);
 
+    // 追加
     action = new QAction(QIcon(":/icons.black/people.svg"), "アカウント", this);
-    action->setCheckable(true);
-    tb->addAction(action);
-
-    connect(tb, &QToolBar::actionTriggered,
-            this, &ViewSetting::on_pageSelect_actionTriggered);
+    tb->addButton(action, accountPage, settings);
 }
-
-void ViewSetting::on_pageSelect_actionTriggered(QAction *action)
-{
-    QToolBar *tb = ui->pageSelector;
-
-}
-
-

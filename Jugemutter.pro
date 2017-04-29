@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     viewnormaleditor.cpp \
     accountaddpopup.cpp \
     viewsetting.cpp \
-    pageselector.cpp
+    pageselector.cpp \
+    viewsettingaccountpage.cpp \
+    viewsettinggeneralpage.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
@@ -44,12 +46,16 @@ HEADERS  += mainwindow.h \
     viewnormaleditor.h \
     accountaddpopup.h \
     viewsetting.h \
-    pageselector.h
+    pageselector.h \
+    viewsettingaccountpage.h \
+    viewsettinggeneralpage.h
 
 FORMS    += mainwindow.ui \
     viewnormaleditor.ui \
     accountaddpopup.ui \
-    viewsetting.ui
+    viewsetting.ui \
+    viewsettingaccountpage.ui \
+    viewsettinggeneralpage.ui
 
 DISTFILES += \
     README.md

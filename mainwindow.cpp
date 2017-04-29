@@ -23,6 +23,10 @@ struct SearchDocumentByTwitterId {
     }
 };
 
+//---------------------------------------------------------
+// EditorPageDocument
+//---------------------------------------------------------
+
 EditorPageDocument::EditorPageDocument(QObject *parent)
     : PageSelectorDocument(parent)
     , m_twitter(nullptr)
@@ -39,11 +43,19 @@ void EditorPageDocument::setTwitter(Twitter *twitter)
     m_twitter = twitter;
 }
 
+//---------------------------------------------------------
+// MainWindow::ResetConfigInfo
+//---------------------------------------------------------
+
 MainWindow::ResetConfigInfo::ResetConfigInfo()
     : resetNeed(false)
     , lazyTimerId(-1)
 {
 }
+
+//---------------------------------------------------------
+// MainWindow
+//---------------------------------------------------------
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

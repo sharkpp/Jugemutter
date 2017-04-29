@@ -2,10 +2,25 @@
 #define VIEWSETTING_H
 
 #include <QFrame>
+#include "pageselector.h"
+
+class ViewSettingGeneralPage;
+class ViewSettingAccountPage;
 
 namespace Ui {
 class ViewSetting;
 }
+
+class SettingPageDocument
+    : public PageSelectorDocument
+{
+    Q_OBJECT
+
+public:
+    SettingPageDocument(QObject* parent = nullptr);
+
+private:
+};
 
 class ViewSetting : public QFrame
 {
@@ -19,10 +34,12 @@ protected:
     void initToolbar();
 
 private slots:
-    void on_pageSelect_actionTriggered(QAction *action);
 
 private:
     Ui::ViewSetting *ui;
+    PageSelectorDocument *settings;
+    ViewSettingGeneralPage *generalPage;
+    ViewSettingAccountPage *accountPage;
 };
 
 #endif // VIEWSETTING_H

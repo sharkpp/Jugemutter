@@ -144,6 +144,10 @@ QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDoc
             = new PageSelectorButton(this, action, view, document);
     m_buttons.push_back(button);
 
+    if (m_buddy && 1 == m_buttons.size()) {
+        setCurrentAction(action);
+    }
+
     return action;
 }
 
@@ -165,6 +169,10 @@ QAction *PageSelector::insertButton(QAction *before, QAction *action, QWidget *v
     }
     else {
         m_buttons.insert(m_buttons.begin(), button);
+    }
+
+    if (m_buddy && 1 == m_buttons.size()) {
+        setCurrentAction(action);
     }
 
     return action;
@@ -301,20 +309,15 @@ void PageSelector::setCurrentAction(QAction *currentAction)
 
 void PageSelector::on_actionTriggered(QAction *action)
 {
-    QAction* selectedAction = nullptr;
-
     for (auto button : m_buttons ) {
         if (!button->action()->isCheckable()) {
             continue;
         }
         bool selected = button->action() == action;
         button->action()->setChecked( selected );
-        if (selected) {
-            selectedAction = button->action();
-            if (m_buddy) {
-                if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
-                    container->setCurrentWidget(button->view());
-                }
+        if (selected && m_buddy) {
+            if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
+                container->setCurrentWidget(button->view());
             }
         }
     }

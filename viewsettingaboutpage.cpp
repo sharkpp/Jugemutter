@@ -6,7 +6,7 @@ ViewSettingAboutPage::ViewSettingAboutPage(QWidget *parent) :
     ui(new Ui::ViewSettingAboutPage)
 {
     ui->setupUi(this);
-    ui->appIcon->setPixmap(qApp->windowIcon().pixmap(QSize(48, 48)));
+    ui->appIcon->setPixmap(QIcon(":/icons.white/add.svg").pixmap(QSize(48, 48)));
 }
 
 ViewSettingAboutPage::~ViewSettingAboutPage()

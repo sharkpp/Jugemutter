@@ -67,3 +67,6 @@ DISTFILES += \
 
 RESOURCES += \
     resources.qrc
+
+macx: ICON = resources/icon-macOS.icns
+win32: RC_ICONS = resources/icon-Windows.ico

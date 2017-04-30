@@ -6,6 +6,7 @@
 
 class ViewSettingGeneralPage;
 class ViewSettingAccountPage;
+class ViewSettingAboutPage;
 
 namespace Ui {
 class ViewSetting;
@@ -40,6 +41,7 @@ private:
     PageSelectorDocument *settings;
     ViewSettingGeneralPage *generalPage;
     ViewSettingAccountPage *accountPage;
+    ViewSettingAboutPage *aboutPage;
 };
 
 #endif // VIEWSETTING_H

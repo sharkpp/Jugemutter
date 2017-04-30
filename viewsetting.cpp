@@ -2,6 +2,7 @@
 #include "ui_viewsetting.h"
 #include "viewsettinggeneralpage.h"
 #include "viewsettingaccountpage.h"
+#include "viewsettingaboutpage.h"
 
 //---------------------------------------------------------
 // SettingPageDocument
@@ -25,6 +26,7 @@ ViewSetting::ViewSetting(QWidget *parent)
     ui->pageSelector->setBuddy(ui->pageContainer);
     ui->pageContainer->addWidget(generalPage = new ViewSettingGeneralPage(this));
     ui->pageContainer->addWidget(accountPage = new ViewSettingAccountPage(this));
+    ui->pageContainer->addWidget(aboutPage = new ViewSettingAboutPage(this));
     initToolbar();
 }
 
@@ -38,11 +40,15 @@ void ViewSetting::initToolbar()
     PageSelector *tb = ui->pageSelector;
     QAction *action;
 
-    // 追加
+    // 一般設定
     action = new QAction(QIcon(":/icons.black/settings.svg"), "一般", this);
     tb->addButton(action, generalPage, settings);
 
-    // 追加
+    // アカウント設定
     action = new QAction(QIcon(":/icons.black/people.svg"), "アカウント", this);
     tb->addButton(action, accountPage, settings);
+
+    // このアプリについて
+    action = new QAction(QIcon(":/icons.black/info.svg"), "バージョン", this);
+    tb->addButton(action, aboutPage, settings);
 }

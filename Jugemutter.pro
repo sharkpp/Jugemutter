@@ -8,6 +8,8 @@ QT       += core gui network networkauth
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+win32:QT += winextras
+
 TARGET = Jugemutter
 TEMPLATE = app
 

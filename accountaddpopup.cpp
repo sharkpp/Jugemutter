@@ -9,7 +9,9 @@ AccountAddPopup::AccountAddPopup(QWidget *parent)
 {
     ui->setupUi(this);
 
+#if defined(Q_OS_MAC)
     setWindowFlags(Qt::Sheet);
+#endif
 }
 
 AccountAddPopup::~AccountAddPopup()

@@ -10,6 +10,7 @@ public:
     enum {
         ColumnProfileImage,
         ColumnName,
+        ColumnAppend, // for Last row span and centering icon
         ColumnSetting,
         ColumnRemove,
         ColumnNum,

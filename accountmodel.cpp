@@ -25,6 +25,9 @@ QVariant AccountModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Qt::DisplayRole:
         switch (index.column()) {
+        case ColumnProfileImage:
+            //result.setValue(QIcon(":/icons.black/people.svg"));
+            break;
         case ColumnName:
             result.setValue(QString("Name"));
             break;
@@ -36,11 +39,17 @@ QVariant AccountModel::data(const QModelIndex &index, int role) const
             result.setValue(QIcon(":/icons.black/people.svg"));
             break;
         case ColumnSetting:
-            //result.setValue(QIcon(":/icons.black/settings.svg"));
+            result.setValue(QIcon(":/icons.black/settings.svg"));
             break;
-        case ColumnRemove: {
-            //result.setValue(QIcon(":/icons.black/delete.svg"));
-            break; }
+        case ColumnRemove:
+            result.setValue(QIcon(":/icons.black/delete.svg"));
+            break;
+        case ColumnAppend:
+            if (index.row() + 1 != rowCount()) {
+                break;
+            }
+            result.setValue(QIcon(":/icons.black/add.svg"));
+            break;
         }
         break;
     /*case Qt::TextAlignmentRole:
@@ -55,6 +64,15 @@ QVariant AccountModel::data(const QModelIndex &index, int role) const
             break; }
         }
         break;*/
+    case Qt::SizeHintRole:
+        switch (index.column()) {
+        case ColumnProfileImage:
+            if (index.row() + 1 != rowCount()) {
+                break;
+            }
+            result.setValue(QSize(100, 48));
+        }
+        break;
     }
 
     return result;

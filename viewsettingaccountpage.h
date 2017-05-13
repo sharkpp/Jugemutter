@@ -19,6 +19,7 @@ public:
 
 private slots:
     void on_account_dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int> ());
+    void on_accountList_clicked(const QModelIndex &index);
 
 private:
     Ui::ViewSettingAccountPage *ui;

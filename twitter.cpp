@@ -123,13 +123,15 @@ void Twitter::authenticate()
                     "<div><h1>%1</h1><div>%2</div></div>")
                 .arg(qApp->applicationName())
                 .arg("コールバックを受け取りました。<br />このページは閉じていただいて問題ありません。");
+#if (QT_VERSION < QT_VERSION_CHECK(5, 9, 0))
         // https://bugreports.qt.io/browse/QTBUG-59725 が修正されるまでこのまま
         const QString postfixTag = "</body></html>";
         const int fixedPaddingSize = messageHtml.toUtf8().length() - messageHtml.length() - postfixTag.length();
-        //httpReplyHandler->setCallbackText(messageHtml + postfixTag + QString(fixedPaddingSize, '*'));
-        // 本来は
+        httpReplyHandler->setCallbackText(messageHtml + postfixTag + QString(fixedPaddingSize, '*'));
+#else // fix in "5.9.0 Beta 2"
+        // 本来はこのようにしたかった
         httpReplyHandler->setCallbackText(messageHtml);
-        // このようにしたかった
+#endif
         setReplyHandler(httpReplyHandler);
     }
 

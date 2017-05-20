@@ -38,6 +38,7 @@ void ViewNormalEditor::setDocument(PageSelectorDocument *document)
             ui->textPrefix->setPlainText("");
             ui->tweetEditor->setPlainText("");
             ui->textPostfix->setPlainText("");
+            ui->tweetEditor->setFocus();
         }
     }
 }

@@ -98,6 +98,7 @@ void PageSelectorButton::setDocument(PageSelectorDocument *document)
 PageSelector::PageSelector(QWidget *parent)
     : QToolBar(parent)
     , m_buddy(nullptr)
+    , m_selected(nullptr)
 {
     connect(this, &QToolBar::actionTriggered,
             this, &PageSelector::on_actionTriggered);
@@ -144,7 +145,9 @@ QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDoc
             = new PageSelectorButton(this, action, view, document);
     m_buttons.push_back(button);
 
-    if (m_buddy && 1 == m_buttons.size()) {
+    if (m_buddy &&
+        action->isCheckable() &&
+        1 == m_buttons.size()) {
         setCurrentAction(action);
     }
 
@@ -294,17 +297,20 @@ QAction *PageSelector::currentAction() const
 
 void PageSelector::setCurrentAction(QAction *currentAction)
 {
-    m_selected = nullptr;
+    PageSelectorButton *newSelectButton = nullptr;
 
     for (auto button : m_buttons ) {
         if (button->action()->isCheckable() &&
             button->action() == currentAction) {
-            m_selected = button;
+            newSelectButton = button;
             break;
         }
     }
 
-    setCurrentButton(m_selected);
+    if (m_selected != newSelectButton) {
+        m_selected = newSelectButton;
+        setCurrentButton(m_selected);
+    }
 }
 
 void PageSelector::on_actionTriggered(QAction *action)

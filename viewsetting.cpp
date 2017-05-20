@@ -20,6 +20,7 @@ SettingPageDocument::SettingPageDocument(QObject *parent)
 ViewSetting::ViewSetting(QWidget *parent)
     : QFrame(parent)
     , ui(new Ui::ViewSetting)
+    , account(nullptr)
     , settings(new SettingPageDocument(this))
 {
     ui->setupUi(this);
@@ -33,6 +34,11 @@ ViewSetting::ViewSetting(QWidget *parent)
 ViewSetting::~ViewSetting()
 {
     delete ui;
+}
+
+void ViewSetting::setAccountList(AccountList *account)
+{
+    this->account = account;
 }
 
 void ViewSetting::initToolbar()

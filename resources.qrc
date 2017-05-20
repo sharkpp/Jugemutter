@@ -5,6 +5,7 @@
         <file alias="delete.svg">resources/material_icons/ic_delete_black_48px.svg</file>
         <file alias="add.svg">resources/material_icons/ic_add_black_48px.svg</file>
         <file alias="info.svg">resources/material_icons/ic_info_black_48px.svg</file>
+        <file alias="remove.svg">resources/material_icons/ic_remove_black_48px.svg</file>
     </qresource>
     <qresource prefix="/icons.white">
         <file alias="add.svg">resources/material_icons/ic_add_white_48px.svg</file>

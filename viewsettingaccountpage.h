@@ -17,9 +17,12 @@ public:
     explicit ViewSettingAccountPage(QWidget *parent = 0);
     ~ViewSettingAccountPage();
 
+protected:
+    void initToolBar();
+
 private slots:
-    void on_account_dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int> ());
-    void on_accountList_clicked(const QModelIndex &index);
+    void on_accountAction_append(bool checked);
+    void on_accountAction_remove(bool checked);
 
 private:
     Ui::ViewSettingAccountPage *ui;

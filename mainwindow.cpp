@@ -6,8 +6,11 @@
 #include "viewnormaleditor.h"
 #include "viewsetting.h"
 #include "pageselector.h"
+#include "accountlist.h"
 #include <QMessageBox>
 #include <algorithm>
+
+static const int dataStreamVersion = QDataStream::Qt_5_8;
 
 struct SearchDocumentByTwitterId {
     Twitter *twitter_;
@@ -15,9 +18,26 @@ struct SearchDocumentByTwitterId {
         : twitter_(twitter)
     { }
     bool operator()(const PageSelectorDocument* document) const {
-      if (const EditorPageDocument *document_
-              = qobject_cast<const EditorPageDocument*>(document)) {
-          return document_->twitter()->id() == twitter_->id();
+        if (const EditorPageDocument *document_
+                = qobject_cast<const EditorPageDocument*>(document)) {
+            if (const TwitterAccount *account_
+                    = qobject_cast<const TwitterAccount*>(document_->account())) {
+              return account_->twitter()->id() == twitter_->id();
+            }
+      }
+      return false;
+    }
+};
+
+struct SearchDocumentByAccount {
+    Account *account_;
+    SearchDocumentByAccount(Account *account)
+        : account_(account)
+    { }
+    bool operator()(const PageSelectorDocument* document) const {
+        if (const EditorPageDocument *document_
+                = qobject_cast<const EditorPageDocument*>(document)) {
+            return document_->account() == account_;
       }
       return false;
     }
@@ -29,18 +49,18 @@ struct SearchDocumentByTwitterId {
 
 EditorPageDocument::EditorPageDocument(QObject *parent)
     : PageSelectorDocument(parent)
-    , m_twitter(nullptr)
+    , m_account(nullptr)
 {
 }
 
-Twitter *EditorPageDocument::twitter() const
+Account *EditorPageDocument::account() const
 {
-    return m_twitter;
+    return m_account;
 }
 
-void EditorPageDocument::setTwitter(Twitter *twitter)
+void EditorPageDocument::setAccount(Account *account)
 {
-    m_twitter = twitter;
+    m_account = account;
 }
 
 //---------------------------------------------------------
@@ -63,15 +83,20 @@ MainWindow::MainWindow(QWidget *parent)
     , welcomeView(nullptr)
     , editorView(nullptr)
     , settingView(nullptr)
+    , accountList(new AccountList(this))
     , actionAccountAdd(nullptr)
     , actionSetting(nullptr)
-    , currentTwitter(nullptr)
+    , currentAccount(nullptr)
 {
     ui->setupUi(this);
     ui->accountList->setBuddy(ui->pageContainer);
     ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
     ui->pageContainer->addWidget(settingView = new ViewSetting(this));
+    settingView->setAccountList(accountList);
     initToolbar();
+
+    connect(accountList, &AccountList::updateAccount,
+            this, &MainWindow::on_accountList_updateAccount);
 
     loadConfig();
 
@@ -110,29 +135,39 @@ void MainWindow::initToolbar()
     tb->addButton(action, settingView);
 }
 
-QAction *MainWindow::addAccount(Twitter *twitter)
+QAction *MainWindow::addAccount(Account *account)
 {
     PageSelector *tb = ui->accountList;
 
     // 最後のアカウントの次に追加
-    QAction *action = new QAction(twitter->icon(),
-                                  twitter->name() + "\n" + twitter->screenName(), this);
-    action->setCheckable(true);
-    EditorPageDocument *document = new EditorPageDocument(this);
-    document->setTwitter(twitter);
-    return tb->insertButton(actionAccountAdd, action, editorView, document);
+    QAction *action = nullptr;
+    switch (account->type()) {
+    case AccountTypeTwitter:
+        if (const TwitterAccount *account_
+                = qobject_cast<const TwitterAccount*>(account)) {
+            action = new QAction(account_->twitter()->icon(),
+                                 account_->twitter()->name() + "\n"
+                                 + account_->twitter()->screenName(), this);
+        }
+        break;
+    default: break;
+    }
+    if (action) {
+        action->setCheckable(true);
+        EditorPageDocument *document = new EditorPageDocument(this);
+        document->setAccount(account);
+        accountList->append(account);
+        return tb->insertButton(actionAccountAdd, action, editorView, document);
+    }
+
 }
 
-Twitter *MainWindow::newTwitter(QObject *parent)
+void MainWindow::attachTwitter(Twitter *twitter)
 {
-    Twitter *twitter = new Twitter(parent);
-
     connect(twitter, &Twitter::authenticated,
             this, &MainWindow::on_twitter_authenticated);
     connect(twitter, &Twitter::verified,
             this, &MainWindow::on_twitter_verified);
-
-    return twitter;
 }
 
 void MainWindow::loadConfig()
@@ -144,15 +179,29 @@ void MainWindow::loadConfig()
     move(settings.value("pos", QPoint(200, 200)).toPoint());
     settings.endGroup();
 
-    settings.beginGroup("twitter");
+    settings.beginGroup("account");
     int accountNum = settings.value("num", QVariant("0")).toInt();
     for (int accountIndex = 0;
          accountIndex < accountNum; ++accountIndex) {
         QVariant serialized = settings.value(QString("%1").arg(accountIndex));
         if (serialized.isValid()) {
-            Twitter *twitter = newTwitter(this);
-            twitter->deserialize(serialized.toString());
-            addAccount(twitter);
+            // split type & data
+            QByteArray dataBytes = QByteArray::fromBase64(serialized.toByteArray());
+            QDataStream in(&dataBytes, QIODevice::ReadOnly);
+            in.setVersion(dataStreamVersion);
+            // deserialize
+            qint32   accountType; in >> accountType;
+            QString  accountData; in >> accountData;
+            // create account instanse
+            switch ((AccountType)accountType) {
+            case AccountTypeTwitter: { // append Twitter account
+                TwitterAccount* account = new TwitterAccount(this);
+                account->deserialize(accountData);
+                attachTwitter(account->twitter());
+                accountList->append(account);
+                break; }
+            default: break;
+            }
         }
     }
     settings.endGroup();
@@ -168,16 +217,23 @@ void MainWindow::saveConfig()
     settings.setValue("pos", pos());
     settings.endGroup();
 
-    settings.beginGroup("twitter");
+    settings.beginGroup("account");
     int accountNum = 0;
-    QList<PageSelectorButton*> buttons = ui->accountList->buttons();
-    for (auto button : buttons) {
-        if (EditorPageDocument *document
-                = qobject_cast<EditorPageDocument*>( tb->documentAt(button->action()) )) {
-            settings.setValue(QString("%1").arg(accountNum),
-                              document->twitter()->serialize());
-            accountNum++;
-        }
+    for (QList<Account*>::const_iterator
+             ite = accountList->begin(),
+             last= accountList->end();
+         ite != last; ++ite, ++accountNum) {
+        // concat type & data
+        QMap<QString, QVariant> serialized;
+        QByteArray dataBytes;
+        QDataStream out(&dataBytes, QIODevice::WriteOnly);
+        out.setVersion(dataStreamVersion);
+        // serialize
+        out << (qint32)(*ite)->type();
+        out << (*ite)->serialize();
+        // write config
+        settings.setValue(QString("%1").arg(accountNum),
+                          dataBytes.toBase64());
     }
     settings.setValue("num", QString("%1").arg(accountNum));
     settings.endGroup();
@@ -190,13 +246,13 @@ void MainWindow::resetConfig()
     for (auto document : documents) {
         if (EditorPageDocument *document_
                     = qobject_cast<EditorPageDocument*>( document )) {
-            Twitter *twitter = document_->twitter();
-            document_->setTwitter(nullptr);
-            delete twitter;
+            Account *account = document_->account();
+            document_->setAccount(nullptr);
+            delete account;
             ui->accountList->removeButton(document);
         }
     }
-    currentTwitter = nullptr;
+    currentAccount = nullptr;
 }
 
 bool MainWindow::event(QEvent* ev)
@@ -232,7 +288,7 @@ bool MainWindow::event(QEvent* ev)
 
 // ツイッターの認証通知
 void MainWindow::on_twitter_authenticated()
-{    
+{
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
     qDebug() << QString(">>USER_TOKEN='%1'").arg(twitter->token());
     qDebug() << QString(">>USER_TOKEN_SECRET='%1'").arg(twitter->tokenSecret());
@@ -252,28 +308,116 @@ void MainWindow::on_twitter_verified()
         return;
     }
 
-    QAction *action = addAccount(twitter);
-    ui->accountList->setCurrentAction(action);
+    TwitterAccount *account = new TwitterAccount(this);
+    account->setTwitter(twitter);
+    accountList->append(account);
 }
 
 void MainWindow::on_accountList_actionTriggered(QAction *action)
 {
     PageSelector *tb = ui->accountList;
 
+    currentAccount = nullptr;
+
     if (actionAccountAdd == action) {
         // アカウント追加
         AccountAddPopup popup(this);
 
-        // ※ currentTwitter->authenticate(); も中で行う
+        // ※ Twitter::authenticate(); も中で行う
 
         if (popup.exec()) {
             Twitter *twitter = popup.account();
-            QAction *action = addAccount(twitter);
-            ui->accountList->setCurrentAction(action);
+            TwitterAccount *account = new TwitterAccount(this);
+            account->setTwitter(twitter);
+            currentAccount = account;
+            accountList->append(account);
+            //QAction *action = addAccount(account);
+            //ui->accountList->setCurrentAction(action);
         }
     }
     else if (EditorPageDocument *document
                 = qobject_cast<EditorPageDocument*>( tb->documentAt(action) )) {
-        //document
+        currentAccount = document->account();
+        ui->accountList->setCurrentAction(action);
     }
+}
+
+void MainWindow::on_accountList_updateAccount()
+{
+    PageSelector *tb = ui->accountList;
+    QList<PageSelectorDocument*> documents = tb->documents();
+
+    // collect exists documents
+    QList<EditorPageDocument *> currentAccounts;
+    QList<PageSelectorButton*> buttons = tb->buttons();
+    for (auto document : documents) {
+        if (EditorPageDocument *document_
+                = qobject_cast<EditorPageDocument*>( document )) {
+            if (document_->account()) {
+                currentAccounts.append(document_);
+            }
+        }
+    }
+
+    // compare
+    QList<EditorPageDocument *> nextAccounts;
+    for (QList<Account*>::const_iterator
+             ite = accountList->begin(),
+             last= accountList->end();
+         ite != last; ++ite) {
+        // search exists document
+        QList<PageSelectorDocument*>::iterator
+                iteDoc = std::find_if(documents.begin(), documents.end(),
+                                   SearchDocumentByAccount(*ite));
+        EditorPageDocument *document = nullptr;
+        if (documents.end() != iteDoc) {
+            if (EditorPageDocument *document_
+                    = qobject_cast<EditorPageDocument*>( *iteDoc )) {
+                nextAccounts.append(document_);
+            }
+        }
+        else {
+            // create new document
+            document = new EditorPageDocument(this);
+            document->setAccount(*ite);
+            nextAccounts.append(document);
+        }
+    }
+
+    tb->setUpdatesEnabled(false);
+    tb->blockSignals(true);
+
+    // remove
+    tb->removeButtons(documents);
+    // append
+    QAction *currentAction = nullptr;
+    for (auto document : nextAccounts) {
+        //
+        QAction *action = nullptr;
+        switch (document->account()->type()) {
+        case AccountTypeTwitter:
+            if (const TwitterAccount *account_
+                    = qobject_cast<const TwitterAccount*>(document->account())) {
+                action = new QAction(account_->twitter()->icon(),
+                                     account_->twitter()->name() + "\n"
+                                     + account_->twitter()->screenName(), this);
+            }
+            break;
+        default: break;
+        }
+        if (action) {
+            action->setCheckable(true);
+            tb->insertButton(actionAccountAdd, action, editorView, document);
+            if (currentAccount == document->account() ||
+                (!currentAccount && !currentAction)) {
+                currentAccount = document->account();
+                currentAction = action;
+            }
+        }
+    }
+
+    tb->blockSignals(false);
+    tb->setUpdatesEnabled(true);
+
+    tb->setCurrentAction(currentAction);
 }

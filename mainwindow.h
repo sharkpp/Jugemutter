@@ -9,6 +9,8 @@ class QFrame;
 class Twitter;
 class ViewNormalEditor;
 class ViewSetting;
+class AccountList;
+class Account;
 
 namespace Ui {
 class MainWindow;
@@ -22,11 +24,11 @@ class EditorPageDocument
 public:
     EditorPageDocument(QObject* parent = nullptr);
 
-    Twitter *twitter() const;
-    void setTwitter(Twitter *twitter);
+    Account *account() const;
+    void setAccount(Account *account);
 
 private:
-    Twitter *m_twitter;
+    Account *m_account;
 };
 
 class MainWindow
@@ -48,12 +50,13 @@ public:
 protected: // method
     // UI関連
     void initToolbar();
-    QAction *addAccount(Twitter *twitter);
-    Twitter *newTwitter(QObject *parent);
+    QAction *addAccount(Account *account);
+    void attachTwitter(Twitter *twitter);
     // 設定関連
     void loadConfig();
     void saveConfig();
     void resetConfig();
+    bool readAccountConfig(const QString& serialized, qint32 accountType, QString& accountData);
 
 protected: // event
     bool event(QEvent* ev);
@@ -62,16 +65,18 @@ private slots:
     void on_twitter_authenticated();
     void on_twitter_verified();
     void on_accountList_actionTriggered(QAction *action);
+    void on_accountList_updateAccount();
 
 private:
     Ui::MainWindow *ui;
-    QFrame* welcomeView;
-    ViewNormalEditor* editorView;
-    ViewSetting* settingView;
+    QFrame *welcomeView;
+    ViewNormalEditor *editorView;
+    ViewSetting *settingView;
+    AccountList *accountList;
     QAction *actionAccountAdd;
     QAction *actionSetting;
     ResetConfigInfo resetConfigInfo;
-    Twitter* currentTwitter;
+    Account* currentAccount;
 };
 
 #endif // MAINWINDOW_H

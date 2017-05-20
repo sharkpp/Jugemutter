@@ -1,7 +1,6 @@
 #ifndef VEIWSETTINGGENERALPAGE_H
 #define VEIWSETTINGGENERALPAGE_H
 
-#include <QFrame>
 #include "pageselector.h"
 
 namespace Ui {
@@ -9,7 +8,7 @@ class ViewSettingGeneralPage;
 }
 
 class ViewSettingGeneralPage
-    : public QFrame
+    : public PageSelectorView
 {
     Q_OBJECT
 

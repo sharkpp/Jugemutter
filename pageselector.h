@@ -3,6 +3,7 @@
 
 #include <QToolBar>
 #include <QList>
+#include <QFrame>
 
 class PageSelectorDocument
     : public QObject
@@ -12,26 +13,39 @@ public:
     PageSelectorDocument(QObject* parent = nullptr);
 };
 
+class PageSelectorView
+    : public QFrame
+{
+    Q_OBJECT
+public:
+    PageSelectorView(QWidget* parent = nullptr);
+    //
+    virtual void setDocument(PageSelectorDocument *document);
+    PageSelectorDocument *document();
+protected:
+    PageSelectorDocument *m_document;
+};
+
 class PageSelectorButton
     : public QObject
 {
     Q_OBJECT
 public:
     PageSelectorButton(QObject* parent = nullptr);
-    PageSelectorButton(QObject* parent, QAction *action, QWidget *view, PageSelectorDocument *document);
+    PageSelectorButton(QObject* parent, QAction *action, PageSelectorView *view, PageSelectorDocument *document);
 
     QAction *action() const;
     void setAction(QAction *action);
 
-    QWidget *view() const;
-    void setView(QWidget *view);
+    PageSelectorView *view() const;
+    void setView(PageSelectorView *view);
 
     PageSelectorDocument *document() const;
     void setDocument(PageSelectorDocument *document);
 
 protected:
     QAction *m_action;
-    QWidget *m_view;
+    PageSelectorView *m_view;
     PageSelectorDocument *m_document;
 };
 
@@ -58,9 +72,9 @@ public:
 
     QAction *addSpacer(QAction *before);
 
-    QAction *addButton(QAction *action, QWidget *view = nullptr, PageSelectorDocument* document = nullptr);
+    QAction *addButton(QAction *action, PageSelectorView *view = nullptr, PageSelectorDocument* document = nullptr);
 
-    QAction *insertButton(QAction *before, QAction *action, QWidget *view = nullptr, PageSelectorDocument* document = nullptr);
+    QAction *insertButton(QAction *before, QAction *action, PageSelectorView *view = nullptr, PageSelectorDocument* document = nullptr);
 
     void removeButton(QAction *action);
 
@@ -75,13 +89,13 @@ public:
     QAction *currentAction() const;
     void setCurrentAction(QAction *currentAction);
 
-    QWidget *currentView() const;
-    void setCurrentView(QWidget *currentView);
+    PageSelectorView *currentView() const;
+    void setCurrentView(PageSelectorView *currentView);
 
     QList<PageSelectorDocument *> documents() const;
 
     PageSelectorDocument *documentAt(QAction *action) const;
-    PageSelectorDocument *documentAt(QWidget *view) const;
+    PageSelectorDocument *documentAt(PageSelectorView *view) const;
 
 protected:
     void setCurrentButton(PageSelectorButton* currentButton);

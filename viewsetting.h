@@ -24,7 +24,8 @@ public:
 private:
 };
 
-class ViewSetting : public QFrame
+class ViewSetting
+        : public PageSelectorView
 {
     Q_OBJECT
 

@@ -9,7 +9,7 @@
 #endif
 
 ViewSettingAboutPage::ViewSettingAboutPage(QWidget *parent) :
-    QFrame(parent),
+    PageSelectorView(parent),
     ui(new Ui::ViewSettingAboutPage)
 {
     ui->setupUi(this);

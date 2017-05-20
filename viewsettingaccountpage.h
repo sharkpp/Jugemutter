@@ -1,7 +1,6 @@
 #ifndef VEIWSETTINGACCOUNTPAGE_H
 #define VEIWSETTINGACCOUNTPAGE_H
 
-#include <QFrame>
 #include "pageselector.h"
 
 namespace Ui {
@@ -9,7 +8,7 @@ class ViewSettingAccountPage;
 }
 
 class ViewSettingAccountPage
-    : public QFrame
+    : public PageSelectorView
 {
     Q_OBJECT
 

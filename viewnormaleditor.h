@@ -2,6 +2,7 @@
 #define VIEWNORMALEDITOR_H
 
 #include <QFrame>
+#include "pageselector.h"
 #include "twittertextsplitter.h"
 
 class Twitter;
@@ -10,7 +11,8 @@ namespace Ui {
 class ViewNormalEditor;
 }
 
-class ViewNormalEditor : public QFrame
+class ViewNormalEditor
+        : public PageSelectorView
 {
     Q_OBJECT
 
@@ -18,7 +20,7 @@ public:
     explicit ViewNormalEditor(QWidget *parent = 0);
     ~ViewNormalEditor();
 
-    void setAccount(Twitter *account);
+    virtual void setDocument(PageSelectorDocument *document);
 
 protected:
     void updateSplitStatus();

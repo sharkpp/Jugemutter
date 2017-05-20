@@ -2,7 +2,7 @@
 #include "ui_viewsettinggeneralpage.h"
 
 ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent) :
-    QFrame(parent),
+    PageSelectorView(parent),
     ui(new Ui::ViewSettingGeneralPage)
 {
     ui->setupUi(this);

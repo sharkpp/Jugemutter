@@ -1,10 +1,12 @@
 #include "viewnormaleditor.h"
 #include "ui_viewnormaleditor.h"
+#include "mainwindow.h"
 #include "twitter.h"
+#include "accountlist.h"
 #include <QMessageBox>
 
 ViewNormalEditor::ViewNormalEditor(QWidget *parent)
-    : QFrame(parent)
+    : PageSelectorView(parent)
     , ui(new Ui::ViewNormalEditor)
     , currentAccount(nullptr)
 {
@@ -16,17 +18,28 @@ ViewNormalEditor::~ViewNormalEditor()
     delete ui;
 }
 
-void ViewNormalEditor::setAccount(Twitter *account)
+void ViewNormalEditor::setDocument(PageSelectorDocument *document)
 {
-    currentAccount = account;
+    PageSelectorView::setDocument(document);
 
-    connect(currentAccount, &Twitter::tweeted,
-            this, &ViewNormalEditor::on_twitter_tweeted);
+    currentAccount = nullptr;
 
-    ui->tweetButton->setEnabled(currentAccount->isAuthenticated());
-    ui->textPrefix->setPlainText("");
-    ui->tweetEditor->setPlainText("");
-    ui->textPostfix->setPlainText("");
+    if (EditorPageDocument *document_
+            = qobject_cast<EditorPageDocument*>( document )) {
+        if (const TwitterAccount *account_
+                = qobject_cast<const TwitterAccount*>(document_->account())) {
+
+            currentAccount = account_->twitter();
+
+            connect(currentAccount, &Twitter::tweeted,
+                  this, &ViewNormalEditor::on_twitter_tweeted);
+
+            ui->tweetButton->setEnabled(currentAccount->isAuthenticated());
+            ui->textPrefix->setPlainText("");
+            ui->tweetEditor->setPlainText("");
+            ui->textPostfix->setPlainText("");
+        }
+    }
 }
 
 void ViewNormalEditor::updateSplitStatus()

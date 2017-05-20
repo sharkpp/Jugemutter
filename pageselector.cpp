@@ -41,6 +41,26 @@ PageSelectorDocument::PageSelectorDocument(QObject *parent)
 }
 
 //---------------------------------------------------------
+// PageSelectorView
+//---------------------------------------------------------
+
+PageSelectorView::PageSelectorView(QWidget *parent)
+    : QFrame(parent)
+    , m_document(nullptr)
+{
+}
+
+void PageSelectorView::setDocument(PageSelectorDocument *document)
+{
+    m_document = document;
+}
+
+PageSelectorDocument *PageSelectorView::document()
+{
+    return m_document;
+}
+
+//---------------------------------------------------------
 // PageSelectorButton
 //---------------------------------------------------------
 
@@ -53,7 +73,7 @@ PageSelectorButton::PageSelectorButton(QObject *parent)
 
 }
 
-PageSelectorButton::PageSelectorButton(QObject *parent, QAction *action, QWidget *view, PageSelectorDocument* document)
+PageSelectorButton::PageSelectorButton(QObject *parent, QAction *action, PageSelectorView *view, PageSelectorDocument* document)
     : QObject(parent)
     , m_action(action)
     , m_view(view)
@@ -71,12 +91,12 @@ void PageSelectorButton::setAction(QAction *action)
     m_action = action;
 }
 
-QWidget *PageSelectorButton::view() const
+PageSelectorView *PageSelectorButton::view() const
 {
     return m_view;
 }
 
-void PageSelectorButton::setView(QWidget *view)
+void PageSelectorButton::setView(PageSelectorView *view)
 {
     m_view = view;
 }
@@ -133,7 +153,7 @@ QAction *PageSelector::addSpacer(QAction *before)
     return insertWidget(before, spacer);
 }
 
-QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDocument* document)
+QAction *PageSelector::addButton(QAction *action, PageSelectorView *view, PageSelectorDocument* document)
 {
     if (view && document) { // checkable(= page selectable), when valid view and document present
         action->setCheckable(true);
@@ -154,7 +174,7 @@ QAction *PageSelector::addButton(QAction *action, QWidget *view, PageSelectorDoc
     return action;
 }
 
-QAction *PageSelector::insertButton(QAction *before, QAction *action, QWidget *view, PageSelectorDocument* document)
+QAction *PageSelector::insertButton(QAction *before, QAction *action, PageSelectorView *view, PageSelectorDocument* document)
 {
     if (document && document) { // checkable(= page selectable), when valid view and document present
         action->setCheckable(true);
@@ -226,22 +246,22 @@ void PageSelector::removeButtons(QList<PageSelectorDocument *> documents)
 
 void PageSelector::setCurrentButton(PageSelectorButton *currentButton)
 {
-    if (currentButton) {
-        emit actionTriggered(currentButton->action());
+    if (currentButton) { // selected, emit select button action
+        emit actionTriggered(currentButton->action()); // call on_actionTriggered() function
     }
-    else if (m_buddy) {
+    else if (m_buddy) { // no selected, clear buddied form
         if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
             container->setCurrentWidget(nullptr);
         }
     }
 }
 
-QWidget *PageSelector::currentView() const
+PageSelectorView *PageSelector::currentView() const
 {
     return m_selected ? m_selected->view() : nullptr;
 }
 
-void PageSelector::setCurrentView(QWidget *currentView)
+void PageSelector::setCurrentView(PageSelectorView *currentView)
 {
     m_selected = nullptr;
 
@@ -280,7 +300,7 @@ PageSelectorDocument *PageSelector::documentAt(QAction *action) const
     return nullptr;
 }
 
-PageSelectorDocument *PageSelector::documentAt(QWidget *view) const
+PageSelectorDocument *PageSelector::documentAt(PageSelectorView *view) const
 {
     for (auto button : m_buttons ) {
         if (button->view() == view) {
@@ -323,6 +343,7 @@ void PageSelector::on_actionTriggered(QAction *action)
         button->action()->setChecked( selected );
         if (selected && m_buddy) {
             if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
+                button->view()->setDocument(button->document());
                 container->setCurrentWidget(button->view());
             }
         }

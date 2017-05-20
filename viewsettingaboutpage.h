@@ -1,13 +1,13 @@
 #ifndef VIEWSETTINGABOUTPAGE_H
 #define VIEWSETTINGABOUTPAGE_H
 
-#include <QFrame>
+#include "pageselector.h"
 
 namespace Ui {
 class ViewSettingAboutPage;
 }
 
-class ViewSettingAboutPage : public QFrame
+class ViewSettingAboutPage : public PageSelectorView
 {
     Q_OBJECT
 

@@ -6,7 +6,7 @@
 #include <QDebug>
 
 ViewSettingAccountPage::ViewSettingAccountPage(QWidget *parent) :
-    QFrame(parent),
+    PageSelectorView(parent),
     ui(new Ui::ViewSettingAccountPage)
 {
     ui->setupUi(this);

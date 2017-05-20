@@ -18,7 +18,7 @@ SettingPageDocument::SettingPageDocument(QObject *parent)
 //---------------------------------------------------------
 
 ViewSetting::ViewSetting(QWidget *parent)
-    : QFrame(parent)
+    : PageSelectorView(parent)
     , ui(new Ui::ViewSetting)
     , account(nullptr)
     , settings(new SettingPageDocument(this))

@@ -407,6 +407,9 @@ void MainWindow::on_accountList_update()
     tb->setUpdatesEnabled(false);
     tb->blockSignals(true);
 
+    // hidden append button, if account exist
+    actionAccountAdd->setVisible(nextAccounts.isEmpty());
+
     // remove
     tb->removeButtons(documents);
     // append

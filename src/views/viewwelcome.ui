@@ -83,7 +83,7 @@
         <string>アカウントを追加</string>
        </property>
        <property name="icon">
-        <iconset resource="resources.qrc">
+        <iconset resource="../resources.qrc">
          <normaloff>:/icons.black/add.svg</normaloff>:/icons.black/add.svg</iconset>
        </property>
        <property name="iconSize">
@@ -115,7 +115,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

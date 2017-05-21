@@ -4,6 +4,12 @@
 #define STR_(x) STR__(x) // うーむ、
 
 static const int dataStreamVersion = QDataStream::Qt_5_8;
+static const QString keyAuthToken = "token";
+static const QString keyAuthTokenSecret = "tokenSecret";
+static const QString keyTwitterId = "id";
+static const QString keyTwitterName = "name";
+static const QString keyTwitterScreenName = "screenName";
+static const QString keyTwitterProfileImage = "profileImage"; // QIcon
 
 Twitter::Twitter(QObject *parent)
     : QOAuth1(parent)
@@ -67,14 +73,14 @@ const QString Twitter::serialize() const
     out.setVersion(dataStreamVersion);
 
     if (QAbstractOAuth::Status::Granted == status()) {
-        serialized.insert("token", token());
-        serialized.insert("tokenSecret", tokenSecret());
+        serialized.insert(keyAuthToken, token());
+        serialized.insert(keyAuthTokenSecret, tokenSecret());
     }
 
-    serialized.insert("id", m_id);
-    serialized.insert("name", m_name);
-    serialized.insert("screenName", m_screenName);
-    serialized.insert("profileImage", m_icon);
+    serialized.insert(keyTwitterId, m_id);
+    serialized.insert(keyTwitterName, m_name);
+    serialized.insert(keyTwitterScreenName, m_screenName);
+    serialized.insert(keyTwitterProfileImage, m_icon);
 
     out << serialized;
 
@@ -89,13 +95,13 @@ void Twitter::deserialize(const QString& data)
     in.setVersion(dataStreamVersion);
     in >> deserialized;
 
-    m_id = deserialized.value("id").toString();
-    m_name = deserialized.value("name").toString();
-    m_screenName = deserialized.value("screenName").toString();
-    m_icon = deserialized.value("profileImage").value<QIcon>();
+    m_id = deserialized.value(keyTwitterId).toString();
+    m_name = deserialized.value(keyTwitterName).toString();
+    m_screenName = deserialized.value(keyTwitterScreenName).toString();
+    m_icon = deserialized.value(keyTwitterProfileImage).value<QIcon>();
 
-    QString userToken       = deserialized.value("token").toString();
-    QString userTokenSecret = deserialized.value("tokenSecret").toString();
+    QString userToken       = deserialized.value(keyAuthToken).toString();
+    QString userTokenSecret = deserialized.value(keyAuthTokenSecret).toString();
     if (userToken.isEmpty() ||
         userTokenSecret.isEmpty()) {
         setTokenCredentials("", "");

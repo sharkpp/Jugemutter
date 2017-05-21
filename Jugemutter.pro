@@ -24,51 +24,52 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += src src/sns src/widgets src/views
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    twitter.cpp \
-    autosizetextedit.cpp \
-    textcounterlabel.cpp \
-    twittertextsplitter.cpp \
-    tweettextedit.cpp \
-    viewnormaleditor.cpp \
-    accountaddpopup.cpp \
-    viewsetting.cpp \
-    pageselector.cpp \
-    viewsettingaccountpage.cpp \
-    viewsettinggeneralpage.cpp \
-    viewsettingaboutpage.cpp \
-    accountlist.cpp \
-    viewwelcome.cpp \
-    postprogress.cpp
+SOURCES += src/main.cpp\
+        src/mainwindow.cpp \
+    src/sns/twitter.cpp \
+    src/widgets/autosizetextedit.cpp \
+    src/widgets/textcounterlabel.cpp \
+    src/twittertextsplitter.cpp \
+    src/widgets/tweettextedit.cpp \
+    src/views/viewnormaleditor.cpp \
+    src/accountaddpopup.cpp \
+    src/views/viewsetting.cpp \
+    src/widgets/pageselector.cpp \
+    src/views/viewsettingaccountpage.cpp \
+    src/views/viewsettinggeneralpage.cpp \
+    src/views/viewsettingaboutpage.cpp \
+    src/accountlist.cpp \
+    src/views/viewwelcome.cpp \
+    src/postprogress.cpp
 
-HEADERS  += mainwindow.h \
-    twitter.h \
-    autosizetextedit.h \
-    textcounterlabel.h \
-    twittertextsplitter.h \
-    tweettextedit.h \
-    viewnormaleditor.h \
-    accountaddpopup.h \
-    viewsetting.h \
-    pageselector.h \
-    viewsettingaccountpage.h \
-    viewsettinggeneralpage.h \
-    viewsettingaboutpage.h \
-    accountlist.h \
-    viewwelcome.h \
-    postprogress.h
+HEADERS  += src/mainwindow.h \
+    src/sns/twitter.h \
+    src/widgets/autosizetextedit.h \
+    src/widgets/textcounterlabel.h \
+    src/twittertextsplitter.h \
+    src/widgets/tweettextedit.h \
+    src/views/viewnormaleditor.h \
+    src/accountaddpopup.h \
+    src/views/viewsetting.h \
+    src/widgets/pageselector.h \
+    src/views/viewsettingaccountpage.h \
+    src/views/viewsettinggeneralpage.h \
+    src/views/viewsettingaboutpage.h \
+    src/accountlist.h \
+    src/views/viewwelcome.h \
+    src/postprogress.h
 
-FORMS    += mainwindow.ui \
-    viewnormaleditor.ui \
-    accountaddpopup.ui \
-    viewsetting.ui \
-    viewsettingaccountpage.ui \
-    viewsettinggeneralpage.ui \
-    viewsettingaboutpage.ui \
-    viewwelcome.ui \
-    postprogress.ui
+FORMS    += src/mainwindow.ui \
+    src/views/viewnormaleditor.ui \
+    src/accountaddpopup.ui \
+    src/views/viewsetting.ui \
+    src/views/viewsettingaccountpage.ui \
+    src/views/viewsettinggeneralpage.ui \
+    src/views/viewsettingaboutpage.ui \
+    src/views/viewwelcome.ui \
+    src/postprogress.ui
 
 DISTFILES += \
     README.md

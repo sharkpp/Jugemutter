@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     initToolbar();
 
     connect(accountList, &AccountList::updateAccount,
-            this, &MainWindow::on_accountList_updateAccount);
+            this, &MainWindow::on_accountList_update);
 
     loadConfig();
 
@@ -342,7 +342,7 @@ void MainWindow::on_accountList_actionTriggered(QAction *action)
     }
 }
 
-void MainWindow::on_accountList_updateAccount()
+void MainWindow::on_accountList_update()
 {
     PageSelector *tb = ui->accountList;
     QList<PageSelectorDocument*> documents = tb->documents();

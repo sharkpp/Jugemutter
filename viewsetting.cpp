@@ -20,7 +20,7 @@ SettingPageDocument::SettingPageDocument(QObject *parent)
 ViewSetting::ViewSetting(QWidget *parent)
     : PageSelectorView(parent)
     , ui(new Ui::ViewSetting)
-    , account(nullptr)
+    , m_accountList(nullptr)
     , settings(new SettingPageDocument(this))
 {
     ui->setupUi(this);
@@ -36,9 +36,11 @@ ViewSetting::~ViewSetting()
     delete ui;
 }
 
-void ViewSetting::setAccountList(AccountList *account)
+void ViewSetting::setAccountList(AccountList *accountList)
 {
-    this->account = account;
+    m_accountList = accountList;
+
+    accountPage->setAccountList(accountList);
 }
 
 void ViewSetting::initToolbar()

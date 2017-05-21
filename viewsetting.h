@@ -33,7 +33,7 @@ public:
     explicit ViewSetting(QWidget *parent = 0);
     ~ViewSetting();
 
-    void setAccountList(AccountList* account);
+    void setAccountList(AccountList* accountList);
 
 protected:
     void initToolbar();
@@ -42,7 +42,7 @@ private slots:
 
 private:
     Ui::ViewSetting *ui;
-    AccountList *account;
+    AccountList *m_accountList;
     PageSelectorDocument *settings;
     ViewSettingGeneralPage *generalPage;
     ViewSettingAccountPage *accountPage;

@@ -65,7 +65,7 @@ private slots:
     void on_twitter_authenticated();
     void on_twitter_verified();
     void on_accountList_actionTriggered(QAction *action);
-    void on_accountList_updateAccount();
+    void on_accountList_update();
 
 private:
     Ui::MainWindow *ui;

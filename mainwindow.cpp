@@ -141,13 +141,31 @@ void MainWindow::requestAddAccount()
 
     // ※ Twitter::authenticate(); も中で行う
 
-    if (popup.exec()) {
-        Twitter *twitter = popup.account();
-        TwitterAccount *account = new TwitterAccount(this);
-        account->setTwitter(twitter);
-        currentAccount = account;
-        accountList->append(account);
+    if (!popup.exec()) {
+        return;
     }
+
+    Twitter *twitter = popup.account();
+
+    // test exist account
+    if (existAccount(twitter)) {
+        return;
+    }
+
+    TwitterAccount *account = new TwitterAccount(this);
+    account->setTwitter(twitter);
+    currentAccount = account;
+    accountList->append(account);
+}
+
+bool MainWindow::existAccount(Twitter *twitter)
+{
+    // すでに登録済みのアカウントかどうかのチェック
+    QList<PageSelectorDocument*> documents = ui->accountList->documents();
+    QList<PageSelectorDocument*>::iterator
+            ite = std::find_if(documents.begin(), documents.end(),
+                               SearchDocumentByTwitterId(twitter));
+    return documents.end() != ite;
 }
 
 QAction *MainWindow::addAccount(Account *account)
@@ -212,8 +230,13 @@ void MainWindow::loadConfig()
             case AccountTypeTwitter: { // append Twitter account
                 TwitterAccount* account = new TwitterAccount(this);
                 account->deserialize(accountData);
-                attachTwitter(account->twitter());
-                accountList->append(account);
+                if (existAccount(account->twitter())) { // just in case
+                    delete account; // delete, if not used
+                }
+                else {
+                    attachTwitter(account->twitter());
+                    accountList->append(account);
+                }
                 break; }
             default: break;
             }
@@ -312,13 +335,8 @@ void MainWindow::on_twitter_verified()
 {
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
 
-    // すでに登録済みのアカウントかどうかのチェック
-    QList<PageSelectorDocument*> documents = ui->accountList->documents();
-    QList<PageSelectorDocument*>::iterator
-            ite = std::find_if(documents.begin(), documents.end(),
-                               SearchDocumentByTwitterId(twitter));
-    if (documents.end() != ite) {
-        // すでに登録済みっぽい
+    // test exist account
+    if (existAccount(twitter)) {
         return;
     }
 

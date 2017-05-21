@@ -58,7 +58,9 @@ protected: // method
     void loadConfig();
     void saveConfig();
     void resetConfig();
+    //
     bool readAccountConfig(const QString& serialized, qint32 accountType, QString& accountData);
+    bool existAccount(Twitter *twitter);
 
 protected: // event
     bool event(QEvent* ev);

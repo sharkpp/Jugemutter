@@ -3,6 +3,8 @@
 
 static const int dataStreamVersion = QDataStream::Qt_5_8;
 
+static const QString keyTwitterInfo = "twitter";
+
 //---------------------------------------------------------
 // BaseAccount
 //---------------------------------------------------------
@@ -35,7 +37,9 @@ const QString TwitterAccount::serialize() const
     QDataStream out(&dataBytes, QIODevice::WriteOnly);
     out.setVersion(dataStreamVersion);
     // serialize
-    out << m_twitter->serialize();
+    QMap<QString, QVariant> serialized;
+    serialized.insert(keyTwitterInfo, m_twitter->serialize());
+    out << serialized;
     //
     return dataBytes.toBase64();
 
@@ -47,7 +51,8 @@ void TwitterAccount::deserialize(const QString &data)
     QDataStream in(&dataBytes, QIODevice::ReadOnly);
     in.setVersion(dataStreamVersion);
     // deserialize
-    QString  serializedOfTwitter; in >> serializedOfTwitter;
+    QMap<QString, QVariant> deserialized; in >> deserialized;
+    QString serializedOfTwitter = deserialized.value(keyTwitterInfo).toString();
     //
     m_twitter->deserialize(serializedOfTwitter);
 }

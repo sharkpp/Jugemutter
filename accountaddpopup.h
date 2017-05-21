@@ -22,7 +22,7 @@ public:
     Twitter* account();
 
 private slots:
-    void on_twitter_veridied();
+    void onTwitterVeridied();
     void on_rejected();
 
 private:

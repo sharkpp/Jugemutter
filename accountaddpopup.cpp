@@ -24,7 +24,7 @@ int AccountAddPopup::exec()
     currentAccount = new Twitter(parent());
 
     connect(currentAccount, &Twitter::verified,
-            this, &AccountAddPopup::on_twitter_veridied);
+            this, &AccountAddPopup::onTwitterVeridied);
 
     currentAccount->authenticate();
 
@@ -35,7 +35,7 @@ Twitter *AccountAddPopup::account()
 {
     return currentAccount;
 }
-void AccountAddPopup::on_twitter_veridied()
+void AccountAddPopup::onTwitterVeridied()
 {
     done(QDialog::Accepted);
 }

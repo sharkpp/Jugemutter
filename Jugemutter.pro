@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     viewsettinggeneralpage.cpp \
     viewsettingaboutpage.cpp \
     accountlist.cpp \
-    viewwelcome.cpp
+    viewwelcome.cpp \
+    postprogress.cpp
 
 HEADERS  += mainwindow.h \
     twitter.h \
@@ -56,7 +57,8 @@ HEADERS  += mainwindow.h \
     viewsettinggeneralpage.h \
     viewsettingaboutpage.h \
     accountlist.h \
-    viewwelcome.h
+    viewwelcome.h \
+    postprogress.h
 
 FORMS    += mainwindow.ui \
     viewnormaleditor.ui \
@@ -65,7 +67,8 @@ FORMS    += mainwindow.ui \
     viewsettingaccountpage.ui \
     viewsettinggeneralpage.ui \
     viewsettingaboutpage.ui \
-    viewwelcome.ui
+    viewwelcome.ui \
+    postprogress.ui
 
 DISTFILES += \
     README.md

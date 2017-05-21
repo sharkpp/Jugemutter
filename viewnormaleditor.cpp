@@ -3,11 +3,13 @@
 #include "mainwindow.h"
 #include "twitter.h"
 #include "accountlist.h"
+#include "postprogress.h"
 #include <QMessageBox>
 
 ViewNormalEditor::ViewNormalEditor(QWidget *parent)
     : PageSelectorView(parent)
     , ui(new Ui::ViewNormalEditor)
+    , postProgress(new PostProgress(this))
     , currentAccount(nullptr)
 {
     ui->setupUi(this);
@@ -15,6 +17,7 @@ ViewNormalEditor::ViewNormalEditor(QWidget *parent)
 
 ViewNormalEditor::~ViewNormalEditor()
 {
+    delete postProgress;
     delete ui;
 }
 
@@ -60,16 +63,38 @@ void ViewNormalEditor::updateSplitStatus()
     ui->totalLength->setText(QString("%1").arg(splitter.size()));
 }
 
+void ViewNormalEditor::startPost()
+{
+    postProgress->setCount( tweetQueue.size() );
+    postProgress->show();
+    postProgress->raise();
+    postProgress->activateWindow();
+}
+
+void ViewNormalEditor::stepPost()
+{
+    postProgress->step();
+}
+
+void ViewNormalEditor::finishPost()
+{
+    postProgress->step();
+    postProgress->hide();
+}
+
 void ViewNormalEditor::onTwitterTweeted(const QString &tweetId)
 {
     qDebug() << "add tweet" << tweetId;
 
     if (tweetQueue.isEmpty()) {
+        finishPost();
         QMessageBox::information(this, qAppName(), "投稿を完了しました。");
         return;
     }
 
     // まだ残りがあれば投稿する
+
+    stepPost();
 
     QString tweetText = tweetQueue.front().toString();
     tweetQueue.pop_front();
@@ -98,6 +123,8 @@ void ViewNormalEditor::on_tweetButton_clicked()
     if (tweetQueue.isEmpty()) {
         return;
     }
+
+    startPost();
 
 #if 1
     QString msg;

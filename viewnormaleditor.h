@@ -4,6 +4,7 @@
 #include "pageselector.h"
 #include "twittertextsplitter.h"
 
+class PostProgress;
 class Twitter;
 
 namespace Ui {
@@ -23,6 +24,9 @@ public:
 
 protected:
     void updateSplitStatus();
+    void startPost();
+    void stepPost();
+    void finishPost();
 
 private slots:
     void onTwitterTweeted(const QString& tweetId);
@@ -33,6 +37,7 @@ private slots:
 
 private:
     Ui::ViewNormalEditor *ui;
+    PostProgress *postProgress;
     Twitter *currentAccount;
     QList<SplittedItem> tweetQueue; // queued tweet
 };

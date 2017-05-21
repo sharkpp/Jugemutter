@@ -135,6 +135,21 @@ void MainWindow::initToolbar()
     tb->addButton(action, settingView);
 }
 
+void MainWindow::requestAddAccount()
+{
+    AccountAddPopup popup(this);
+
+    // ※ Twitter::authenticate(); も中で行う
+
+    if (popup.exec()) {
+        Twitter *twitter = popup.account();
+        TwitterAccount *account = new TwitterAccount(this);
+        account->setTwitter(twitter);
+        currentAccount = account;
+        accountList->append(account);
+    }
+}
+
 QAction *MainWindow::addAccount(Account *account)
 {
     PageSelector *tb = ui->accountList;
@@ -159,7 +174,7 @@ QAction *MainWindow::addAccount(Account *account)
         accountList->append(account);
         return tb->insertButton(actionAccountAdd, action, editorView, document);
     }
-
+    return nullptr;
 }
 
 void MainWindow::attachTwitter(Twitter *twitter)
@@ -209,7 +224,6 @@ void MainWindow::loadConfig()
 
 void MainWindow::saveConfig()
 {
-    PageSelector *tb = ui->accountList;
     QSettings settings;
 
     settings.beginGroup("mainWindow");
@@ -320,20 +334,8 @@ void MainWindow::on_accountList_actionTriggered(QAction *action)
     currentAccount = nullptr;
 
     if (actionAccountAdd == action) {
-        // アカウント追加
-        AccountAddPopup popup(this);
-
-        // ※ Twitter::authenticate(); も中で行う
-
-        if (popup.exec()) {
-            Twitter *twitter = popup.account();
-            TwitterAccount *account = new TwitterAccount(this);
-            account->setTwitter(twitter);
-            currentAccount = account;
-            accountList->append(account);
-            //QAction *action = addAccount(account);
-            //ui->accountList->setCurrentAction(action);
-        }
+        // append account
+        requestAddAccount();
     }
     else if (EditorPageDocument *document
                 = qobject_cast<EditorPageDocument*>( tb->documentAt(action) )) {

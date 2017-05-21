@@ -47,6 +47,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void requestAddAccount();
+
 protected: // method
     // UI関連
     void initToolbar();

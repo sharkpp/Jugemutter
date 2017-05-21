@@ -93,6 +93,11 @@ void AccountList::removeAt(int index)
     emit updateAccount();
 }
 
+int AccountList::size() const
+{
+    return accounts.size();
+}
+
 QList<Account *>::const_iterator AccountList::begin() const
 {
     return accounts.begin();

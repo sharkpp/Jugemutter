@@ -55,6 +55,8 @@ public:
     void remove(Account* account);
     void removeAt(int index);
 
+    int size() const;
+
     QList<Account *>::const_iterator begin() const;
     QList<Account *>::const_iterator end() const;
 

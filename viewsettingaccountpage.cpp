@@ -118,15 +118,7 @@ void ViewSettingAccountPage::on_accountList_itemSelectionChanged()
 
 void ViewSettingAccountPage::onAccountActionAppend(bool /*checked*/)
 {
-    // find main window
-    MainWindow *mainWindow;
-    for (QWidget *w = parentWidget();
-         w && !(mainWindow = qobject_cast<MainWindow *>(w));
-         w = w->parentWidget())
-    { }
-    if (mainWindow) {
-        mainWindow->requestAddAccount();
-    }
+    MainWindow::requestAddAccount(this);
 }
 
 void ViewSettingAccountPage::onAccountActionRemove(bool /*checked*/)

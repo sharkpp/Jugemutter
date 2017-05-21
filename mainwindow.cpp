@@ -3,6 +3,7 @@
 #include "twitter.h"
 #include "twittertextsplitter.h"
 #include "accountaddpopup.h"
+#include "viewwelcome.h"
 #include "viewnormaleditor.h"
 #include "viewsetting.h"
 #include "pageselector.h"
@@ -90,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->accountList->setBuddy(ui->pageContainer);
+    ui->accountList->setBlankView(new ViewWelcome(this));
     ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
     ui->pageContainer->addWidget(settingView = new ViewSetting(this));
     settingView->setAccountList(accountList);
@@ -133,6 +135,19 @@ void MainWindow::initToolbar()
     action = actionSetting = new QAction(QIcon(":/icons.white/settings.svg"), "設定", this);
     action->setCheckable(true);
     tb->addButton(action, settingView);
+}
+
+void MainWindow::requestAddAccount(QWidget *parent)
+{
+    // find main window
+    MainWindow *mainWindow;
+    for (QWidget *w = parent;
+         w && !(mainWindow = qobject_cast<MainWindow *>(w));
+         w = w->parentWidget())
+    { }
+    if (mainWindow) {
+        mainWindow->requestAddAccount();
+    }
 }
 
 void MainWindow::requestAddAccount()
@@ -353,7 +368,7 @@ void MainWindow::on_accountList_actionTriggered(QAction *action)
 
     if (actionAccountAdd == action) {
         // append account
-        requestAddAccount();
+        requestAddAccount(this);
     }
     else if (EditorPageDocument *document
                 = qobject_cast<EditorPageDocument*>( tb->documentAt(action) )) {

@@ -118,6 +118,7 @@ void PageSelectorButton::setDocument(PageSelectorDocument *document)
 PageSelector::PageSelector(QWidget *parent)
     : QToolBar(parent)
     , m_buddy(nullptr)
+    , m_blankView(nullptr)
     , m_selected(nullptr)
 {
     connect(this, &QToolBar::actionTriggered,
@@ -136,6 +137,12 @@ QWidget *PageSelector::buddy() const
 
 void PageSelector::setBuddy(QWidget *buddy)
 {
+    if (QStackedWidget* container = qobject_cast<QStackedWidget*>( buddy )) {
+        if (m_blankView) {
+            container->addWidget(m_blankView);
+        }
+    }
+
     m_buddy = buddy;
 }
 
@@ -251,7 +258,7 @@ void PageSelector::setCurrentButton(PageSelectorButton *currentButton)
     }
     else if (m_buddy) { // no selected, clear buddied form
         if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
-            container->setCurrentWidget(nullptr);
+            container->setCurrentWidget(m_blankView);
         }
     }
 }
@@ -274,6 +281,21 @@ void PageSelector::setCurrentView(PageSelectorView *currentView)
     }
 
     setCurrentButton(m_selected);
+}
+
+PageSelectorView *PageSelector::blankView() const
+{
+    return m_blankView;
+}
+
+void PageSelector::setBlankView(PageSelectorView *blankView)
+{
+    if (QStackedWidget* container = qobject_cast<QStackedWidget*>( m_buddy )) {
+        container->removeWidget(m_blankView);
+        container->addWidget(blankView);
+    }
+
+    m_blankView = blankView;
 }
 
 QList<PageSelectorDocument *> PageSelector::documents() const

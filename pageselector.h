@@ -92,6 +92,9 @@ public:
     PageSelectorView *currentView() const;
     void setCurrentView(PageSelectorView *currentView);
 
+    PageSelectorView *blankView() const;
+    void setBlankView(PageSelectorView *blankView);
+
     QList<PageSelectorDocument *> documents() const;
 
     PageSelectorDocument *documentAt(QAction *action) const;
@@ -106,6 +109,7 @@ protected slots:
 private:
     QWidget* m_buddy;
     QList<PageSelectorButton *> m_buttons;
+    PageSelectorView *m_blankView;
     PageSelectorButton *m_selected;
 };
 

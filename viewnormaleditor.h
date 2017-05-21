@@ -1,7 +1,6 @@
 #ifndef VIEWNORMALEDITOR_H
 #define VIEWNORMALEDITOR_H
 
-#include <QFrame>
 #include "pageselector.h"
 #include "twittertextsplitter.h"
 

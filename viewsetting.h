@@ -1,7 +1,6 @@
 #ifndef VIEWSETTING_H
 #define VIEWSETTING_H
 
-#include <QFrame>
 #include "pageselector.h"
 
 class ViewSettingGeneralPage;

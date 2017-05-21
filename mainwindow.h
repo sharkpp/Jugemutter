@@ -47,7 +47,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void requestAddAccount();
+    static void requestAddAccount(QWidget *parent);
 
 protected: // method
     // UI関連
@@ -61,6 +61,7 @@ protected: // method
     //
     bool readAccountConfig(const QString& serialized, qint32 accountType, QString& accountData);
     bool existAccount(Twitter *twitter);
+    void requestAddAccount();
 
 protected: // event
     bool event(QEvent* ev);

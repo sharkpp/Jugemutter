@@ -7,11 +7,13 @@ AccountAddPopup::AccountAddPopup(QWidget *parent)
     , ui(new Ui::AccountAddPopup)
     , currentAccount(nullptr)
 {
-    ui->setupUi(this);
-
 #if defined(Q_OS_MAC)
     setWindowFlags(Qt::Sheet);
 #endif
+
+    ui->setupUi(this);
+
+    adjustSize();
 }
 
 AccountAddPopup::~AccountAddPopup()

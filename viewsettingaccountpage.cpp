@@ -27,15 +27,14 @@ void ViewSettingAccountPage::initToolBar()
 
     tb->setIconSize(QSize(16, 16));
 
-    tb->setStyleSheet(QString("QToolButton:pressed { background-color: %2; border: none; }")
-        .arg( tb->palette().color(QPalette::Background).toRgb().name(QColor::HexRgb) )
+    tb->setStyleSheet(QString("QToolButton:pressed { background-color: %1; border: none; }")
         .arg( tb->palette().color(QPalette::AlternateBase).toRgb().name(QColor::HexRgb) ));
 
     tb->addAction(QIcon(":/icons.black/add.svg"), "アカウントを追加",
-                  this, &ViewSettingAccountPage::on_accountAction_append);
+                  this, &ViewSettingAccountPage::onAccountActionAppend);
 
     removeAccount = tb->addAction(QIcon(":/icons.black/remove.svg"), "アカウントを削除",
-                                  this, &ViewSettingAccountPage::on_accountAction_remove);
+                                  this, &ViewSettingAccountPage::onAccountActionRemove);
 }
 
 void ViewSettingAccountPage::setAccountList(AccountList *accountList)
@@ -43,10 +42,10 @@ void ViewSettingAccountPage::setAccountList(AccountList *accountList)
     this->accountList = accountList;
 
     connect(accountList, &AccountList::updateAccount,
-            this, &ViewSettingAccountPage::on_accountList_update);
+            this, &ViewSettingAccountPage::onAccountListUpdate);
 }
 
-void ViewSettingAccountPage::on_accountList_update()
+void ViewSettingAccountPage::onAccountListUpdate()
 {
     QListWidget *list = ui->accountList;
 
@@ -117,7 +116,7 @@ void ViewSettingAccountPage::on_accountList_itemSelectionChanged()
     removeAccount->setEnabled(!!item);
 }
 
-void ViewSettingAccountPage::on_accountAction_append(bool /*checked*/)
+void ViewSettingAccountPage::onAccountActionAppend(bool /*checked*/)
 {
     // find main window
     MainWindow *mainWindow;
@@ -130,7 +129,7 @@ void ViewSettingAccountPage::on_accountAction_append(bool /*checked*/)
     }
 }
 
-void ViewSettingAccountPage::on_accountAction_remove(bool /*checked*/)
+void ViewSettingAccountPage::onAccountActionRemove(bool /*checked*/)
 {
     QMessageBox msgBox;
     msgBox.setText("登録済みのアカウントを削除しようとしています。\n"

@@ -32,7 +32,7 @@ void ViewNormalEditor::setDocument(PageSelectorDocument *document)
             currentAccount = account_->twitter();
 
             connect(currentAccount, &Twitter::tweeted,
-                  this, &ViewNormalEditor::on_twitter_tweeted);
+                  this, &ViewNormalEditor::onTwitterTweeted);
 
             ui->tweetButton->setEnabled(currentAccount->isAuthenticated());
             ui->textPrefix->setPlainText("");
@@ -60,7 +60,7 @@ void ViewNormalEditor::updateSplitStatus()
     ui->totalLength->setText(QString("%1").arg(splitter.size()));
 }
 
-void ViewNormalEditor::on_twitter_tweeted(const QString &tweetId)
+void ViewNormalEditor::onTwitterTweeted(const QString &tweetId)
 {
     qDebug() << "add tweet" << tweetId;
 

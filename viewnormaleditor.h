@@ -26,7 +26,7 @@ protected:
     void updateSplitStatus();
 
 private slots:
-    void on_twitter_tweeted(const QString& tweetId);
+    void onTwitterTweeted(const QString& tweetId);
     void on_tweetButton_clicked();
     void on_textPrefix_textChanged();
     void on_textPostfix_textChanged();

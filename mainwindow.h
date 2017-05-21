@@ -66,10 +66,10 @@ protected: // event
     bool event(QEvent* ev);
 
 private slots:
-    void on_twitter_authenticated();
-    void on_twitter_verified();
+    void onTwitterAuthenticated();
+    void onTwitterVerified();
     void on_accountList_actionTriggered(QAction *action);
-    void on_accountList_update();
+    void onAccountListUpdate();
 
 private:
     Ui::MainWindow *ui;

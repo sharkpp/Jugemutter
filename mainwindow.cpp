@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     initToolbar();
 
     connect(accountList, &AccountList::updateAccount,
-            this, &MainWindow::on_accountList_update);
+            this, &MainWindow::onAccountListUpdate);
 
     loadConfig();
 
@@ -198,9 +198,9 @@ QAction *MainWindow::addAccount(Account *account)
 void MainWindow::attachTwitter(Twitter *twitter)
 {
     connect(twitter, &Twitter::authenticated,
-            this, &MainWindow::on_twitter_authenticated);
+            this, &MainWindow::onTwitterAuthenticated);
     connect(twitter, &Twitter::verified,
-            this, &MainWindow::on_twitter_verified);
+            this, &MainWindow::onTwitterVerified);
 }
 
 void MainWindow::loadConfig()
@@ -324,14 +324,14 @@ bool MainWindow::event(QEvent* ev)
 }
 
 // ツイッターの認証通知
-void MainWindow::on_twitter_authenticated()
+void MainWindow::onTwitterAuthenticated()
 {
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
     qDebug() << QString(">>USER_TOKEN='%1'").arg(twitter->token());
     qDebug() << QString(">>USER_TOKEN_SECRET='%1'").arg(twitter->tokenSecret());
 }
 
-void MainWindow::on_twitter_verified()
+void MainWindow::onTwitterVerified()
 {
     Twitter *twitter = qobject_cast<Twitter*>( sender() );
 
@@ -362,7 +362,7 @@ void MainWindow::on_accountList_actionTriggered(QAction *action)
     }
 }
 
-void MainWindow::on_accountList_update()
+void MainWindow::onAccountListUpdate()
 {
     PageSelector *tb = ui->accountList;
     QList<PageSelectorDocument*> documents = tb->documents();

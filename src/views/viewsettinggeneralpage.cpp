@@ -71,6 +71,10 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
     ui->postBody2->setText(text.mid(3).trimmed());
     //ui->postBody2->setText("The Life and Strange Surprizing Adventures of Robinson Crusoe, of York, Mariner: Who lived Eight and Twenty Years, all alone in an un‐inhabited Island on the Coast of America, near the Mouth of the Great River of Oroonoque; Having been cast on Shore by Shipwreck, wherein all the Men perished but himself. With An Account how he was at last as strangely deliver’d by Pyrates");
 
+    updateStateList();
+
+    ui->prefixState->setCurrentIndex(0);
+    ui->postfixState->setCurrentIndex(0);
 
     resizeEvent(nullptr);
 }
@@ -78,6 +82,31 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
 ViewSettingGeneralPage::~ViewSettingGeneralPage()
 {
     delete ui;
+}
+
+void ViewSettingGeneralPage::updateStateList()
+{
+    int selected;
+    QStringList stateList;
+    stateList.append("(なし)");
+    stateList.append(!ui->postContinueText->text().isEmpty() ? ui->postContinueText->text()
+                                                             : "("+ui->postContinueLabel->text()+")");
+    stateList.append(!ui->postFinishedText->text().isEmpty() ? ui->postFinishedText->text()
+                                                             : "("+ui->postFinishedLabel->text()+")");
+    stateList.append(!ui->postContinueText->text().isEmpty() && !ui->postFinishedText->text().isEmpty()
+                        ? "" + ui->postContinueText->text() + "/" + ui->postFinishedText->text()
+                        : "("+ui->postContinueLabel->text()+"/"+ui->postFinishedLabel->text()+")");
+
+    selected = ui->prefixState->currentIndex();
+    ui->prefixState->clear();
+    ui->prefixState->addItems(stateList);
+    ui->prefixState->setCurrentIndex(selected);
+
+    selected = ui->postfixState->currentIndex();
+    ui->postfixState->clear();
+    ui->postfixState->addItems(stateList);
+    ui->postfixState->setCurrentIndex(selected);
+
 }
 
 void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
@@ -94,4 +123,14 @@ void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
     QString body2 = QLabel_getLineText(ui->postBody2, 0);
 
     ui->postBody3->setText(text.mid(text.indexOf(body2) + body2.length(), 3));
+}
+
+void ViewSettingGeneralPage::on_postContinueText_textChanged(const QString &arg1)
+{
+    updateStateList();
+}
+
+void ViewSettingGeneralPage::on_postFinishedText_textChanged(const QString &arg1)
+{
+    updateStateList();
 }

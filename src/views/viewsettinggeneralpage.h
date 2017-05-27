@@ -16,6 +16,9 @@ public:
     explicit ViewSettingGeneralPage(QWidget *parent = 0);
     ~ViewSettingGeneralPage();
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 private:
     Ui::ViewSettingGeneralPage *ui;
 };

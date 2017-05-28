@@ -42,7 +42,8 @@ SOURCES += src/main.cpp\
     src/views/viewsettingaboutpage.cpp \
     src/accountlist.cpp \
     src/views/viewwelcome.cpp \
-    src/postprogress.cpp
+    src/postprogress.cpp \
+    src/widgets/taginput.cpp
 
 HEADERS  += src/mainwindow.h \
     src/sns/twitter.h \
@@ -59,7 +60,8 @@ HEADERS  += src/mainwindow.h \
     src/views/viewsettingaboutpage.h \
     src/accountlist.h \
     src/views/viewwelcome.h \
-    src/postprogress.h
+    src/postprogress.h \
+    src/widgets/taginput.h
 
 FORMS    += src/mainwindow.ui \
     src/views/viewnormaleditor.ui \

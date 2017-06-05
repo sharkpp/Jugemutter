@@ -265,15 +265,15 @@
     </layout>
    </item>
    <item>
-    <widget class="TagInput" name="textEdit">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="TagInput" name="tagTest" native="true"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_5">
+     <property name="styleSheet">
+      <string notr="true">QLabel {\n  border-radius: 5px;\n  border: 1px solid #999;\n  background: #fff;\n}</string>
      </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContents</enum>
+     <property name="text">
+      <string>TextLabel</string>
      </property>
     </widget>
    </item>
@@ -295,8 +295,9 @@
  <customwidgets>
   <customwidget>
    <class>TagInput</class>
-   <extends>QTextEdit</extends>
+   <extends>QWidget</extends>
    <header>taginput.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,11 +1,13 @@
 #ifndef TAGINPUT_H
 #define TAGINPUT_H
 
-#include <QTextEdit>
+#include <QScrollArea>
 #include <QStringList>
 
+class QHBoxLayout;
+
 class TagInput
-        : public QTextEdit
+        : public QScrollArea
 {
     Q_OBJECT
 
@@ -16,14 +18,14 @@ public:
 
     void remove(const QString &tag);
 
-protected: // event
-    void keyPressEvent(QKeyEvent *event);
-
-private slots:
+protected:
     void updateTags();
+
+protected: // event
 
 protected:
     QStringList m_tags;
+    QHBoxLayout *m_layout;
 };
 
 #endif // TAGINPUT_H

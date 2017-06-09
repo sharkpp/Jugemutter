@@ -23,6 +23,10 @@ protected:
 
 protected: // event
 
+private slots:
+    void onTagRemoveClick(bool checked);
+    void onTagClick();
+
 protected:
     QStringList m_tags;
     QHBoxLayout *m_layout;

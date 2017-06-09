@@ -9,9 +9,11 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QScrollBar>
 
 TagInput::TagInput(QWidget *parent)
     : QScrollArea(parent)
+    , m_dragStartOffset(0)
 {
     //connect(this, &QTextEdit::textChanged, this, &TagInput::updateTags);
 
@@ -20,16 +22,6 @@ TagInput::TagInput(QWidget *parent)
     setMaximumHeight(fm.height() + 6 * 2 + 4 * 2);
     setContentsMargins(6, 6, 6, 6);
 
-    /*
-    setAutoFillBackground(true);
-    QPalette pal = palette();
-    pal.setColor( backgroundRole(), pal.color(QPalette::Base) );
-    //pal.setColor( backgroundRole(), QColor(255,0,0) );
-    setPalette( pal );
-    setAutoFillBackground( true );
-*/
-    //setLayout(m_layout = new QHBoxLayout(this));
-
     setBackgroundRole(QPalette::Base);
     setFrameShadow(QFrame::Plain);
     setFrameShape(QFrame::StyledPanel);
@@ -37,11 +29,10 @@ TagInput::TagInput(QWidget *parent)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setWidgetResizable(true);
 
-    //vertical box that contains all the checkboxes for the filters
     QWidget* base = new QWidget(this);
-    base->setObjectName("techarea");
     base->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
     base->setLayout(m_layout = new QHBoxLayout(base));
+    //base->setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setWidget(base);
 
     m_layout->setSpacing(6);
@@ -110,6 +101,7 @@ void TagInput::append(const QString &tag)
            "QPushButton { margin: 0; padding: 0; border: none; color: #FFF; }"
            "QPushButton:pressed { border: none; background: #19BC9C; color: #F66;}"
         ));
+    tagRemoveButton->setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
     QRect rc = tagRemoveButtonFm.boundingRect("x");
     qDebug() << "tagRemoveFm.w" << tagRemoveButtonFm.width("x") << tagRemoveButtonFm.height() << rc;
@@ -125,18 +117,6 @@ void TagInput::append(const QString &tag)
     m_layout->insertWidget(m_layout->count() - 1, tagItem);
 
     connect(tagRemoveButton, &QAbstractButton::clicked, this, &TagInput::onTagRemoveClick);
-
-#if 0
-    QLabel *w = new QLabel(this);
-    QFontMetrics fm = w->fontMetrics();
-    w->setStyleSheet("QFrame { border-radius: 5px; border: none; background: #19BC9C; color: #FFF; padding: 3px; }");
-    w->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    w->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    w->setMaximumHeight(fm.height() + 3 * 2);
-    w->setText(tag);
-    //connect(w, &QTextEdit::textChanged, this, &TagInput::onTagClick);
-    m_layout->insertWidget(m_layout->count() - 1, w);
-#endif
 }
 
 void TagInput::remove(const QString &tag)
@@ -146,6 +126,54 @@ void TagInput::remove(const QString &tag)
 
 void TagInput::updateTags()
 {
+}
+
+void TagInput::mousePressEvent(QMouseEvent *event)
+{
+    m_dragStartPos = event->pos();
+    m_dragStartOffset = horizontalScrollBar()->value();
+    setCursor(Qt::SizeHorCursor);
+//    qDebug() << "mousePressEvent" << m_dragStartPos;
+}
+
+void TagInput::mouseMoveEvent(QMouseEvent *event)
+{
+    if (m_dragStartOffset < 0) {
+        return;
+    }
+
+    QPoint topLeft = viewport()->rect().topLeft();
+
+    int offset = m_dragStartOffset - (event->pos().x() - m_dragStartPos.x());
+    if (offset < 0) { offset = 0; }
+    if (horizontalScrollBar()->maximum() <= offset) { offset = horizontalScrollBar()->maximum(); }
+
+    horizontalScrollBar()->setValue(offset);
+    widget()->move(topLeft.x() - offset, topLeft.y());
+
+//    qDebug() << "mouseMoveEvent" << m_dragStartPos << event->pos() << (m_dragStartPos - event->pos());
+}
+
+void TagInput::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_dragStartOffset < 0) {
+        return;
+    }
+
+    QPoint topLeft = viewport()->rect().topLeft();
+
+    int offset = m_dragStartOffset - (event->pos().x() - m_dragStartPos.x());
+    if (offset < 0) { offset = 0; }
+    if (horizontalScrollBar()->maximum() <= offset) { offset = horizontalScrollBar()->maximum(); }
+
+    horizontalScrollBar()->setValue(offset);
+    widget()->move(topLeft.x() - offset, topLeft.y());
+
+    unsetCursor();
+
+    m_dragStartOffset = -1;
+//    qDebug() << "mouseReleaseEvent" << m_dragStartPos << event->pos() << (m_dragStartPos - event->pos());
+
 }
 
 void TagInput::onTagRemoveClick(bool checked)

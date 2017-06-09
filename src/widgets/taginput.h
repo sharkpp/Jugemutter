@@ -22,12 +22,17 @@ protected:
     void updateTags();
 
 protected: // event
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private slots:
     void onTagRemoveClick(bool checked);
     void onTagClick();
 
 protected:
+    QPoint m_dragStartPos;
+    int m_dragStartOffset;
     QStringList m_tags;
     QHBoxLayout *m_layout;
 };

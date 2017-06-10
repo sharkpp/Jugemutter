@@ -76,6 +76,9 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
     ui->prefixState->setCurrentIndex(0);
     ui->postfixState->setCurrentIndex(0);
 
+    ui->prefix->setContentsMargins(3, 3, 3, 3);
+    ui->postfix->setContentsMargins(3, 3, 3, 3);
+
     resizeEvent(nullptr);
 }
 

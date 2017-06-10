@@ -11,6 +11,8 @@
 #include <QScrollArea>
 #include <QScrollBar>
 
+const int defaultMargins = 6;
+
 TagInput::TagInput(QWidget *parent)
     : QScrollArea(parent)
     , m_dragStartOffset(0)
@@ -19,8 +21,14 @@ TagInput::TagInput(QWidget *parent)
 
     QFontMetrics fm = fontMetrics();
     setSizePolicy(sizePolicy().horizontalPolicy(), QSizePolicy::Fixed);
-    setMaximumHeight(fm.height() + 6 * 2 + 4 * 2);
-    setContentsMargins(6, 6, 6, 6);
+    QMargins margin(contentsMargins().left() ? contentsMargins().left() : defaultMargins,
+                    contentsMargins().top() ? contentsMargins().top() : defaultMargins,
+                    contentsMargins().right() ? contentsMargins().right() : defaultMargins,
+                    contentsMargins().bottom() ? contentsMargins().bottom() : defaultMargins
+                );
+    setContentsMargins(0, 0, 0, 0);
+
+    setMaximumHeight(fm.height() + margin.top() + margin.bottom() + 4 * 2);
 
     setBackgroundRole(QPalette::Base);
     setFrameShadow(QFrame::Plain);
@@ -35,8 +43,14 @@ TagInput::TagInput(QWidget *parent)
     //base->setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setWidget(base);
 
-    m_layout->setSpacing(6);
-    m_layout->setContentsMargins(6, 6, 6, 6);
+    m_layout->setSpacing(defaultMargins);
+    m_layout->setContentsMargins(margin.left() ? margin.left() : defaultMargins,
+                                 margin.top() ? margin.top() : defaultMargins,
+                                 margin.right() ? margin.right() : defaultMargins,
+                                 margin.bottom() ? margin.bottom() : defaultMargins
+                              );
+    //m_layout->setContentsMargins(margin);
+    //m_layout->setAlignment(Qt::AlignHCenter);
 
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
@@ -60,7 +74,7 @@ void TagInput::append(const QString &tag)
     QFrame *tagItem = new QFrame(this);
     tagItem->setObjectName(QStringLiteral("tag:%1").arg(tag));
     tagItem->setStyleSheet(QStringLiteral(
-            "QFrame { border-radius: 5px; padding: 3px; border: none;"
+            "QFrame { border-radius: 5px; padding: 2px; border: none;"
                      "background: #19BC9C; color: #FFF; }"
         ));
     tagItem->setFrameShape(QFrame::StyledPanel);

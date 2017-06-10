@@ -65,7 +65,7 @@
       </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">QFrame {
+      <string notr="true">.QFrame {
   border-radius: 5px;
   border: 1px solid #999;
   background: #fff;
@@ -99,12 +99,18 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="QComboBox" name="prefixState"/>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="prefixText">
-          <property name="placeholderText">
-           <string>本文前テキスト</string>
+         <widget class="TagInput" name="prefix" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -182,19 +188,18 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="postfixText">
-          <property name="placeholderText">
-           <string>本文後テキスト</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="postfixState">
+         <widget class="TagInput" name="postfix" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -262,20 +267,49 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="postFinishedText"/>
      </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="postfixText">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="placeholderText">
+        <string>本文後テキスト</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="prefixText">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="placeholderText">
+        <string>本文前テキスト</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="prefixState"/>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="postfixState">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
     <widget class="TagInput" name="tagTest" native="true"/>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_5">
-     <property name="styleSheet">
-      <string notr="true">QLabel {\n  border-radius: 5px;\n  border: 1px solid #999;\n  background: #fff;\n}</string>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

@@ -10,12 +10,109 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QComboBox>
 
 const int defaultMargins = 6;
+
+//---------------------------------------------------------
+// TagItem
+//---------------------------------------------------------
+
+TagItem::TagItem(QObject *parent)
+    : QObject(parent)
+    , m_unique(true)
+{
+}
+
+TagItem::TagItem(const QString &tagName, QObject *parent)
+    : QObject(parent)
+    , m_tagName(tagName)
+    , m_unique(true)
+{
+}
+
+TagItem::TagItem(const QString &tagName, const QString &tagId, QObject *parent)
+    : QObject(parent)
+    , m_tagName(tagName)
+    , m_id(tagId)
+    , m_unique(true)
+{
+}
+
+TagItem *TagItem::clone()
+{
+    TagItem *item = new TagItem(parent());
+    item->setTagName(m_tagName);
+    item->setId(m_id);
+    item->setDescriptionText(m_descriptionText);
+    return item;
+}
+
+QString TagItem::tagName() const
+{
+    return m_tagName;
+}
+
+void TagItem::setTagName(const QString &tagName)
+{
+    m_tagName = tagName;
+}
+
+QString TagItem::id() const
+{
+    return !m_id.isEmpty() ? m_id : m_tagName;
+}
+
+void TagItem::setId(const QString &id)
+{
+    m_id = id;
+}
+
+QString TagItem::descriptionText() const
+{
+    return !m_descriptionText.isEmpty() ? m_descriptionText : m_tagName;
+}
+
+void TagItem::setDescriptionText(const QString &descriptionText)
+{
+    m_descriptionText = descriptionText;
+}
+
+bool TagItem::unique() const
+{
+    return m_unique;
+}
+
+void TagItem::setUnique(bool unique)
+{
+    m_unique = unique;
+}
+
+//---------------------------------------------------------
+// TagInput
+//---------------------------------------------------------
 
 TagInput::TagInput(QWidget *parent)
     : QScrollArea(parent)
     , m_dragStartOffset(0)
+{
+    initWidget();
+
+#if 0
+    append("test");
+    append("hoge");
+    append("a");
+    append("ほげふが");
+    append("ふふぉjのの");
+    append("っっz");
+    append("test5");
+    append("hoge6");
+    append("test7");
+    append("hoge8");
+#endif
+}
+
+void TagInput::initWidget()
 {
     //connect(this, &QTextEdit::textChanged, this, &TagInput::updateTags);
 
@@ -40,7 +137,6 @@ TagInput::TagInput(QWidget *parent)
     QWidget* base = new QWidget(this);
     base->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
     base->setLayout(m_layout = new QHBoxLayout(base));
-    //base->setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setWidget(base);
 
     m_layout->setSpacing(defaultMargins);
@@ -49,30 +145,26 @@ TagInput::TagInput(QWidget *parent)
                                  margin.right() ? margin.right() : defaultMargins,
                                  margin.bottom() ? margin.bottom() : defaultMargins
                               );
-    //m_layout->setContentsMargins(margin);
-    //m_layout->setAlignment(Qt::AlignHCenter);
 
+    // list and editor
+    m_tagListWidget = new QComboBox(this);
+    //m_tagListWidget->setEditable(true);
+    m_tagListWidget->setFrame(false);
+    m_layout->addWidget(m_tagListWidget);
+    connect(m_tagListWidget, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &TagInput::onTagListSelected);
+
+    // spacer
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
     m_layout->addWidget(spacer);
-
-    append("test");
-    append("hoge");
-    append("a");
-    append("ほげふが");
-    append("ふふぉjのの");
-    append("っっz");
-    append("test5");
-    append("hoge6");
-    append("test7");
-    append("hoge8");
-
 }
 
-void TagInput::append(const QString &tag)
+QFrame *TagInput::createTagItem(TagItem *item)
 {
+    // add widget
     QFrame *tagItem = new QFrame(this);
-    tagItem->setObjectName(QStringLiteral("tag:%1").arg(tag));
+    tagItem->setObjectName(QStringLiteral("tag:%1").arg(item->id()));
     tagItem->setStyleSheet(QStringLiteral(
             "QFrame { border-radius: 5px; padding: 2px; border: none;"
                      "background: #19BC9C; color: #FFF; }"
@@ -89,7 +181,7 @@ void TagInput::append(const QString &tag)
     tagLabel->setMaximumHeight(tagLabelFm.height());
     tagLabel->setSizePolicy(sizePolicyLabel);
     tagLabel->setContentsMargins(0, 0, 0, 0);
-    tagLabel->setText(tag);
+    tagLabel->setText(item->tagName());
     tagLabel->setStyleSheet(QStringLiteral("QFrame { border-radius: 0; border: none; background: #FFEEEE; color: #000; padding: 0; height: 1em; line-height: 1em; }"));
     tagLabel->setStyleSheet(QStringLiteral("QFrame { border-radius: 0; border: none; padding: 0; height: 1em; line-height: 1em; }"));
 
@@ -118,7 +210,7 @@ void TagInput::append(const QString &tag)
     tagRemoveButton->setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
     QRect rc = tagRemoveButtonFm.boundingRect("x");
-    qDebug() << "tagRemoveFm.w" << tagRemoveButtonFm.width("x") << tagRemoveButtonFm.height() << rc;
+    //qDebug() << "tagRemoveFm.w" << tagRemoveButtonFm.width("x") << tagRemoveButtonFm.height() << rc;
 
     QHBoxLayout *tagItemLayout = new QHBoxLayout(tagItem);
     tagItemLayout->setObjectName(QStringLiteral("layout"));
@@ -128,18 +220,79 @@ void TagInput::append(const QString &tag)
     tagItemLayout->addWidget(tagLabel);
     tagItemLayout->addWidget(tagRemoveButton);
 
-    m_layout->insertWidget(m_layout->count() - 1, tagItem);
-
     connect(tagRemoveButton, &QAbstractButton::clicked, this, &TagInput::onTagRemoveClick);
+
+    return tagItem;
 }
 
-void TagInput::remove(const QString &tag)
+void TagInput::append(const QString &tag, const QString &tagId)
 {
-
+    append(new TagItem(tag, tagId, this));
 }
 
-void TagInput::updateTags()
+void TagInput::append(TagItem *item)
 {
+    // check unique tag
+    foreach (TagItem* ite, m_tags) {
+        if (ite->id() == item->id() &&
+            (ite->unique() || item->unique())) {
+            return;
+        }
+    }
+
+    // add tag list
+    m_tags.append(item);
+
+    // add tag widget
+    QFrame *tagItem = createTagItem(item);
+    m_layout->insertWidget(m_layout->count() - 2, tagItem);
+}
+
+void TagInput::removeById(const QString &tagId)
+{
+    foreach (TagItem* ite, m_tags) {
+        if (tagId == ite->id()) {
+            m_tagList.removeOne(ite);
+            break;
+        }
+    }
+}
+
+void TagInput::appendList(const QString &tag, const QString &tagId)
+{
+    appendList(new TagItem(tag, tagId, this));
+}
+
+void TagInput::appendList(TagItem *item)
+{
+    // check unique tag
+    foreach (TagItem* ite, m_tagList) {
+        if (ite->id() == item->id()) {
+            return;
+        }
+    }
+
+    m_tagList.append(item);
+
+    m_tagListWidget->blockSignals(true);
+    m_tagListWidget->addItem(item->tagName(), item->id());
+    m_tagListWidget->setCurrentIndex(-1);
+    m_tagListWidget->blockSignals(false);
+}
+
+void TagInput::removeListById(const QString &tagId)
+{
+    foreach (TagItem* ite, m_tagList) {
+        if (tagId == ite->id()) {
+            m_tagList.removeOne(ite);
+            break;
+        }
+    }
+
+    int index = m_tagListWidget->findData(tagId);
+    if (0 <= index) {
+        m_tagListWidget->removeItem(index);
+    }
 }
 
 void TagInput::mousePressEvent(QMouseEvent *event)
@@ -203,4 +356,19 @@ void TagInput::onTagRemoveClick(bool checked)
 void TagInput::onTagClick()
 {
 
+}
+
+void TagInput::onTagListSelected(int index)
+{
+    if (index < 0 ||
+        m_tagList.size() <= index) {
+        return;
+    }
+
+    TagItem *item = m_tagList.at(index);
+    TagItem *itemClone = item->clone();
+
+    append(itemClone);
+
+    m_tagListWidget->setCurrentIndex(-1);
 }

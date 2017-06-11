@@ -17,15 +17,11 @@ public:
     ~ViewSettingGeneralPage();
 
 protected:
-    void updateStateList();
 
 protected:
     void resizeEvent(QResizeEvent *event);
 
 private slots:
-    void on_postContinueText_textChanged(const QString &arg1);
-
-    void on_postFinishedText_textChanged(const QString &arg1);
 
 private:
     Ui::ViewSettingGeneralPage *ui;

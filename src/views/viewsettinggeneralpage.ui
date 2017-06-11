@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>291</width>
+    <width>300</width>
     <height>456</height>
    </rect>
   </property>
@@ -20,6 +20,9 @@
    <enum>QFrame::Raised</enum>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>6</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
@@ -240,35 +243,18 @@
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout">
-     <item row="1" column="0">
-      <widget class="QLabel" name="postFinishedLabel">
-       <property name="text">
-        <string>終了</string>
-       </property>
-      </widget>
-     </item>
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::ExpandingFieldsGrow</enum>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="postContinueLabel">
        <property name="text">
-        <string>継続</string>
+        <string>継続テキスト</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="postContinueText">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="postFinishedText"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="postfixText">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -276,7 +262,27 @@
         </sizepolicy>
        </property>
        <property name="placeholderText">
-        <string>本文後テキスト</string>
+        <string>(続く) (つづく など</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="postFinishedLabel">
+       <property name="text">
+        <string>終了テキスト</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="postFinishedText">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="placeholderText">
+        <string>(終わり) (了 など</string>
        </property>
       </widget>
      </item>
@@ -289,27 +295,38 @@
         </sizepolicy>
        </property>
        <property name="placeholderText">
-        <string>本文前テキスト</string>
+        <string>本文の前に追加するテキストの初期値</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QComboBox" name="prefixState"/>
-     </item>
-     <item row="5" column="1">
-      <widget class="QComboBox" name="postfixState">
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="postfixText">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="placeholderText">
+        <string>本文の後に追加するテキストの初期値</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="prefixTextLabel">
+       <property name="text">
+        <string>本文前テキスト</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="postfixTextLabel">
+       <property name="text">
+        <string>本文後テキスト</string>
+       </property>
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="TagInput" name="tagTest" native="true"/>
    </item>
    <item>
     <spacer name="verticalSpacer">

@@ -165,6 +165,7 @@ QFrame *TagInput::createTagItem(TagItem *item)
     // add widget
     QFrame *tagItem = new QFrame(this);
     tagItem->setObjectName(QStringLiteral("tag:%1").arg(item->id()));
+    tagItem->setProperty("tagItem", QVariant::fromValue(static_cast<void *>( item )));
     tagItem->setStyleSheet(QStringLiteral(
             "QFrame { border-radius: 5px; padding: 2px; border: none;"
                      "background: #19BC9C; color: #FFF; }"
@@ -250,11 +251,26 @@ void TagInput::append(TagItem *item)
 
 void TagInput::removeById(const QString &tagId)
 {
+    int tabOrder = -1;
+
+    int index = 0;
     foreach (TagItem* ite, m_tags) {
         if (tagId == ite->id()) {
-            m_tagList.removeOne(ite);
+            m_tags.removeOne(ite);
+            tabOrder = index;
             break;
         }
+        ++index;
+    }
+
+    if (tabOrder < 0) {
+        return;
+    }
+
+    if (QLayoutItem *item = m_layout->itemAt(tabOrder)) {
+        QWidget *w = item->widget();
+        m_layout->removeItem(item);
+        delete w;
     }
 }
 
@@ -345,12 +361,30 @@ void TagInput::mouseReleaseEvent(QMouseEvent *event)
 
 void TagInput::onTagRemoveClick(bool checked)
 {
-    QPushButton *button = qobject_cast<QPushButton*>( sender() );
-    QLabel *label = button->parentWidget()->findChild<QLabel*>();
-
-    if (label) {
-        qDebug() << label->text();
+    if (QPushButton *button = qobject_cast<QPushButton*>( sender() )) {
+        if (QLabel *label = button->parentWidget()->findChild<QLabel*>()) {
+            if (QFrame *tagItem = qobject_cast<QFrame*>(label->parentWidget())) {
+                if (TagItem *item = static_cast<TagItem *>( tagItem->property("tagItem").value<void *>() )) {
+                    qDebug() << label->text();
+                    removeById(item->id());
+                }
+            }
+        }
     }
+
+#if 0
+    int tagOrder = -1;
+    for (int index = 0; index < m_layout->count(); ++index) {
+        if (QLayoutItem *item = m_layout->itemAt(index)) {
+            if (QFrame *tagItem_ = qobject_cast<QFrame*>(item->widget())) {
+                if (tagItem_ == tagItem) {
+                    tabOrder = index;
+                    break;
+                }
+            }
+        }
+    }
+#endif
 }
 
 void TagInput::onTagClick()

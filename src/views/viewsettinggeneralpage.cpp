@@ -72,12 +72,12 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
     //ui->postBody2->setText("The Life and Strange Surprizing Adventures of Robinson Crusoe, of York, Mariner: Who lived Eight and Twenty Years, all alone in an un‐inhabited Island on the Coast of America, near the Mouth of the Great River of Oroonoque; Having been cast on Shore by Shipwreck, wherein all the Men perished but himself. With An Account how he was at last as strangely deliver’d by Pyrates");
 
     ui->prefix->setContentsMargins(3, 3, 3, 3);
-    ui->prefix->appendList(ui->prefixTextLabel->text(), "prefix");
-    ui->prefix->appendList(ui->postContinueLabel->text(), "continued");
+    ui->prefix->appendList(ui->postTextLabel->text(), "text");
+    ui->prefix->appendList(ui->postContinueLabel->text(), "continue");
     ui->prefix->appendList(ui->postFinishedLabel->text(), "finish");
     ui->postfix->setContentsMargins(3, 3, 3, 3);
-    ui->postfix->appendList(ui->postfixTextLabel->text(), "postfix");
-    ui->postfix->appendList(ui->postContinueLabel->text(), "continued");
+    ui->postfix->appendList(ui->postTextLabel->text(), "text");
+    ui->postfix->appendList(ui->postContinueLabel->text(), "continue");
     ui->postfix->appendList(ui->postFinishedLabel->text(), "finish");
 
     resizeEvent(nullptr);

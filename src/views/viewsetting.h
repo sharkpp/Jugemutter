@@ -7,6 +7,7 @@ class ViewSettingGeneralPage;
 class ViewSettingAccountPage;
 class ViewSettingAboutPage;
 class AccountList;
+class Preference;
 
 namespace Ui {
 class ViewSetting;
@@ -32,7 +33,9 @@ public:
     explicit ViewSetting(QWidget *parent = 0);
     ~ViewSetting();
 
-    void setAccountList(AccountList* accountList);
+    void setAccountList(AccountList *accountList);
+
+    void setPreference(Preference *preference);
 
 protected:
     void initToolbar();
@@ -42,6 +45,7 @@ private slots:
 private:
     Ui::ViewSetting *ui;
     AccountList *m_accountList;
+    Preference *m_preference;
     PageSelectorDocument *settings;
     ViewSettingGeneralPage *generalPage;
     ViewSettingAccountPage *accountPage;

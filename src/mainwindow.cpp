@@ -8,6 +8,7 @@
 #include "viewsetting.h"
 #include "pageselector.h"
 #include "accountlist.h"
+#include "preference.h"
 #include <QMessageBox>
 #include <algorithm>
 
@@ -84,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     , welcomeView(nullptr)
     , editorView(nullptr)
     , settingView(nullptr)
+    , preference(new Preference(this))
     , accountList(new AccountList(this))
     , actionAccountAdd(nullptr)
     , actionSetting(nullptr)
@@ -95,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
     ui->pageContainer->addWidget(settingView = new ViewSetting(this));
     settingView->setAccountList(accountList);
+    settingView->setPreference(preference);
     initToolbar();
 
     connect(accountList, &AccountList::updateAccount,
@@ -222,6 +225,8 @@ void MainWindow::loadConfig()
 {
     QSettings settings;
 
+    preference->deserialize(settings.value("preference").toString());
+
     settings.beginGroup("mainWindow");
     resize(settings.value("size", QSize(400, 400)).toSize());
     move(settings.value("pos", QPoint(200, 200)).toPoint());
@@ -263,6 +268,8 @@ void MainWindow::loadConfig()
 void MainWindow::saveConfig()
 {
     QSettings settings;
+
+    settings.setValue("preference", preference->serialize());
 
     settings.beginGroup("mainWindow");
     settings.setValue("size", size());

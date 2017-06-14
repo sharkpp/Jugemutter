@@ -11,6 +11,7 @@ class ViewNormalEditor;
 class ViewSetting;
 class AccountList;
 class Account;
+class Preference;
 
 namespace Ui {
 class MainWindow;
@@ -77,6 +78,7 @@ private:
     QFrame *welcomeView;
     ViewNormalEditor *editorView;
     ViewSetting *settingView;
+    Preference *preference;
     AccountList *accountList;
     QAction *actionAccountAdd;
     QAction *actionSetting;

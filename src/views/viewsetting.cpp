@@ -43,6 +43,14 @@ void ViewSetting::setAccountList(AccountList *accountList)
     accountPage->setAccountList(accountList);
 }
 
+void ViewSetting::setPreference(Preference *preference)
+{
+    m_preference = preference;
+
+    generalPage->setPreference(preference);
+
+}
+
 void ViewSetting::initToolbar()
 {
     PageSelector *tb = ui->pageSelector;

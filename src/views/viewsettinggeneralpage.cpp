@@ -1,5 +1,6 @@
 #include "viewsettinggeneralpage.h"
 #include "ui_viewsettinggeneralpage.h"
+#include "preference.h"
 #include <QDebug>
 #include <QRegularExpression>
 
@@ -72,11 +73,11 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
     //ui->postBody2->setText("The Life and Strange Surprizing Adventures of Robinson Crusoe, of York, Mariner: Who lived Eight and Twenty Years, all alone in an un‐inhabited Island on the Coast of America, near the Mouth of the Great River of Oroonoque; Having been cast on Shore by Shipwreck, wherein all the Men perished but himself. With An Account how he was at last as strangely deliver’d by Pyrates");
 
     ui->prefix->setContentsMargins(3, 3, 3, 3);
-    ui->prefix->appendList(ui->postTextLabel->text(), "text");
+    ui->prefix->appendList(ui->postFreeTextLabel->text(), "text");
     ui->prefix->appendList(ui->postContinueLabel->text(), "continue");
     ui->prefix->appendList(ui->postFinishedLabel->text(), "finish");
     ui->postfix->setContentsMargins(3, 3, 3, 3);
-    ui->postfix->appendList(ui->postTextLabel->text(), "text");
+    ui->postfix->appendList(ui->postFreeTextLabel->text(), "text");
     ui->postfix->appendList(ui->postContinueLabel->text(), "continue");
     ui->postfix->appendList(ui->postFinishedLabel->text(), "finish");
 
@@ -86,6 +87,16 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
 ViewSettingGeneralPage::~ViewSettingGeneralPage()
 {
     delete ui;
+}
+
+void ViewSettingGeneralPage::setPreference(Preference *preference)
+{
+    m_preference = preference;
+
+    connect(m_preference, &Preference::update,
+            this, &ViewSettingGeneralPage::onPreferenceUpdate);
+
+    onPreferenceUpdate();
 }
 
 void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
@@ -103,3 +114,44 @@ void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
 
     ui->postBody3->setText(text.mid(text.indexOf(body2) + body2.length(), 3));
 }
+
+void ViewSettingGeneralPage::onPreferenceUpdate()
+{
+    ui->postPrefixFreeText->setText(m_preference->postPrefixFreeText());
+    ui->postPrefixContinueText->setText(m_preference->postPrefixContinueText());
+    ui->postPrefixFinishedText->setText(m_preference->postPrefixFinishedText());
+    ui->postPostfixFreeText->setText(m_preference->postPostfixFreeText());
+    ui->postPostfixContinueText->setText(m_preference->postPostfixContinueText());
+    ui->postPostfixFinishedText->setText(m_preference->postPostfixFinishedText());
+}
+
+void ViewSettingGeneralPage::on_postPrefixFreeText_editingFinished()
+{
+    m_preference->setPostPrefixFreeText(ui->postPrefixFreeText->text());
+}
+
+void ViewSettingGeneralPage::on_postPrefixContinueText_editingFinished()
+{
+    m_preference->setPostPrefixContinueText(ui->postPrefixContinueText->text());
+}
+
+void ViewSettingGeneralPage::on_postPrefixFinishedText_editingFinished()
+{
+    m_preference->setPostPrefixFinishedText(ui->postPrefixFinishedText->text());
+}
+
+void ViewSettingGeneralPage::on_postPostfixFreeText_editingFinished()
+{
+    m_preference->setPostPostfixFreeText(ui->postPostfixFreeText->text());
+}
+
+void ViewSettingGeneralPage::on_postPostfixContinueText_editingFinished()
+{
+    m_preference->setPostPostfixContinueText(ui->postPostfixContinueText->text());
+}
+
+void ViewSettingGeneralPage::on_postPostfixFinishedText_editingFinished()
+{
+    m_preference->setPostPostfixFinishedText(ui->postPostfixFinishedText->text());
+}
+

@@ -24,9 +24,35 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,0,0">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="prefixLayout">
      <item>
-      <widget class="AutoSizeTextEdit" name="textPrefix">
+      <widget class="QLabel" name="prefixContinueText">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string>prefixContinueText</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="prefixFinishedText">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string>prefixFinishedText</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="AutoSizeTextEdit" name="prefixFreeText">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -53,34 +79,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="TextCounterLabel" name="textPrefixLength">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>30</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::PlainText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-       </property>
-       <property name="buddy">
-        <cstring>textPrefix</cstring>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -97,9 +95,9 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="postfixLayout">
      <item>
-      <widget class="AutoSizeTextEdit" name="textPostfix">
+      <widget class="AutoSizeTextEdit" name="postfixFreeText">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -127,30 +125,28 @@
       </widget>
      </item>
      <item>
-      <widget class="TextCounterLabel" name="textPostfixLength">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+      <widget class="QLabel" name="postfixContinueText">
+       <property name="frameShape">
+        <enum>QFrame::Box</enum>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>30</width>
-         <height>0</height>
-        </size>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
-        <string>0</string>
+        <string>postfixContinueText</string>
        </property>
-       <property name="textFormat">
-        <enum>Qt::PlainText</enum>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="postfixFinishedText">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
        </property>
-       <property name="buddy">
-        <cstring>textPostfix</cstring>
+       <property name="text">
+        <string>postfixFinishedText</string>
        </property>
       </widget>
      </item>
@@ -294,19 +290,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AutoSizeTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>autosizetextedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TextCounterLabel</class>
-   <extends>QLabel</extends>
-   <header>textcounterlabel.h</header>
-  </customwidget>
-  <customwidget>
    <class>TweetTextEdit</class>
    <extends>QTextEdit</extends>
    <header>tweettextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AutoSizeTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>autosizetextedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

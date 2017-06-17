@@ -2,8 +2,10 @@
 #define VIEWNORMALEDITOR_H
 
 #include "pageselector.h"
+#include "preference.h"
 #include "twittertextsplitter.h"
 
+class AutoSizeTextEdit;
 class PostProgress;
 class Twitter;
 
@@ -20,15 +22,19 @@ public:
     explicit ViewNormalEditor(QWidget *parent = 0);
     ~ViewNormalEditor();
 
+    void setPreference(Preference *preference);
+
     virtual void setDocument(PageSelectorDocument *document);
 
 protected:
+    QWidget *getPostTextWidget(Preference::PostTextType type);
     void updateSplitStatus();
     void startPost();
     void stepPost();
     void finishPost();
 
 private slots:
+    void onPreferenceUpdate();
     void onTwitterTweeted(const QString& tweetId);
     void on_tweetButton_clicked();
     void on_textPrefix_textChanged();
@@ -37,6 +43,7 @@ private slots:
 
 private:
     Ui::ViewNormalEditor *ui;
+    Preference *m_preference;
     PostProgress *postProgress;
     Twitter *currentAccount;
     QList<SplittedItem> tweetQueue; // queued tweet

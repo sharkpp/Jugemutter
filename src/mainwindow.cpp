@@ -96,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->accountList->setBlankView(new ViewWelcome(this));
     ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
     ui->pageContainer->addWidget(settingView = new ViewSetting(this));
+    editorView->setPreference(preference);
     settingView->setAccountList(accountList);
     settingView->setPreference(preference);
     initToolbar();

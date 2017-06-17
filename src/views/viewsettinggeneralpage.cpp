@@ -159,11 +159,11 @@ void ViewSettingGeneralPage::setPreference(Preference *preference)
     connect(m_preference, &Preference::update,
             this, &ViewSettingGeneralPage::onPreferenceUpdate);
 
-    ui->prefix->blockSignals(true);
-    ui->postfix->blockSignals(true);
+//    ui->prefix->blockSignals(true);
+//    ui->postfix->blockSignals(true);
     onPreferenceUpdate();
-    ui->prefix->blockSignals(false);
-    ui->postfix->blockSignals(false);
+//    ui->prefix->blockSignals(false);
+//    ui->postfix->blockSignals(false);
 }
 
 void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)

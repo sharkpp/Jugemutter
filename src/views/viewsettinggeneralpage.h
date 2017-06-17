@@ -1,9 +1,12 @@
 #ifndef VEIWSETTINGGENERALPAGE_H
 #define VEIWSETTINGGENERALPAGE_H
 
+#include <QString>
+#include <QList>
 #include "pageselector.h"
+#include "preference.h"
 
-class Preference;
+class TagItem;
 
 namespace Ui {
 class ViewSettingGeneralPage;
@@ -21,6 +24,9 @@ public:
     void setPreference(Preference *preference);
 
 protected:
+    const QString& tagFromPostTextType(Preference::PostTextType type);
+    QString tagNameFromPostTextType(Preference::PostTextType type);
+    Preference::PostTextType tagToPostTextType(const QString &type);
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -33,6 +39,8 @@ private slots:
     void on_postPostfixFreeText_editingFinished();
     void on_postPostfixContinueText_editingFinished();
     void on_postPostfixFinishedText_editingFinished();
+    void onPrefixUpdateTags();
+    void onPostfixUpdateTags();
 
 private:
     Ui::ViewSettingGeneralPage *ui;

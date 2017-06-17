@@ -47,15 +47,25 @@ class TagInput
 public:
     TagInput(QWidget *parent);
 
-    void append(const QString &tag, const QString &tagId);
-    void append(TagItem *item);
+    void clearTags();
 
-    void removeById(const QString &tagId);
+    void addTag(const QString &tag, const QString &tagId);
+    void addTag(TagItem *item);
 
-    void appendList(const QString &tag, const QString &tagId);
-    void appendList(TagItem *item);
+    void addTags(QList<TagItem *> items);
 
-    void removeListById(const QString &tagId);
+    void replaceTags(QList<TagItem *> items);
+
+    void removeTagById(const QString &tagId);
+
+    const QList<TagItem *> &tags();
+
+    void clearTagList();
+
+    void addTagList(const QString &tag, const QString &tagId);
+    void addTagList(TagItem *item);
+
+    void removeTagListById(const QString &tagId);
 
 protected:
     void initWidget();
@@ -66,6 +76,9 @@ protected: // event
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+
+signals:
+    void updateTags();
 
 private slots:
     void onTagRemoveClick(bool checked);

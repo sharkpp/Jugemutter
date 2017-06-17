@@ -226,12 +226,27 @@ QFrame *TagInput::createTagItem(TagItem *item)
     return tagItem;
 }
 
-void TagInput::append(const QString &tag, const QString &tagId)
+void TagInput::clearTags()
 {
-    append(new TagItem(tag, tagId, this));
+    foreach (TagItem* ite, m_tags) {
+        delete ite;
+    }
+    m_tags.clear();
+
+    for (int i = 0, num = m_layout->count() - 2;
+         i < num; ++i) {
+        QWidget *w = m_layout->itemAt(i)->widget();
+        m_layout->removeWidget(w);
+        delete w;
+    }
 }
 
-void TagInput::append(TagItem *item)
+void TagInput::addTag(const QString &tag, const QString &tagId)
+{
+    addTag(new TagItem(tag, tagId, this));
+}
+
+void TagInput::addTag(TagItem *item)
 {
     // check unique tag
     foreach (TagItem* ite, m_tags) {
@@ -247,9 +262,50 @@ void TagInput::append(TagItem *item)
     // add tag widget
     QFrame *tagItem = createTagItem(item);
     m_layout->insertWidget(m_layout->count() - 2, tagItem);
+
+    // emit signal
+    emit updateTags();
 }
 
-void TagInput::removeById(const QString &tagId)
+void TagInput::addTags(QList<TagItem *> items)
+{
+    foreach (TagItem* item, items) {
+        // check unique tag
+        foreach (TagItem* ite, m_tags) {
+            if (ite->id() == item->id() &&
+                (ite->unique() || item->unique())) {
+                return;
+            }
+        }
+
+        // add tag list
+        m_tags.append(item);
+
+        // add tag widget
+        QFrame *tagItem = createTagItem(item);
+        m_layout->insertWidget(m_layout->count() - 2, tagItem);
+    }
+
+    // emit signal
+    emit updateTags();
+}
+
+void TagInput::replaceTags(QList<TagItem *> items)
+{
+    setUpdatesEnabled(false);
+    blockSignals(true);
+    QRect vp = viewport()->geometry();
+    clearTags();
+    addTags(items);
+    blockSignals(false);
+    viewport()->setGeometry(vp);
+    setUpdatesEnabled(true);
+
+    // emit signal
+    emit updateTags();
+}
+
+void TagInput::removeTagById(const QString &tagId)
 {
     int tabOrder = -1;
 
@@ -274,12 +330,22 @@ void TagInput::removeById(const QString &tagId)
     }
 }
 
-void TagInput::appendList(const QString &tag, const QString &tagId)
+const QList<TagItem *> &TagInput::tags()
 {
-    appendList(new TagItem(tag, tagId, this));
+    return m_tags;
 }
 
-void TagInput::appendList(TagItem *item)
+void TagInput::clearTagList()
+{
+
+}
+
+void TagInput::addTagList(const QString &tag, const QString &tagId)
+{
+    addTagList(new TagItem(tag, tagId, this));
+}
+
+void TagInput::addTagList(TagItem *item)
 {
     // check unique tag
     foreach (TagItem* ite, m_tagList) {
@@ -296,7 +362,7 @@ void TagInput::appendList(TagItem *item)
     m_tagListWidget->blockSignals(false);
 }
 
-void TagInput::removeListById(const QString &tagId)
+void TagInput::removeTagListById(const QString &tagId)
 {
     foreach (TagItem* ite, m_tagList) {
         if (tagId == ite->id()) {
@@ -366,7 +432,7 @@ void TagInput::onTagRemoveClick(bool checked)
             if (QFrame *tagItem = qobject_cast<QFrame*>(label->parentWidget())) {
                 if (TagItem *item = static_cast<TagItem *>( tagItem->property("tagItem").value<void *>() )) {
                     qDebug() << label->text();
-                    removeById(item->id());
+                    removeTagById(item->id());
                 }
             }
         }
@@ -402,7 +468,7 @@ void TagInput::onTagListSelected(int index)
     TagItem *item = m_tagList.at(index);
     TagItem *itemClone = item->clone();
 
-    append(itemClone);
+    addTag(itemClone);
 
     m_tagListWidget->setCurrentIndex(-1);
 }

@@ -4,6 +4,13 @@
 #include <QDebug>
 #include <QRegularExpression>
 
+const QString tagPrefixPostFreeText = "textPre";
+const QString tagPrefixPostContinue = "continuePre";
+const QString tagPrefixPostFinished = "finishedPre";
+const QString tagPostfixPostFreeText = "textPost";
+const QString tagPostfixPostContinue = "continuePost";
+const QString tagPostfixPostFinished = "finishedPost";
+
 const QRegularExpression matchNonAscii = QRegularExpression("[^\x21-\x7E]");
 QString QLabel_getLineText(QLabel* label, int lineNo = 0) {
     QFontMetrics fm   = label->fontMetrics();
@@ -73,13 +80,16 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
     //ui->postBody2->setText("The Life and Strange Surprizing Adventures of Robinson Crusoe, of York, Mariner: Who lived Eight and Twenty Years, all alone in an un‐inhabited Island on the Coast of America, near the Mouth of the Great River of Oroonoque; Having been cast on Shore by Shipwreck, wherein all the Men perished but himself. With An Account how he was at last as strangely deliver’d by Pyrates");
 
     ui->prefix->setContentsMargins(3, 3, 3, 3);
-    ui->prefix->appendList(ui->postFreeTextLabel->text(), "text");
-    ui->prefix->appendList(ui->postContinueLabel->text(), "continue");
-    ui->prefix->appendList(ui->postFinishedLabel->text(), "finish");
+    ui->prefix->addTagList(ui->postFreeTextLabel->text(), tagPrefixPostFreeText);
+    ui->prefix->addTagList(ui->postContinueLabel->text(), tagPrefixPostContinue);
+    ui->prefix->addTagList(ui->postFinishedLabel->text(), tagPrefixPostFinished);
     ui->postfix->setContentsMargins(3, 3, 3, 3);
-    ui->postfix->appendList(ui->postFreeTextLabel->text(), "text");
-    ui->postfix->appendList(ui->postContinueLabel->text(), "continue");
-    ui->postfix->appendList(ui->postFinishedLabel->text(), "finish");
+    ui->postfix->addTagList(ui->postFreeTextLabel->text(), tagPostfixPostFreeText);
+    ui->postfix->addTagList(ui->postContinueLabel->text(), tagPostfixPostContinue);
+    ui->postfix->addTagList(ui->postFinishedLabel->text(), tagPostfixPostFinished);
+
+    connect(ui->prefix,  &TagInput::updateTags, this, &ViewSettingGeneralPage::onPrefixUpdateTags);
+    connect(ui->postfix, &TagInput::updateTags, this, &ViewSettingGeneralPage::onPostfixUpdateTags);
 
     resizeEvent(nullptr);
 }
@@ -89,6 +99,59 @@ ViewSettingGeneralPage::~ViewSettingGeneralPage()
     delete ui;
 }
 
+QString ViewSettingGeneralPage::tagNameFromPostTextType(Preference::PostTextType type)
+{
+    const QString tmp = "";
+    switch (type) {
+    case Preference::postTextPrefixFreeText:    return ui->postFreeTextLabel->text();
+    case Preference::postTextPrefixContinue:    return ui->postContinueLabel->text();
+    case Preference::postTextPrefixFinished:    return ui->postFinishedLabel->text();
+    case Preference::postTextPostfixFree:       return ui->postFreeTextLabel->text();
+    case Preference::postTextPostfixContinue:   return ui->postContinueLabel->text();
+    case Preference::postTextPostfixFinished:   return ui->postFinishedLabel->text();
+    default:
+        return tmp;
+    }
+}
+
+const QString& ViewSettingGeneralPage::tagFromPostTextType(Preference::PostTextType type)
+{
+    const QString tmp = "";
+    switch (type) {
+    case Preference::postTextPrefixFreeText:    return tagPrefixPostFreeText;
+    case Preference::postTextPrefixContinue:    return tagPrefixPostContinue;
+    case Preference::postTextPrefixFinished:    return tagPrefixPostFinished;
+    case Preference::postTextPostfixFree:       return tagPostfixPostFreeText;
+    case Preference::postTextPostfixContinue:   return tagPostfixPostContinue;
+    case Preference::postTextPostfixFinished:   return tagPostfixPostFinished;
+    default:
+        return tmp;
+    }
+}
+
+Preference::PostTextType ViewSettingGeneralPage::tagToPostTextType(const QString &type)
+{
+    if (tagPrefixPostFreeText == type) {
+        return Preference::postTextPrefixFreeText;
+    }
+    else if (tagPrefixPostContinue == type) {
+        return Preference::postTextPrefixContinue;
+    }
+    else if (tagPrefixPostFinished == type) {
+        return Preference::postTextPrefixFinished;
+    }
+    else if (tagPostfixPostFreeText == type) {
+        return Preference::postTextPostfixFree;
+    }
+    else if (tagPostfixPostContinue == type) {
+        return Preference::postTextPostfixContinue;
+    }
+    else if (tagPostfixPostFinished == type) {
+        return Preference::postTextPostfixFinished;
+    }
+    return (Preference::PostTextType)-1;
+}
+
 void ViewSettingGeneralPage::setPreference(Preference *preference)
 {
     m_preference = preference;
@@ -96,7 +159,11 @@ void ViewSettingGeneralPage::setPreference(Preference *preference)
     connect(m_preference, &Preference::update,
             this, &ViewSettingGeneralPage::onPreferenceUpdate);
 
+    ui->prefix->blockSignals(true);
+    ui->postfix->blockSignals(true);
     onPreferenceUpdate();
+    ui->prefix->blockSignals(false);
+    ui->postfix->blockSignals(false);
 }
 
 void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
@@ -105,8 +172,8 @@ void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
         PageSelectorView::resizeEvent(event);
     }
 
-    qDebug() << "--------------------------------------------------------";
-    qDebug() << QLabel_getLineText(ui->postBody2, 0);
+    //qDebug() << "--------------------------------------------------------";
+    //qDebug() << QLabel_getLineText(ui->postBody2, 0);
 
     const QString text = "寿限無 寿限無 五劫の擦り切れ 海砂利水魚の水行末 雲来末 風来末 食う寝る処に住む処 藪ら柑子の藪柑子 パイポ パイポ パイポのシューリンガン シューリンガンのグーリンダイ グーリンダイのポンポコピーのポンポコナーの長久命の長助";
 
@@ -123,6 +190,24 @@ void ViewSettingGeneralPage::onPreferenceUpdate()
     ui->postPostfixFreeText->setText(m_preference->postPostfixFreeText());
     ui->postPostfixContinueText->setText(m_preference->postPostfixContinueText());
     ui->postPostfixFinishedText->setText(m_preference->postPostfixFinishedText());
+
+    QList<TagItem *> items;
+
+    foreach (auto ite, m_preference->postPrefixText()) {
+        items.append(new TagItem(tagNameFromPostTextType(ite),
+                                 tagFromPostTextType(ite),
+                                 this));
+    }
+    ui->prefix->addTags(items);
+    items.clear();
+
+    foreach (auto ite, m_preference->postPostfixText()) {
+        items.append(new TagItem(tagNameFromPostTextType(ite),
+                                 tagFromPostTextType(ite),
+                                 this));
+    }
+    ui->postfix->addTags(items);
+    items.clear();
 }
 
 void ViewSettingGeneralPage::on_postPrefixFreeText_editingFinished()
@@ -155,3 +240,20 @@ void ViewSettingGeneralPage::on_postPostfixFinishedText_editingFinished()
     m_preference->setPostPostfixFinishedText(ui->postPostfixFinishedText->text());
 }
 
+void ViewSettingGeneralPage::onPrefixUpdateTags()
+{
+    Preference::PostTextTypeList tags;
+    foreach (auto tag, ui->prefix->tags()) {
+        tags.append(tagToPostTextType(tag->id()));
+    }
+    m_preference->setPostPrefixText(tags);
+}
+
+void ViewSettingGeneralPage::onPostfixUpdateTags()
+{
+    Preference::PostTextTypeList tags;
+    foreach (auto tag, ui->postfix->tags()) {
+        tags.append(tagToPostTextType(tag->id()));
+    }
+    m_preference->setPostPostfixText(tags);
+}

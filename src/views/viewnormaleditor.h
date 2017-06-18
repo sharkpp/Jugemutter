@@ -28,6 +28,7 @@ public:
 
 protected:
     QWidget *getPostTextWidget(Preference::PostTextType type);
+    TwitterTextSplitter::TextTypeValue textTypeValueFromPostType(Preference::PostTextType type);
     void updateSplitStatus();
     void startPost();
     void stepPost();

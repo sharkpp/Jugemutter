@@ -41,7 +41,7 @@ QWidget *ViewNormalEditor::getPostTextWidget(Preference::PostTextType type)
     case Preference::postTextPrefixFinished:
         ui->prefixFinishedText->setText(m_preference->postPrefixFinishedText());
         return ui->prefixFinishedText;
-    case Preference::postTextPostfixFree:
+    case Preference::postTextPostfixFreeText:
         return ui->postfixFreeText;
     case Preference::postTextPostfixContinue:
         ui->postfixContinueText->setText(m_preference->postPostfixContinueText());
@@ -51,6 +51,44 @@ QWidget *ViewNormalEditor::getPostTextWidget(Preference::PostTextType type)
         return ui->postfixFinishedText;
     default:
         return nullptr;
+    }
+}
+
+TwitterTextSplitter::TextTypeValue ViewNormalEditor::textTypeValueFromPostType(Preference::PostTextType type)
+{
+    switch (type) {
+    case Preference::postTextPrefixFreeText:
+        return TwitterTextSplitter::TextTypeValue(
+                    TwitterTextSplitter::textPrefixFreeText,
+                    ui->prefixFreeText->toPlainText()
+                );
+    case Preference::postTextPrefixContinue:
+        return TwitterTextSplitter::TextTypeValue(
+                    TwitterTextSplitter::textPrefixContinue,
+                    m_preference->postPrefixContinueText()
+                );
+    case Preference::postTextPrefixFinished:
+        return TwitterTextSplitter::TextTypeValue(
+                    TwitterTextSplitter::textPrefixFinished,
+                    m_preference->postPrefixFinishedText()
+                );
+    case Preference::postTextPostfixFreeText:
+        return TwitterTextSplitter::TextTypeValue(
+                    TwitterTextSplitter::textPostfixFreeText,
+                    ui->postfixFreeText->toPlainText()
+                );
+    case Preference::postTextPostfixContinue:
+        return TwitterTextSplitter::TextTypeValue(
+                    TwitterTextSplitter::textPostfixContinue,
+                    m_preference->postPostfixContinueText()
+                );
+    case Preference::postTextPostfixFinished:
+            return TwitterTextSplitter::TextTypeValue(
+                    TwitterTextSplitter::textPostfixFinished,
+                    m_preference->postPostfixFinishedText()
+                );
+    default:
+        return TwitterTextSplitter::TextTypeValue((TwitterTextSplitter::TextType)-1, "");
     }
 }
 
@@ -96,12 +134,23 @@ void ViewNormalEditor::setDocument(PageSelectorDocument *document)
 void ViewNormalEditor::updateSplitStatus()
 {
     TwitterTextSplitter splitter;
-
     QString text = ui->tweetEditor->toPlainText();
 
-    splitter.setPrefix( ui->prefixFreeText->toPlainText() );
-    splitter.setText( text );
-    splitter.setPostfix( ui->postfixFreeText->toPlainText() );
+    QList<TwitterTextSplitter::TextTypeValue> list;
+
+    list.clear();
+    foreach (auto type, m_preference->postPrefixText()) {
+        list.append(textTypeValueFromPostType(type));
+    }
+    splitter.setPrefix(list);
+
+    splitter.setText(text);
+
+    list.clear();
+    foreach (auto type, m_preference->postPostfixText()) {
+        list.append(textTypeValueFromPostType(type));
+    }
+    splitter.setPostfix(list);
 
     tweetQueue = splitter.split();
 
@@ -152,6 +201,8 @@ void ViewNormalEditor::onPreferenceUpdate()
         w->setVisible(true);
         ui->postfixLayout->addWidget(w);
     }
+
+    updateSplitStatus();
 }
 
 void ViewNormalEditor::onTwitterTweeted(const QString &tweetId)
@@ -187,9 +238,23 @@ void ViewNormalEditor::on_tweetButton_clicked()
 
     TwitterTextSplitter splitter;
 
-    splitter.setPrefix( ui->prefixFreeText->toPlainText() );
+    QList<TwitterTextSplitter::TextTypeValue> list;
+
+    list.clear();
+    foreach (auto type, m_preference->postPrefixText()) {
+        list.append(textTypeValueFromPostType(type));
+    }
+    splitter.setPrefix(list);
+
     splitter.setText( ui->tweetEditor->toPlainText() );
-    splitter.setPostfix( ui->postfixFreeText->toPlainText() );
+
+    list.clear();
+    foreach (auto type, m_preference->postPostfixText()) {
+        list.append(textTypeValueFromPostType(type));
+    }
+    splitter.setPostfix(list);
+
+    ui->tweetEditor->setTextSplitter(splitter);
 
     tweetQueue = splitter.split();
     if (tweetQueue.isEmpty()) {
@@ -214,13 +279,11 @@ void ViewNormalEditor::on_tweetButton_clicked()
 
 void ViewNormalEditor::on_textPrefix_textChanged()
 {
-    ui->tweetEditor->setPrefix(ui->prefixFreeText->toPlainText());
     updateSplitStatus();
 }
 
 void ViewNormalEditor::on_textPostfix_textChanged()
 {
-    ui->tweetEditor->setPostfix(ui->postfixFreeText->toPlainText());
     updateSplitStatus();
 }
 

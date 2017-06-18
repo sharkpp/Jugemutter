@@ -10,13 +10,9 @@ TweetTextEdit::TweetTextEdit(QWidget *parent)
 
 void TweetTextEdit::updateHighlight()
 {
-    TwitterTextSplitter splitter;
+    m_textSplitter.setText( toPlainText() );
 
-    splitter.setPrefix( m_prefix);
-    splitter.setText( toPlainText() );
-    splitter.setPostfix( m_postfix );
-
-    QList<SplittedItem> tweet = splitter.split();
+    QList<SplittedItem> tweet = m_textSplitter.split();
     if (tweet.isEmpty()) {
         return;
     }
@@ -51,14 +47,8 @@ void TweetTextEdit::on_textChanged()
     updateHighlight();
 }
 
-void TweetTextEdit::setPrefix(const QString &prefix)
+void TweetTextEdit::setTextSplitter(const TwitterTextSplitter &textSplitter)
 {
-    m_prefix = prefix;
-    updateHighlight();
-}
-
-void TweetTextEdit::setPostfix(const QString &postfix)
-{
-    m_postfix = postfix;
+    m_textSplitter = textSplitter;
     updateHighlight();
 }

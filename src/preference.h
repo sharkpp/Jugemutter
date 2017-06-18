@@ -15,7 +15,7 @@ public:
         postTextPrefixFreeText = 1,
         postTextPrefixContinue,
         postTextPrefixFinished,
-        postTextPostfixFree,
+        postTextPostfixFreeText,
         postTextPostfixContinue,
         postTextPostfixFinished,
     };

@@ -86,24 +86,46 @@ TwitterTextSplitter::TwitterTextSplitter()
 
 }
 
-QString TwitterTextSplitter::prefix() const
+// ツイートの先頭に追加するテキスト
+const QList<TwitterTextSplitter::TextTypeValue> TwitterTextSplitter::prefix() const
 {
     return m_prefix;
 }
 
-void TwitterTextSplitter::setPrefix(const QString &prefix)
+void TwitterTextSplitter::setPrefix(const QList<TwitterTextSplitter::TextTypeValue> &prefix)
 {
-    m_prefix = prefix;
+    QList<TwitterTextSplitter::TextTypeValue> list;
+
+    foreach (auto typePair, prefix) {
+        if (typePair.first == textPrefixFreeText ||
+            typePair.first == textPrefixContinue ||
+            typePair.first == textPrefixFinished ) {
+            list.append(typePair);
+        }
+    }
+
+    m_prefix = list;
 }
 
-QString TwitterTextSplitter::postfix() const
+// ツイートの末尾に設定するテキスト
+const QList<TwitterTextSplitter::TextTypeValue> TwitterTextSplitter::postfix() const
 {
     return m_postfix;
 }
 
-void TwitterTextSplitter::setPostfix(const QString &postfix)
+void TwitterTextSplitter::setPostfix(const QList<TwitterTextSplitter::TextTypeValue> &postfix)
 {
-    m_postfix = postfix;
+    QList<TwitterTextSplitter::TextTypeValue> list;
+
+    foreach (auto typePair, postfix) {
+        if (typePair.first == textPostfixFreeText ||
+            typePair.first == textPostfixContinue ||
+            typePair.first == textPostfixFinished ) {
+            list.append(typePair);
+        }
+    }
+
+    m_postfix = list;
 }
 
 QString TwitterTextSplitter::text() const
@@ -122,9 +144,7 @@ QList<SplittedItem> TwitterTextSplitter::split()
 
     m_totalLength = 0;
 
-    int maxSplitSize = 140
-                     - (m_prefix.size()  ? m_prefix.size()  + 1 : 0)
-                     - (m_postfix.size() ? m_postfix.size() + 1 : 0);
+    int maxSplitSize = 140;
 
     int textLen = m_text.size();
 
@@ -132,14 +152,108 @@ QList<SplittedItem> TwitterTextSplitter::split()
     qDebug() << "maxSplitSize" << maxSplitSize;
     qDebug() << "textLen" << textLen;
 
+/*
+
++ = prefix
+@ = body
+* = postfix
+
+<-----------------><----------------->
+@@@@@@@@@@@@@@@@@@
+++++@@@@@@@@@@@@@@@++++@@@
+
+
+*/
+
     for (int offset = 0; offset < textLen; ) {
         SplittedItem item;
-        if (!m_prefix.isEmpty()) {
-            item.setPrefix(m_prefix);
+
+        // 本文前の文字列を生成
+        //   各パターンでの文字を生成
+        //          dec bin :         2                     1
+        //   flags =  0  00 :                 (none)
+        //   flags =  1  01 :                    | textPrefixContinue
+        //   flags =  2  10 : textPrefixFinished
+        //   flags =  3  11 : textPrefixFinished | textPrefixContinue
+        QString prefixTextList[4];
+        for (int flags = 0; flags < 4; ++flags) {
+            QString &s = prefixTextList[flags];
+            foreach (auto typePair, m_prefix) {
+                switch (typePair.first) {
+                default: break;
+                case textPrefixFreeText:
+                    s += typePair.second;
+                    break;
+                case textPrefixContinue:
+                    if (flags & 1) {
+                        s += typePair.second;
+                    }
+                    break;
+                case textPrefixFinished:
+                    if (flags & 2) {
+                        s += typePair.second;
+                    }
+                    break;
+                }
+            }
         }
-        if (!m_postfix.isEmpty()) {
-            item.setPostfix(m_postfix);
+
+        // 本文後の文字列を生成
+        //   各パターンでの文字を生成
+        //          dec bin :          2                      1
+        //   flags =  0  00 :                  (none)
+        //   flags =  1  01 :                       textPostfixContinue
+        //   flags =  2  10 : textPostfixFinished
+        //   flags =  3  11 : textPostfixFinished | textPostfixContinue
+        QString postfixTextList[4];
+        for (int flags = 0; flags < 4; ++flags) {
+            QString &s = postfixTextList[flags];
+            foreach (auto typePair, m_postfix) {
+                switch (typePair.first) {
+                default: break;
+                case textPostfixFreeText:
+                    s += typePair.second;
+                    break;
+                case textPostfixContinue:
+                    if (flags & 1) {
+                        s += typePair.second;
+                    }
+                    break;
+                case textPostfixFinished:
+                    if (flags & 2) {
+                        s += typePair.second;
+                    }
+                    break;
+                }
+            }
         }
+
+        // 戦略
+        //  1. なるべく本文を詰め込むように
+        //  2.
+
+        //   各パターンでの文字を生成
+        //                      textPostfixFinished
+        //                      |   textPostfixContinue ※末尾の「つづく」は次回のポストがある時のみ
+        //                      |   |   textPrefixFinished
+        //                      |   |   |   textPrefixContinue ※先頭の「つづき」は前回のポストがある時のみ
+        //          dec   bin : |   |   |   |
+        //   flags =  0  0000 : 0   0   0   0
+        //   flags =  1  0001 : 0   0   0   1
+        //   flags =  2  0010 : 0   0   1   0
+        //   flags =  3  0011 : 0   0   1   1
+        //   flags =  4  0100 : 0   1   0   0
+        //   flags =  5  0101 : 0   1   0   1
+        //   flags =  6  0110 : 0   1   1   0
+        //   flags =  7  0111 : 0   1   1   1
+        //   flags =  8  1000 : 1   0   0   0
+        //   flags =  9  1001 : 1   0   0   1
+        //   flags = 10  1010 : 1   0   1   0
+        //   flags = 11  1011 : 1   0   1   1
+        //   flags = 12  1100 : 1   1   0   0
+        //   flags = 13  1101 : 1   1   0   1
+        //   flags = 14  1110 : 1   1   1   0
+        //   flags = 15  1111 : 1   1   1   1
 
         QString trimText = m_text.mid(offset, maxSplitSize);
 

@@ -2,6 +2,7 @@
 #define TWEETTEXTEDIT_H
 
 #include <QTextEdit>
+#include "twittertextsplitter.h"
 
 class TweetTextEdit : public QTextEdit
 {
@@ -10,9 +11,7 @@ class TweetTextEdit : public QTextEdit
 public:
     TweetTextEdit(QWidget *parent = Q_NULLPTR);
 
-    void setPrefix(const QString &prefix);
-
-    void setPostfix(const QString &postfix);
+    void setTextSplitter(const TwitterTextSplitter &textSplitter);
 
 protected:
     void updateHighlight();
@@ -21,8 +20,7 @@ private slots:
     void on_textChanged();
 
 private:
-    QString m_prefix;
-    QString m_postfix;
+    TwitterTextSplitter m_textSplitter;
 };
 
 #endif // TWEETTEXTEDIT_H

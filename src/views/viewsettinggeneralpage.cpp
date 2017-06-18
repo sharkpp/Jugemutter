@@ -106,7 +106,7 @@ QString ViewSettingGeneralPage::tagNameFromPostTextType(Preference::PostTextType
     case Preference::postTextPrefixFreeText:    return ui->postFreeTextLabel->text();
     case Preference::postTextPrefixContinue:    return ui->postContinueLabel->text();
     case Preference::postTextPrefixFinished:    return ui->postFinishedLabel->text();
-    case Preference::postTextPostfixFree:       return ui->postFreeTextLabel->text();
+    case Preference::postTextPostfixFreeText:       return ui->postFreeTextLabel->text();
     case Preference::postTextPostfixContinue:   return ui->postContinueLabel->text();
     case Preference::postTextPostfixFinished:   return ui->postFinishedLabel->text();
     default:
@@ -121,7 +121,7 @@ const QString& ViewSettingGeneralPage::tagFromPostTextType(Preference::PostTextT
     case Preference::postTextPrefixFreeText:    return tagPrefixPostFreeText;
     case Preference::postTextPrefixContinue:    return tagPrefixPostContinue;
     case Preference::postTextPrefixFinished:    return tagPrefixPostFinished;
-    case Preference::postTextPostfixFree:       return tagPostfixPostFreeText;
+    case Preference::postTextPostfixFreeText:       return tagPostfixPostFreeText;
     case Preference::postTextPostfixContinue:   return tagPostfixPostContinue;
     case Preference::postTextPostfixFinished:   return tagPostfixPostFinished;
     default:
@@ -141,7 +141,7 @@ Preference::PostTextType ViewSettingGeneralPage::tagToPostTextType(const QString
         return Preference::postTextPrefixFinished;
     }
     else if (tagPostfixPostFreeText == type) {
-        return Preference::postTextPostfixFree;
+        return Preference::postTextPostfixFreeText;
     }
     else if (tagPostfixPostContinue == type) {
         return Preference::postTextPostfixContinue;

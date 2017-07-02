@@ -152,6 +152,8 @@ void ViewNormalEditor::updateSplitStatus()
     }
     splitter.setPostfix(list);
 
+    ui->tweetEditor->setTextSplitter(splitter);
+
     tweetQueue = splitter.split();
 
     ui->partitionCount->setText(QString("%1").arg(tweetQueue.size()));

@@ -277,12 +277,12 @@ void ViewNormalEditor::on_tweetButton_clicked()
     currentAccount->tweet(tweetText);
 }
 
-void ViewNormalEditor::on_textPrefix_textChanged()
+void ViewNormalEditor::on_prefixFreeText_textChanged()
 {
     updateSplitStatus();
 }
 
-void ViewNormalEditor::on_textPostfix_textChanged()
+void ViewNormalEditor::on_postfixFreeText_textChanged()
 {
     updateSplitStatus();
 }

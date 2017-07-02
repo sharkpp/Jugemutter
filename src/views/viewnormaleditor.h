@@ -38,8 +38,8 @@ private slots:
     void onPreferenceUpdate();
     void onTwitterTweeted(const QString& tweetId);
     void on_tweetButton_clicked();
-    void on_textPrefix_textChanged();
-    void on_textPostfix_textChanged();
+    void on_prefixFreeText_textChanged();
+    void on_postfixFreeText_textChanged();
     void on_tweetEditor_textChanged();
 
 private:

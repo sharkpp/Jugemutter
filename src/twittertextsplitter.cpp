@@ -144,12 +144,10 @@ QList<SplittedItem> TwitterTextSplitter::split()
 
     m_totalLength = 0;
 
-    int maxSplitSize = 140;
-
     int textLen = m_text.size();
 
     QRegExp findTerminate("(。|、|，|,|\\.|\n| )");
-    qDebug() << "maxSplitSize" << maxSplitSize;
+
     qDebug() << "textLen" << textLen;
 
 /*
@@ -165,72 +163,68 @@ QList<SplittedItem> TwitterTextSplitter::split()
 
 */
 
-    for (int offset = 0; offset < textLen; ) {
+    // 本文前の文字列を生成
+    //   各パターンでの文字を生成
+    //          dec bin :         2                     1
+    //   flags =  0  00 :                 (none)
+    //   flags =  1  01 :                    | textPrefixContinue
+    //   flags =  2  10 : textPrefixFinished
+    //   flags =  3  11 : textPrefixFinished | textPrefixContinue
+    QString prefixTextList[4];
+    for (int flags = 0; flags < 4; ++flags) {
+        QString &s = prefixTextList[flags];
+        foreach (auto typePair, m_prefix) {
+            switch (typePair.first) {
+            default: break;
+            case textPrefixFreeText:
+                s += typePair.second;
+                break;
+            case textPrefixContinue:
+                if (flags & 1) {
+                    s += typePair.second;
+                }
+                break;
+            case textPrefixFinished:
+                if (flags & 2) {
+                    s += typePair.second;
+                }
+                break;
+            }
+        }
+    }
+
+    // 本文後の文字列を生成
+    //   各パターンでの文字を生成
+    //          dec bin :          2                      1
+    //   flags =  0  00 :                  (none)
+    //   flags =  1  01 :                       textPostfixContinue
+    //   flags =  2  10 : textPostfixFinished
+    //   flags =  3  11 : textPostfixFinished | textPostfixContinue
+    QString postfixTextList[4];
+    for (int flags = 0; flags < 4; ++flags) {
+        QString &s = postfixTextList[flags];
+        foreach (auto typePair, m_postfix) {
+            switch (typePair.first) {
+            default: break;
+            case textPostfixFreeText:
+                s += typePair.second;
+                break;
+            case textPostfixContinue:
+                if (flags & 1) {
+                    s += typePair.second;
+                }
+                break;
+            case textPostfixFinished:
+                if (flags & 2) {
+                    s += typePair.second;
+                }
+                break;
+            }
+        }
+    }
+
+    for (int offset = 0, postNo = 0; offset < textLen; ++postNo) {
         SplittedItem item;
-
-        // 本文前の文字列を生成
-        //   各パターンでの文字を生成
-        //          dec bin :         2                     1
-        //   flags =  0  00 :                 (none)
-        //   flags =  1  01 :                    | textPrefixContinue
-        //   flags =  2  10 : textPrefixFinished
-        //   flags =  3  11 : textPrefixFinished | textPrefixContinue
-        QString prefixTextList[4];
-        for (int flags = 0; flags < 4; ++flags) {
-            QString &s = prefixTextList[flags];
-            foreach (auto typePair, m_prefix) {
-                switch (typePair.first) {
-                default: break;
-                case textPrefixFreeText:
-                    s += typePair.second;
-                    break;
-                case textPrefixContinue:
-                    if (flags & 1) {
-                        s += typePair.second;
-                    }
-                    break;
-                case textPrefixFinished:
-                    if (flags & 2) {
-                        s += typePair.second;
-                    }
-                    break;
-                }
-            }
-        }
-
-        // 本文後の文字列を生成
-        //   各パターンでの文字を生成
-        //          dec bin :          2                      1
-        //   flags =  0  00 :                  (none)
-        //   flags =  1  01 :                       textPostfixContinue
-        //   flags =  2  10 : textPostfixFinished
-        //   flags =  3  11 : textPostfixFinished | textPostfixContinue
-        QString postfixTextList[4];
-        for (int flags = 0; flags < 4; ++flags) {
-            QString &s = postfixTextList[flags];
-            foreach (auto typePair, m_postfix) {
-                switch (typePair.first) {
-                default: break;
-                case textPostfixFreeText:
-                    s += typePair.second;
-                    break;
-                case textPostfixContinue:
-                    if (flags & 1) {
-                        s += typePair.second;
-                    }
-                    break;
-                case textPostfixFinished:
-                    if (flags & 2) {
-                        s += typePair.second;
-                    }
-                    break;
-                }
-            }
-        }
-
-        // 戦略
-        //  1. なるべく本文を詰め込むように
-        //  2.
 
         //   各パターンでの文字を生成
         //                      textPostfixFinished
@@ -255,22 +249,82 @@ QList<SplittedItem> TwitterTextSplitter::split()
         //   flags = 14  1110 : 1   1   1   0
         //   flags = 15  1111 : 1   1   1   1
 
-        QString trimText = m_text.mid(offset, maxSplitSize);
+        int prefixContinueMask  = 0 == postNo ? ~0 : ~1;
 
-        // テスト：ケツから句読点を探す
-        if (offset + maxSplitSize < textLen) {
-            int trimPos = trimText.lastIndexOf(findTerminate);
-qDebug() << "trimText.size()" << trimText.size() << "trimPos" << trimPos;
-            //if (maxSplitSize / 2 < trimText.size() - trimPod) {
-            if (0 < trimPos) {
-                trimText = trimText.mid(0, trimPos + 1);
+        int flagsSplit = -1; // 確定したフラグ
+        int sizeSplit  = 0; // 読み取りサイズ
+
+        // 戦略
+        //  1. できるだけ本文を多く消費するように
+        //  2. prefix/postfixは優先
+
+        // 戦略に沿って切り出し範囲を決定
+        for (int flags = 0; flags < 15 + 1; ++flags) {
+
+            int flagsPrefix  = flags &  3;
+            int flagsPostfix = flags >> 2;
+
+            int splitSize = 140; // 最大値をセット
+
+            // 本文前の文字列を状態によってマスクする
+            if (flagsPrefix != (flagsPrefix & prefixContinueMask)) {
+                continue;
+            }
+
+            // 本文前の文字列分を消費
+            splitSize -= prefixTextList[flagsPrefix].size();
+
+            // 本文後の文字列文を消費
+            splitSize -= postfixTextList[flagsPostfix].size();
+
+            // テスト：末尾から句読点を探す
+            int trimOffset = -1;
+            for (int pos = offset;
+                 -1 != (pos = m_text.indexOf(findTerminate, pos)); ++pos) {
+                if (offset + splitSize <= pos) {
+                    break;
+                }
+                trimOffset = pos + 1;
+            }
+
+            if (offset <= trimOffset) {
+                splitSize = trimOffset - offset;
+            }
+
+            if (offset + splitSize <= textLen) {
+                // 全部消費しきった
+                if (!(flagsPostfix & 1)) { // textPostfixContinue
+                    // 続きあり、の場合はそれを設定できないのでスキップ
+                    continue;
+                }
+            }
+
+            if (sizeSplit < splitSize) {
+                flagsSplit = flags;
+                sizeSplit  = splitSize;
             }
         }
 
-        item.setText(trimText);
-        offset += trimText.size();
+        // なんかうまく構築できなかった
+        // たぶん、前後の文字列が多すぎる...
+        if (flagsSplit < 0) {
+            r.clear();
+            return r;
+        }
 
-        m_totalLength += item.size();
+        QString trimText = m_text.mid(offset, sizeSplit);
+
+        item.setPrefix (prefixTextList [flagsSplit  & 3]);
+        item.setPostfix(postfixTextList[flagsSplit >> 2]);
+        item.setText(trimText);
+
+        qDebug() << "@@@@@@@@@@@@@@@@@@@@";
+        qDebug() << "@@@@" << (flagsSplit&3) << (flagsSplit>>2) << sizeSplit << item.toString().size();
+        qDebug() << "@@@@" << trimText;
+        qDebug() << "@@@@" << item.toString();
+
+        offset        += sizeSplit;
+        m_totalLength += sizeSplit;
 
         r.push_back(item);
     }

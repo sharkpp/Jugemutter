@@ -171,6 +171,8 @@ QList<SplittedItem> TwitterTextSplitter::split()
     //   flags =  2  10 : textPrefixFinished
     //   flags =  3  11 : textPrefixFinished | textPrefixContinue
     QString prefixTextList[4];
+    bool    prefixTextListValid[4] = {};
+    int     prefixFlagsMask = 3;
     for (int flags = 0; flags < 4; ++flags) {
         QString &s = prefixTextList[flags];
         foreach (auto typePair, m_prefix) {
@@ -182,11 +184,13 @@ QList<SplittedItem> TwitterTextSplitter::split()
             case textPrefixContinue:
                 if (flags & 1) {
                     s += typePair.second;
+                    prefixFlagsMask &= ~1;
                 }
                 break;
             case textPrefixFinished:
                 if (flags & 2) {
                     s += typePair.second;
+                    prefixFlagsMask &= ~2;
                 }
                 break;
             }
@@ -201,6 +205,8 @@ QList<SplittedItem> TwitterTextSplitter::split()
     //   flags =  2  10 : textPostfixFinished
     //   flags =  3  11 : textPostfixFinished | textPostfixContinue
     QString postfixTextList[4];
+    bool    postfixTextListValid[4] = {};
+    int     postfixFlagsMask = 3;
     for (int flags = 0; flags < 4; ++flags) {
         QString &s = postfixTextList[flags];
         foreach (auto typePair, m_postfix) {
@@ -212,11 +218,13 @@ QList<SplittedItem> TwitterTextSplitter::split()
             case textPostfixContinue:
                 if (flags & 1) {
                     s += typePair.second;
+                    postfixFlagsMask &= ~1;
                 }
                 break;
             case textPostfixFinished:
                 if (flags & 2) {
                     s += typePair.second;
+                    postfixFlagsMask &= ~2;
                 }
                 break;
             }
@@ -277,14 +285,17 @@ QList<SplittedItem> TwitterTextSplitter::split()
             // 本文後の文字列文を消費
             splitSize -= postfixTextList[flagsPostfix].size();
 
-            // テスト：末尾から句読点を探す
+            // 末尾から句読点を探す
             int trimOffset = -1;
-            for (int pos = offset;
-                 -1 != (pos = m_text.indexOf(findTerminate, pos)); ++pos) {
-                if (offset + splitSize <= pos) {
-                    break;
+            if (m_text.size() - offset < splitSize) {
+                // 削らないと治らない場合に限り...
+                for (int pos = offset;
+                     -1 != (pos = m_text.indexOf(findTerminate, pos)); ++pos) {
+                    if (offset + splitSize <= pos) {
+                        break;
+                    }
+                    trimOffset = pos + 1;
                 }
-                trimOffset = pos + 1;
             }
 
             if (offset <= trimOffset) {
@@ -293,7 +304,21 @@ QList<SplittedItem> TwitterTextSplitter::split()
 
             if (offset + splitSize <= textLen) {
                 // 全部消費しきった
+                if (flagsPostfix & 1) { // textPostfixContinue
+                    // 続きあり、の場合はそれを設定できないのでスキップ
+                    continue;
+                }
+                if (!(flagsPostfix & 2)) { // textPostfixFinished
+                    // 続きあり、の場合はそれを設定できないのでスキップ
+                    continue;
+                }
+            }
+            else {
                 if (!(flagsPostfix & 1)) { // textPostfixContinue
+                    // 続きなし、の場合はそれを設定できないのでスキップ
+                    continue;
+                }
+                if (flagsPostfix & 2) { // textPostfixFinished
                     // 続きあり、の場合はそれを設定できないのでスキップ
                     continue;
                 }

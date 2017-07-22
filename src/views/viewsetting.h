@@ -6,6 +6,7 @@
 class ViewSettingGeneralPage;
 class ViewSettingAccountPage;
 class ViewSettingAboutPage;
+class ViewTestPage;
 class AccountList;
 class Preference;
 
@@ -50,6 +51,7 @@ private:
     ViewSettingGeneralPage *generalPage;
     ViewSettingAccountPage *accountPage;
     ViewSettingAboutPage *aboutPage;
+    ViewTestPage *testPage;
 };
 
 #endif // VIEWSETTING_H

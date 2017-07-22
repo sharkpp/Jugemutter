@@ -59,6 +59,10 @@ public:
 public:
     TwitterTextSplitter();
 
+    // 制限
+    int maxTweetLength() const;
+    void setMaxTweetLength(int maxTweetLength);
+
     // ツイートの先頭に追加するテキスト
     const QList<TextTypeValue> prefix() const;
     void setPrefix(const QList<TextTypeValue> &prefix);
@@ -77,6 +81,7 @@ public:
     int size() const;
 
 protected:
+    int m_maxTweetLength;
     QList<TextTypeValue> m_prefix;
     QList<TextTypeValue> m_postfix;
     QString m_text;

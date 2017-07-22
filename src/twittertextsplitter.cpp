@@ -34,7 +34,7 @@ SplittedItem::~SplittedItem()
 
 QString SplittedItem::toString() const
 {
-    QString delimit = " ";
+    QString delimit = "";
     return (m_prefix.isEmpty() ? QString() : m_prefix + delimit)
         +  m_text
         +  (m_postfix.isEmpty() ? QString() : delimit + m_postfix);
@@ -81,9 +81,20 @@ int SplittedItem::size() const
 ////////////////
 
 TwitterTextSplitter::TwitterTextSplitter()
-    : m_totalLength(-1)
+    : m_maxTweetLength(140)
+    , m_totalLength(-1)
 {
 
+}
+
+int TwitterTextSplitter::maxTweetLength() const
+{
+    return m_maxTweetLength;
+}
+
+void TwitterTextSplitter::setMaxTweetLength(int maxTweetLength)
+{
+    m_maxTweetLength = maxTweetLength;
 }
 
 // ツイートの先頭に追加するテキスト
@@ -272,7 +283,7 @@ QList<SplittedItem> TwitterTextSplitter::split()
             int flagsPrefix  = flags &  3;
             int flagsPostfix = flags >> 2;
 
-            int splitSize = 140; // 最大値をセット
+            int splitSize = m_maxTweetLength; // 最大値をセット
 
             // 本文前の文字列を状態によってマスクする
             if (flagsPrefix != (flagsPrefix & prefixContinueMask)) {

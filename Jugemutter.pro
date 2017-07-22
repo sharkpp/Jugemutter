@@ -44,7 +44,8 @@ SOURCES += src/main.cpp\
     src/views/viewwelcome.cpp \
     src/postprogress.cpp \
     src/widgets/taginput.cpp \
-    src/preference.cpp
+    src/preference.cpp \
+    src/views/viewtestpage.cpp
 
 HEADERS  += src/mainwindow.h \
     src/sns/twitter.h \
@@ -63,7 +64,8 @@ HEADERS  += src/mainwindow.h \
     src/views/viewwelcome.h \
     src/postprogress.h \
     src/widgets/taginput.h \
-    src/preference.h
+    src/preference.h \
+    src/views/viewtestpage.h
 
 FORMS    += src/mainwindow.ui \
     src/views/viewnormaleditor.ui \
@@ -73,7 +75,8 @@ FORMS    += src/mainwindow.ui \
     src/views/viewsettinggeneralpage.ui \
     src/views/viewsettingaboutpage.ui \
     src/views/viewwelcome.ui \
-    src/postprogress.ui
+    src/postprogress.ui \
+    src/views/viewtestpage.ui
 
 DISTFILES += \
     README.md

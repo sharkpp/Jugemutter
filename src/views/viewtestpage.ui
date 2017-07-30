@@ -41,7 +41,7 @@
      <item>
       <widget class="QPushButton" name="testRun">
        <property name="text">
-        <string>Go</string>
+        <string>テスト実行</string>
        </property>
       </widget>
      </item>

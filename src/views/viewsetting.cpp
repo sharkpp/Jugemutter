@@ -3,7 +3,6 @@
 #include "viewsettinggeneralpage.h"
 #include "viewsettingaccountpage.h"
 #include "viewsettingaboutpage.h"
-#include "viewtestpage.h"
 
 //---------------------------------------------------------
 // SettingPageDocument
@@ -29,9 +28,6 @@ ViewSetting::ViewSetting(QWidget *parent)
     ui->pageContainer->addWidget(generalPage = new ViewSettingGeneralPage(this));
     ui->pageContainer->addWidget(accountPage = new ViewSettingAccountPage(this));
     ui->pageContainer->addWidget(aboutPage = new ViewSettingAboutPage(this));
-#ifndef QT_NO_DEBUG
-    ui->pageContainer->addWidget(testPage = new ViewTestPage(this));
-#endif
     initToolbar();
 }
 
@@ -71,11 +67,4 @@ void ViewSetting::initToolbar()
     // このアプリについて
     action = new QAction(QIcon(":/icons.black/info.svg"), "バージョン", this);
     tb->addButton(action, aboutPage, settings);
-
-#ifndef QT_NO_DEBUG
-
-    // テスト
-    action = new QAction(QIcon(":/icons.black/bug_report.svg"), "テスト", this);
-    tb->addButton(action, testPage, settings);
-#endif
 }

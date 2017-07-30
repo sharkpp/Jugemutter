@@ -9,6 +9,9 @@ class QFrame;
 class Twitter;
 class ViewNormalEditor;
 class ViewSetting;
+#ifndef QT_NO_DEBUG
+class ViewTestPage;
+#endif
 class AccountList;
 class Account;
 class Preference;
@@ -78,6 +81,9 @@ private:
     QFrame *welcomeView;
     ViewNormalEditor *editorView;
     ViewSetting *settingView;
+#ifndef QT_NO_DEBUG
+    ViewTestPage *testPage;
+#endif
     Preference *preference;
     AccountList *accountList;
     QAction *actionAccountAdd;

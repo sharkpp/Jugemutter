@@ -6,6 +6,7 @@
 #include "viewwelcome.h"
 #include "viewnormaleditor.h"
 #include "viewsetting.h"
+#include "viewtestpage.h"
 #include "pageselector.h"
 #include "accountlist.h"
 #include "preference.h"
@@ -96,6 +97,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->accountList->setBlankView(new ViewWelcome(this));
     ui->pageContainer->addWidget(editorView = new ViewNormalEditor(this));
     ui->pageContainer->addWidget(settingView = new ViewSetting(this));
+#ifndef QT_NO_DEBUG
+    ui->pageContainer->addWidget(testPage = new ViewTestPage(this));
+#endif
     editorView->setPreference(preference);
     settingView->setAccountList(accountList);
     settingView->setPreference(preference);
@@ -135,10 +139,15 @@ void MainWindow::initToolbar()
     // スペーサー
     tb->addSpacer();
 
+#ifndef QT_NO_DEBUG
+    // テスト
+    action = new QAction(QIcon(":/icons.white/bug_report.svg"), "テスト", this);
+    tb->addButton(action, testPage)->setCheckable(true);
+#endif
+
     // 設定
     action = actionSetting = new QAction(QIcon(":/icons.white/settings.svg"), "設定", this);
-    action->setCheckable(true);
-    tb->addButton(action, settingView);
+    tb->addButton(action, settingView)->setCheckable(true);
 }
 
 void MainWindow::requestAddAccount(QWidget *parent)

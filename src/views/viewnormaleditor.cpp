@@ -121,6 +121,8 @@ void ViewNormalEditor::setDocument(PageSelectorDocument *document)
 
             connect(currentAccount, &Twitter::tweeted,
                   this, &ViewNormalEditor::onTwitterTweeted);
+            connect(currentAccount, &Twitter::tweetFailure,
+                  this, &ViewNormalEditor::onTwitterTweetFailure);
 
             ui->tweetButton->setEnabled(currentAccount->isAuthenticated());
             ui->prefixFreeText->setPlainText("");
@@ -225,6 +227,15 @@ void ViewNormalEditor::onTwitterTweeted(const QString &tweetId)
     tweetQueue.pop_front();
 
     currentAccount->tweet(tweetText, tweetId);
+}
+
+void ViewNormalEditor::onTwitterTweetFailure(const QList<QPair<int, QString> > & errors)
+{
+    qDebug() << "error post tweet" << errors;
+
+    QMessageBox::warning(this, qAppName(), "投稿に失敗しました。");
+
+    finishPost();
 }
 
 // ツイート投稿

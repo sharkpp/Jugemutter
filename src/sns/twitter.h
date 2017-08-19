@@ -49,6 +49,7 @@ signals:
     void authenticated();
     void verified();
     void tweeted(const QString& tweetId);
+    void tweetFailure(const QList<QPair<int, QString> > & errors);
 
 private slots:
 

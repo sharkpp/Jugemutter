@@ -11,6 +11,8 @@ static const QString keyTwitterName = "name";
 static const QString keyTwitterScreenName = "screenName";
 static const QString keyTwitterProfileImage = "profileImage"; // QIcon
 
+
+
 Twitter::Twitter(QObject *parent)
     : QOAuth1(parent)
     , httpReplyHandler(nullptr)
@@ -180,6 +182,8 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
     QUrl url("https://api.twitter.com/1.1/statuses/update.json");
     QUrlQuery query(url);
 
+    qDebug() << "text=" << text;
+
     QVariantMap data;
     data.insert("status", text);
     if (!inReplyToStatusId.isEmpty()) {
@@ -211,12 +215,27 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
         }
 
         const auto result = resultDoc.object();
+
         if (result.value("id_str").isUndefined()) {
+            QList<QPair<int, QString> > errors;
+            const QJsonArray errorsInfo
+                    = result.contains("errors") ? result.value("errors").toArray()
+                                                : QJsonArray();
+            foreach (auto errorInfo, errorsInfo) {
+                const QJsonObject& errorInfo_ = errorInfo.toObject();
+                errors.push_back( qMakePair(!errorInfo_.contains("code") ? -1 : errorInfo_.value("code").toInt(),
+                                           !errorInfo_.contains("message") ? QString() : errorInfo_.value("message").toString() ) );
+            }
+            //qDebug() << "***>>" << (result.contains("errors") &&
+            //                        !result.value("errors").toArray().isEmpty() &&
+            //                        result.value("errors").toArray().at(0).toObject().contains("code")
+            //                         ? result.value("errors").toArray().at(0).toObject().value("code").toInt() : -1);
             qDebug() << resultDoc.toJson();
+            Q_EMIT tweetFailure(errors);
             return;
         }
 
-        qDebug() << "***\n" << QString(resultDoc.toJson()).replace(QRegExp(" +"), " ");
+        qDebug() << "****\n" << QString(resultDoc.toJson()).replace(QRegExp(" +"), " ");
 
         const auto tweetId = result.value("id_str").toString();
 

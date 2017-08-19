@@ -1,6 +1,9 @@
 #ifndef VIEWNORMALEDITOR_H
 #define VIEWNORMALEDITOR_H
 
+#include <QList>
+#include <QPair>
+#include <QString>
 #include "pageselector.h"
 #include "preference.h"
 #include "twittertextsplitter.h"
@@ -37,6 +40,7 @@ protected:
 private slots:
     void onPreferenceUpdate();
     void onTwitterTweeted(const QString& tweetId);
+    void onTwitterTweetFailure(const QList<QPair<int, QString> > & errors);
     void on_tweetButton_clicked();
     void on_prefixFreeText_textChanged();
     void on_postfixFreeText_textChanged();

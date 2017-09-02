@@ -204,6 +204,14 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
     url.setQuery(query);
 
     QNetworkReply *reply = post(url, data);
+
+#ifndef QT_NO_DEBUG // 自己証明書でのhttps通信のダンプ処理用
+    connect(reply, &QNetworkReply::sslErrors, this, [=](QList<QSslError>) {
+        auto reply_ = qobject_cast<QNetworkReply*>(sender());
+        reply_->ignoreSslErrors();
+    });
+#endif
+
     connect(reply, &QNetworkReply::finished, this, [=](){
         auto reply_ = qobject_cast<QNetworkReply*>(sender());
 

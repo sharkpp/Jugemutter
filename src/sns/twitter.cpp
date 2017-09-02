@@ -11,8 +11,6 @@ static const QString keyTwitterName = "name";
 static const QString keyTwitterScreenName = "screenName";
 static const QString keyTwitterProfileImage = "profileImage"; // QIcon
 
-
-
 Twitter::Twitter(QObject *parent)
     : QOAuth1(parent)
     , httpReplyHandler(nullptr)
@@ -53,8 +51,10 @@ Twitter::Twitter(QObject *parent)
         qDebug() << "QOAuth1::requestFailed" << (int)error;
     });
 
-    qDebug() << QString("TWITTER_APP_KEY='%1'").arg(STR_(TWITTER_APP_KEY));
-    qDebug() << QString("TWITTER_APP_SECRET='%1'").arg(STR_(TWITTER_APP_SECRET));
+#ifndef QT_NO_DEBUG
+    qDebug() << "TWITTER_APP_KEY" << QString(STR_(TWITTER_APP_KEY));
+    qDebug() << "TWITTER_APP_SECRET" << QString(STR_(TWITTER_APP_SECRET));
+#endif
 
     // QAbstractOAuth::setClientIdentifier()
     // > qmake ... DEFINES+=TWITTER_APP_KEY="{App key}"
@@ -75,6 +75,10 @@ const QString Twitter::serialize() const
     out.setVersion(dataStreamVersion);
 
     if (QAbstractOAuth::Status::Granted == status()) {
+#ifndef QT_NO_DEBUG
+        qDebug() << "save" << keyAuthToken << token();
+        qDebug() << "save" << keyAuthTokenSecret << tokenSecret();
+#endif
         serialized.insert(keyAuthToken, token());
         serialized.insert(keyAuthTokenSecret, tokenSecret());
     }
@@ -110,8 +114,10 @@ void Twitter::deserialize(const QString& data)
         setStatus(QAbstractOAuth::Status::NotAuthenticated);
     }
     else {
-        qDebug() << QString("USER_TOKEN='%1'").arg(userToken);
-        qDebug() << QString("USER_TOKEN_SECRET='%1'").arg(userTokenSecret);
+#ifndef QT_NO_DEBUG
+        qDebug() << keyAuthToken << userToken;
+        qDebug() << keyAuthTokenSecret << userTokenSecret;
+#endif
         setTokenCredentials(userToken, userTokenSecret);
         setStatus(QAbstractOAuth::Status::Granted);
     }
@@ -181,6 +187,11 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
     // https://dev.twitter.com/rest/reference/post/statuses/update
     QUrl url("https://api.twitter.com/1.1/statuses/update.json");
     QUrlQuery query(url);
+
+#ifndef QT_NO_DEBUG
+        qDebug() << ">>" << keyAuthToken << token();
+        qDebug() << ">>" << keyAuthTokenSecret << tokenSecret();
+#endif
 
     qDebug() << "text=" << text;
 
@@ -263,6 +274,11 @@ void Twitter::verifyCredentials(bool include_entities, bool skip_status, bool in
         auto reply_ = qobject_cast<QNetworkReply*>(sender());
 
         qDebug() << "verifyCredentials finished";
+
+#ifndef QT_NO_DEBUG
+        qDebug() << keyAuthToken << token();
+        qDebug() << keyAuthTokenSecret << tokenSecret();
+#endif
 
         QJsonParseError parseError;
         const auto resultJson = reply_->readAll();

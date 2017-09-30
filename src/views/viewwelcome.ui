@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Frame</string>
+   <string notr="true"/>
   </property>
   <property name="frameShape">
    <enum>QFrame::NoFrame</enum>
@@ -43,7 +43,7 @@
       </font>
      </property>
      <property name="text">
-      <string>「じゅげむったー」へようこそ！</string>
+      <string>Welcome to &quot;Jugemutter&quot;!</string>
      </property>
      <property name="textFormat">
       <enum>Qt::PlainText</enum>
@@ -56,7 +56,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>利用するには１つ以上のアカウントの登録が必要です。</string>
+      <string>In order to use it, registration of at least one account is necessary.</string>
      </property>
      <property name="textFormat">
       <enum>Qt::PlainText</enum>
@@ -80,7 +80,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>アカウントを追加</string>
+        <string>Add account</string>
        </property>
        <property name="icon">
         <iconset resource="../resources.qrc">

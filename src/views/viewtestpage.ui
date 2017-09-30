@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string notr="true"/>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
@@ -25,7 +25,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>テスト</string>
+        <string>TEST</string>
        </property>
       </widget>
      </item>
@@ -45,7 +45,7 @@
      <item>
       <widget class="QPushButton" name="testRun">
        <property name="text">
-        <string>テスト実行</string>
+        <string>Run test</string>
        </property>
       </widget>
      </item>

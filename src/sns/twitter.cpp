@@ -153,7 +153,7 @@ void Twitter::authenticate()
                     "</style>" \
                     "<div><h1>%1</h1><div>%2</div></div>")
                 .arg(qApp->applicationName())
-                .arg("コールバックを受け取りました。<br />このページは閉じていただいて問題ありません。");
+                .arg(tr("Callback received.<br />Feel free to close this page."));
 #if (QT_VERSION < QT_VERSION_CHECK(5, 9, 0))
         // https://bugreports.qt.io/browse/QTBUG-59725 が修正されるまでこのまま
         const QString postfixTag = "</body></html>";

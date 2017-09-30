@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Frame</string>
+   <string notr="true"/>
   </property>
   <property name="frameShape">
    <enum>QFrame::NoFrame</enum>
@@ -111,7 +111,7 @@
               </font>
              </property>
              <property name="text">
-              <string>じゅげむったー</string>
+              <string>Jugemutter</string>
              </property>
              <property name="textInteractionFlags">
               <set>Qt::NoTextInteraction</set>
@@ -121,7 +121,7 @@
            <item>
             <widget class="QLabel" name="appVersionLabel">
              <property name="text">
-              <string>  Version </string>
+              <string notr="true">  Version </string>
              </property>
              <property name="alignment">
               <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
@@ -131,7 +131,7 @@
            <item>
             <widget class="QLabel" name="appVersion">
              <property name="text">
-              <string>1.0.0</string>
+              <string notr="true">1.0.0</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -156,7 +156,7 @@
          <item>
           <widget class="QLabel" name="appCopyright">
            <property name="text">
-            <string>Copyright (c) 2017 sharkpp All rights reserved.</string>
+            <string notr="true">Copyright (c) 2017 sharkpp All rights reserved.</string>
            </property>
            <property name="textFormat">
             <enum>Qt::PlainText</enum>
@@ -244,7 +244,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+            <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot;&quot;&gt;

@@ -133,7 +133,7 @@ void MainWindow::initToolbar()
     QAction *action;
 
     // 追加
-    action = actionAccountAdd = new QAction(QIcon(":/icons.white/add.svg"), "アカウントの追加", this);
+    action = actionAccountAdd = new QAction(QIcon(":/icons.white/add.svg"), tr("Add account"), this);
     tb->addButton(action);
 
     // スペーサー
@@ -141,12 +141,12 @@ void MainWindow::initToolbar()
 
 #ifndef QT_NO_DEBUG
     // テスト
-    action = new QAction(QIcon(":/icons.white/bug_report.svg"), "テスト", this);
+    action = new QAction(QIcon(":/icons.white/bug_report.svg"), "TEST", this);
     tb->addButton(action, testPage)->setCheckable(true);
 #endif
 
     // 設定
-    action = actionSetting = new QAction(QIcon(":/icons.white/settings.svg"), "設定", this);
+    action = actionSetting = new QAction(QIcon(":/icons.white/settings.svg"), tr("Settings"), this);
     tb->addButton(action, settingView)->setCheckable(true);
 }
 
@@ -344,7 +344,7 @@ bool MainWindow::event(QEvent* ev)
         resetConfigInfo.lazyTimerId = -1;
         // 設定のリセット確認メッセージ
         QMessageBox cfgResetMsg;
-        cfgResetMsg.setText("設定を初期化しますか？");
+        cfgResetMsg.setText(tr("Do you want to initialize the setting?"));
         cfgResetMsg.setStandardButtons(QMessageBox::Reset | QMessageBox::No);
         cfgResetMsg.setDefaultButton(QMessageBox::No);
         if (QMessageBox::No != cfgResetMsg.exec()) {

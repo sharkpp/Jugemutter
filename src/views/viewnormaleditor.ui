@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Frame</string>
+   <string notr="true"/>
   </property>
   <property name="frameShape">
    <enum>QFrame::NoFrame</enum>
@@ -34,7 +34,7 @@
         <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
-        <string>prefixContinueText</string>
+        <string notr="true">prefixContinueText</string>
        </property>
       </widget>
      </item>
@@ -47,7 +47,7 @@
         <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
-        <string>prefixFinishedText</string>
+        <string notr="true">prefixFinishedText</string>
        </property>
       </widget>
      </item>
@@ -75,7 +75,7 @@
         <string/>
        </property>
        <property name="placeholderText">
-        <string>各ツイートの先頭へ追加するテキスト</string>
+        <string>Text to add to the beginning of each tweet</string>
        </property>
       </widget>
      </item>
@@ -90,7 +90,7 @@
       </sizepolicy>
      </property>
      <property name="placeholderText">
-      <string>ツイート内容</string>
+      <string>Tweet content</string>
      </property>
     </widget>
    </item>
@@ -120,7 +120,7 @@
         <string/>
        </property>
        <property name="placeholderText">
-        <string>各ツイートの末尾へ追加するテキスト</string>
+        <string>Text to add to the end of each tweet</string>
        </property>
       </widget>
      </item>
@@ -133,7 +133,7 @@
         <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
-        <string>postfixContinueText</string>
+        <string notr="true">postfixContinueText</string>
        </property>
       </widget>
      </item>
@@ -146,7 +146,7 @@
         <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
-        <string>postfixFinishedText</string>
+        <string notr="true">postfixFinishedText</string>
        </property>
       </widget>
      </item>
@@ -174,7 +174,7 @@
           </size>
          </property>
          <property name="text">
-          <string>分割数</string>
+          <string>Divisions</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -190,7 +190,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>0</string>
+          <string notr="true">0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -216,7 +216,7 @@
           </size>
          </property>
          <property name="text">
-          <string>本文文字数</string>
+          <string>Number of body text</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -226,7 +226,7 @@
        <item>
         <widget class="QLabel" name="textLength">
          <property name="text">
-          <string>0</string>
+          <string notr="true">0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -252,7 +252,7 @@
           </size>
          </property>
          <property name="text">
-          <string>全体文字数</string>
+          <string>Number of total text</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -262,7 +262,7 @@
        <item>
         <widget class="QLabel" name="totalLength">
          <property name="text">
-          <string>0</string>
+          <string notr="true">0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -280,7 +280,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>つぶやく</string>
+        <string>Tweet</string>
        </property>
       </widget>
      </item>

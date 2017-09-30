@@ -57,14 +57,14 @@ void ViewSetting::initToolbar()
     QAction *action;
 
     // 一般設定
-    action = new QAction(QIcon(":/icons.black/settings.svg"), "一般", this);
+    action = new QAction(QIcon(":/icons.black/settings.svg"), tr("General"), this);
     tb->addButton(action, generalPage, settings);
 
     // アカウント設定
-    action = new QAction(QIcon(":/icons.black/people.svg"), "アカウント", this);
+    action = new QAction(QIcon(":/icons.black/people.svg"), tr("Accounts"), this);
     tb->addButton(action, accountPage, settings);
 
     // このアプリについて
-    action = new QAction(QIcon(":/icons.black/info.svg"), "バージョン", this);
+    action = new QAction(QIcon(":/icons.black/info.svg"), tr("Version"), this);
     tb->addButton(action, aboutPage, settings);
 }

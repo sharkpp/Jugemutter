@@ -69,7 +69,7 @@ ViewSettingGeneralPage::ViewSettingGeneralPage(QWidget *parent)
     qDebug() << x.lastIndexOf(y, 7);        // returns 4
     qDebug() << x.lastIndexOf(y, 11);       // returns 9
 
-    const QString text = "寿限無 寿限無 五劫の擦り切れ 海砂利水魚の水行末 雲来末 風来末 食う寝る処に住む処 藪ら柑子の藪柑子 パイポ パイポ パイポのシューリンガン シューリンガンのグーリンダイ グーリンダイのポンポコピーのポンポコナーの長久命の長助";
+    const QString text = tr("Jugemu Jugemu Gokō-no surikire Kaijarisuigyo-no Suigyōmatsu Unraimatsu Fūraimatsu Kuunerutokoro-ni Sumutokoro Yaburakōji-no burakōji Paipopaipo Paipo-no-shūringan Shūringan-no Gūrindai Gūrindai-no Ponpokopī-no Ponpokonā-no Chōkyūmei-no Chōsuke");
 
     ui->postBody1->setText(text.left(3).trimmed());
 
@@ -175,7 +175,7 @@ void ViewSettingGeneralPage::resizeEvent(QResizeEvent *event)
     //qDebug() << "--------------------------------------------------------";
     //qDebug() << QLabel_getLineText(ui->postBody2, 0);
 
-    const QString text = "寿限無 寿限無 五劫の擦り切れ 海砂利水魚の水行末 雲来末 風来末 食う寝る処に住む処 藪ら柑子の藪柑子 パイポ パイポ パイポのシューリンガン シューリンガンのグーリンダイ グーリンダイのポンポコピーのポンポコナーの長久命の長助";
+    const QString text = tr("Jugemu Jugemu Gokō-no surikire Kaijarisuigyo-no Suigyōmatsu Unraimatsu Fūraimatsu Kuunerutokoro-ni Sumutokoro Yaburakōji-no burakōji Paipopaipo Paipo-no-shūringan Shūringan-no Gūrindai Gūrindai-no Ponpokopī-no Ponpokonā-no Chōkyūmei-no Chōsuke");
 
     QString body2 = QLabel_getLineText(ui->postBody2, 0);
 

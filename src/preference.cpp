@@ -32,11 +32,11 @@ QList<Preference::PostTextType> PostTextTypeListFromQVariantList(const QVariantL
 Preference::Preference(QObject *parent)
     : QObject(parent)
     , m_postPrefixFreeText("")
-    , m_postPrefixContinueText("つづき) ")
-    , m_postPrefixFinishedText("おわり) ")
+    , m_postPrefixContinueText(tr("cont.) "))
+    , m_postPrefixFinishedText(tr("end) "))
     , m_postPostfixFreeText("")
-    , m_postPostfixContinueText(" (つづく")
-    , m_postPostfixFinishedText("( おわり")
+    , m_postPostfixContinueText(tr(" (cont."))
+    , m_postPostfixFinishedText(tr(" (end"))
 {
 
 }

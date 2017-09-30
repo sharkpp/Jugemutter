@@ -30,10 +30,10 @@ void ViewSettingAccountPage::initToolBar()
     tb->setStyleSheet(QString("QToolButton:pressed { background-color: %1; border: none; }")
         .arg( tb->palette().color(QPalette::AlternateBase).toRgb().name(QColor::HexRgb) ));
 
-    tb->addAction(QIcon(":/icons.black/add.svg"), "アカウントを追加",
+    tb->addAction(QIcon(":/icons.black/add.svg"), tr("Add account"),
                   this, &ViewSettingAccountPage::onAccountActionAppend);
 
-    removeAccount = tb->addAction(QIcon(":/icons.black/remove.svg"), "アカウントを削除",
+    removeAccount = tb->addAction(QIcon(":/icons.black/remove.svg"), tr("Unregister account"),
                                   this, &ViewSettingAccountPage::onAccountActionRemove);
 }
 
@@ -124,10 +124,10 @@ void ViewSettingAccountPage::onAccountActionAppend(bool /*checked*/)
 void ViewSettingAccountPage::onAccountActionRemove(bool /*checked*/)
 {
     QMessageBox msgBox;
-    msgBox.setText("登録済みのアカウントを削除しようとしています。\n"
-                   "この操作は即座に適用されます。\n"
-                   "対象アカウントを再度利用するには登録し直す必要があります。");
-    msgBox.setInformativeText("削除してもよろしいですか？");
+    msgBox.setText(tr("You are about to delete a registered account.\n"
+                      "This operation will be applied immediately.\n"
+                      "To use the target account again, you need to register again."));
+    msgBox.setInformativeText(tr("Are you sure you want to unregister?"));
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::No);
     if (QMessageBox::Yes != msgBox.exec()) {

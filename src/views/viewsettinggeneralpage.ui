@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
+    <width>366</width>
     <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Frame</string>
+   <string notr="true"/>
   </property>
   <property name="frameShape">
    <enum>QFrame::NoFrame</enum>
@@ -34,7 +34,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>デフォルト値</string>
+        <string>Default value</string>
        </property>
       </widget>
      </item>
@@ -53,7 +53,7 @@
         <enum>QFrame::Sunken</enum>
        </property>
        <property name="text">
-        <string/>
+        <string notr="true"/>
        </property>
       </widget>
      </item>
@@ -132,7 +132,7 @@
            <enum>QFrame::NoFrame</enum>
           </property>
           <property name="text">
-           <string>本文 ...</string>
+           <string>Text ...</string>
           </property>
          </widget>
         </item>
@@ -150,7 +150,7 @@
          <string notr="true">QFrame { border: none; }</string>
         </property>
         <property name="text">
-         <string>... 本文 ...</string>
+         <string>... Text ...</string>
         </property>
         <property name="scaledContents">
          <bool>false</bool>
@@ -183,7 +183,7 @@
            <string notr="true">QFrame { border: none; }</string>
           </property>
           <property name="text">
-           <string>... 本文</string>
+           <string>... Text</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -216,7 +216,7 @@
      <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>設定</string>
+        <string>Settings</string>
        </property>
       </widget>
      </item>
@@ -227,6 +227,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string notr="true"/>
        </property>
        <property name="frameShape">
         <enum>QFrame::HLine</enum>
@@ -249,28 +252,28 @@
      <item row="2" column="0">
       <widget class="QLabel" name="postFinishedLabel">
        <property name="text">
-        <string>終了テキスト</string>
+        <string>End text</string>
        </property>
       </widget>
      </item>
      <item row="1" column="2">
       <widget class="QLineEdit" name="postPostfixContinueText">
        <property name="placeholderText">
-        <string>(続く) (つづく など</string>
+        <string>(Continued) (Continued etc.</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="postContinueLabel">
        <property name="text">
-        <string>継続テキスト</string>
+        <string>Continuation text</string>
        </property>
       </widget>
      </item>
      <item row="0" column="2">
       <widget class="QLabel" name="postPostfixLabel">
        <property name="text">
-        <string>本文後</string>
+        <string>After text</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -280,14 +283,14 @@
      <item row="2" column="2">
       <widget class="QLineEdit" name="postPostfixFinishedText">
        <property name="placeholderText">
-        <string>(終わり) (了 など</string>
+        <string>(The end) (such as</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
       <widget class="QLabel" name="postPrefixLabel">
        <property name="text">
-        <string>本文前</string>
+        <string>Before text</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -303,7 +306,7 @@
         </sizepolicy>
        </property>
        <property name="placeholderText">
-        <string>(続く) (つづく など</string>
+        <string>(Continued) (Continued etc.</string>
        </property>
       </widget>
      </item>
@@ -316,14 +319,14 @@
         </sizepolicy>
        </property>
        <property name="placeholderText">
-        <string>(終わり) (了 など</string>
+        <string>(The end) (such as</string>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="postFreeTextLabel">
        <property name="text">
-        <string>テキスト</string>
+        <string>Free text</string>
        </property>
       </widget>
      </item>
@@ -336,7 +339,7 @@
         </sizepolicy>
        </property>
        <property name="placeholderText">
-        <string>本文の前に追加するテキストの初期値</string>
+        <string>Initial value of text to be added before body text</string>
        </property>
       </widget>
      </item>
@@ -349,7 +352,7 @@
         </sizepolicy>
        </property>
        <property name="placeholderText">
-        <string>本文の後に追加するテキストの初期値</string>
+        <string>Initial value of text to be added after the body</string>
        </property>
       </widget>
      </item>

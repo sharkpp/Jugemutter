@@ -84,5 +84,7 @@ DISTFILES += \
 RESOURCES += \
     src/resources.qrc
 
+TRANSLATIONS = src/i18n/ja_JP.ts
+
 macx: ICON = resources/icon-macOS.icns
 win32: RC_ICONS = resources/icon-Windows.ico

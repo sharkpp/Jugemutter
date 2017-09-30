@@ -215,7 +215,7 @@ void ViewNormalEditor::onTwitterTweeted(const QString &tweetId)
 
     if (tweetQueue.isEmpty()) {
         finishPost();
-        QMessageBox::information(this, qAppName(), "投稿を完了しました。");
+        QMessageBox::information(this, qAppName(), tr("Your post has been completed."));
         return;
     }
 
@@ -233,7 +233,7 @@ void ViewNormalEditor::onTwitterTweetFailure(const QList<QPair<int, QString> > &
 {
     qDebug() << "error post tweet" << errors;
 
-    QMessageBox::warning(this, qAppName(), "投稿に失敗しました。");
+    QMessageBox::warning(this, qAppName(), tr("Posting failed."));
 
     finishPost();
 }

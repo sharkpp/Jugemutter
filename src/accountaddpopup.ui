@@ -11,14 +11,14 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>アカウントの追加</string>
+   <string>Add account</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>ツイッターアカウントの認証結果を受け取るために一時的にポートをリッスンします。
-ファイヤーウォールなどでブロックしている場合は認証結果が受け取れないためにアカウントを追加することができません。</string>
+      <string>Temporarily listen to the port to receive the authentication result of the Twitter account.
+If you are blocking with a firewall etc., you will not be able to add accounts because you can not receive authentication results.</string>
      </property>
      <property name="textFormat">
       <enum>Qt::PlainText</enum>
@@ -40,7 +40,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>登録を中止する</string>
+      <string>Cancel registration</string>
      </property>
      <property name="autoDefault">
       <bool>false</bool>

@@ -125,9 +125,9 @@ void ViewNormalEditor::setDocument(PageSelectorDocument *document)
                   this, &ViewNormalEditor::onTwitterTweetFailure);
 
             ui->tweetButton->setEnabled(currentAccount->isAuthenticated());
-            ui->prefixFreeText->setPlainText("");
+            ui->prefixFreeText->setPlainText(m_preference->postPrefixFreeText());
             ui->tweetEditor->setPlainText("");
-            ui->postfixFreeText->setPlainText("");
+            ui->postfixFreeText->setPlainText(m_preference->postPostfixFreeText());
             ui->tweetEditor->setFocus();
         }
     }

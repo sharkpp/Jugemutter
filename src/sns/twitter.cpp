@@ -1,4 +1,6 @@
 #include "twitter.h"
+#include <QUrl>
+#include <QNetworkAccessManager>
 
 #define STR__(x) #x
 #define STR_(x) STR__(x) // うーむ、
@@ -11,8 +13,23 @@ static const QString keyTwitterName = "name";
 static const QString keyTwitterScreenName = "screenName";
 static const QString keyTwitterProfileImage = "profileImage"; // QIcon
 
+class QNetworkReply_
+    : public QNetworkReply
+{
+public:
+    QNetworkReply_(QObject *parent)
+        : QNetworkReply(parent)
+    {
+    }
+
+    void setHeader(const QByteArray &headerName, const QByteArray &value)
+    {
+        setRawHeader(headerName, value);
+    }
+};
+
 Twitter::Twitter(QObject *parent)
-    : QOAuth1(parent)
+    : QOAuth1(new QNetworkAccessManager(parent), parent)
     , httpReplyHandler(nullptr)
 {
     // 実行するとすぐにポートを開きに行くので遅延させる
@@ -182,6 +199,40 @@ const QIcon &Twitter::icon() const
     return m_icon;
 }
 
+QNetworkReply *Twitter::post_(const QUrl &url, const QVariantMap &parameters)
+{
+    if (!networkAccessManager()) {
+        qWarning("QOAuth1::post: QNetworkAccessManager not available");
+        return nullptr;
+    }
+    QNetworkRequest request(url);
+
+    qDebug() << "**url**" << QUrl::toPercentEncoding(url.toString(QUrl::RemoveQuery));
+    const auto queryItems = QUrlQuery(url.query()).queryItems();
+    for (auto it = queryItems.begin(), end = queryItems.end(); it != end; ++it)
+        qDebug() << "**queryItems" << it->first << it->second;
+
+    request.setRawHeader(QByteArray("accept"), QByteArray("*/*")); // accept: */*
+    request.setRawHeader(QByteArray("accept-language"), QByteArray("ja-jp")); // accept-language: ja-jp
+    request.setRawHeader(QByteArray("user-agent"), QByteArray("Jugemutter")); // user-agent: Jugemutter
+    request.setRawHeader(QByteArray("connection"), QByteArray("keep-alive")); // connection: keep-alive
+
+    setup(&request, parameters, QNetworkAccessManager::PostOperation);
+
+//    QByteArray authorization = request.rawHeader(QByteArray("authorization"));
+//    request.setRawHeader(QByteArray("authorization"), authorization.replace("\",", "\", ")); // accept: */*
+
+    QUrlQuery query;
+    for (auto it = parameters.begin(), end = parameters.end(); it != end; ++it)
+        query.addQueryItem(it.key(), it.value().toString());
+    QString data = query.toString(QUrl::FullyEncoded);
+    //QString data = query.toString();
+    qDebug() << "**" << data;
+    QNetworkReply *reply = networkAccessManager()->post(request, data.toUtf8());
+    connect(reply, &QNetworkReply::finished, std::bind(&QAbstractOAuth::finished, this, reply));
+    return reply;
+}
+
 bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
 {
     // https://dev.twitter.com/rest/reference/post/statuses/update
@@ -193,7 +244,19 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
         qDebug() << ">>" << keyAuthTokenSecret << tokenSecret();
 #endif
 
-    qDebug() << "text=" << text;
+    QByteArray text_ = QUrl::toPercentEncoding(text, "", "~");
+
+    QUrl url_path(text);
+    qDebug() << "[Original String]:" << text;
+    qDebug() << "--------------------------------------------------------------------";
+    qDebug() << "(QUrl::toEncoded)          :" << url_path.toEncoded(QUrl::FullyEncoded);
+    qDebug() << "(QUrl::toString)          :" << url_path.toString(QUrl::FullyEncoded);
+    qDebug() << "(QUrl::url)                :" << url_path.url();
+    qDebug() << "(QUrl::toString)           :" << url_path.toString();
+    qDebug() << "(QUrl::toDisplayString)    :" << url_path.toDisplayString(QUrl::FullyDecoded);
+    //qDebug() << "(QUrl::fromPercentEncoding):" << url_path.fromPercentEncoding(url_path.toEncoded(QUrl::FullyEncoded));
+
+    qDebug() << "text=" << text << text_;
 
     QVariantMap data;
     data.insert("status", text);
@@ -204,6 +267,11 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
     url.setQuery(query);
 
     QNetworkReply *reply = post(url, data);
+
+//    QNetworkReply_ *reply__ = (QNetworkReply_ *)reply;
+//    reply__->setHeader("accept", "*/*"); // accept: */*
+//    reply__->setHeader("accept-language", "ja-jp"); // accept-language: ja-jp
+//    reply__->setHeader("user-agent", "Jugemutter"); // user-agent: YoruFukurou
 
 #ifndef QT_NO_DEBUG // 自己証明書でのhttps通信のダンプ処理用
     connect(reply, &QNetworkReply::sslErrors, this, [=](QList<QSslError>) {

@@ -45,6 +45,8 @@ protected:
 
     void verifyCredentials(bool include_entities = false, bool skip_status = true, bool include_email = true);
 
+    QNetworkReply *post_(const QUrl &url, const QVariantMap &parameters);
+
 signals:
     void authenticated();
     void verified();

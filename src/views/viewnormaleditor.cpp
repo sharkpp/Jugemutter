@@ -276,11 +276,13 @@ void ViewNormalEditor::on_tweetButton_clicked()
 
     startPost();
 
-#if 1
+#ifndef QT_NO_DEBUG
     QString msg;
     QList<SplittedItem>::iterator i;
-    for (i = tweetQueue.begin(); i != tweetQueue.end(); ++i)
+    for (i = tweetQueue.begin(); i != tweetQueue.end(); ++i) {
+        qDebug() << QString("[%1]\n").arg(i->toString());
         msg += QString("[%1]\n").arg(i->toString());
+    }
     QMessageBox::information(this, "", msg);
 #endif
 

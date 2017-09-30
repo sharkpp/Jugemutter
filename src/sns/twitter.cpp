@@ -273,13 +273,6 @@ bool Twitter::tweet(const QString& text, const QString& inReplyToStatusId)
 //    reply__->setHeader("accept-language", "ja-jp"); // accept-language: ja-jp
 //    reply__->setHeader("user-agent", "Jugemutter"); // user-agent: YoruFukurou
 
-#ifndef QT_NO_DEBUG // 自己証明書でのhttps通信のダンプ処理用
-    connect(reply, &QNetworkReply::sslErrors, this, [=](QList<QSslError>) {
-        auto reply_ = qobject_cast<QNetworkReply*>(sender());
-        reply_->ignoreSslErrors();
-    });
-#endif
-
     connect(reply, &QNetworkReply::finished, this, [=](){
         auto reply_ = qobject_cast<QNetworkReply*>(sender());
 

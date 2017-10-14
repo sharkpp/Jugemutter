@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QtNetwork>
 #include <QtNetworkAuth>
+#include <QIcon>
 
 class Twitter
     : public QOAuth1

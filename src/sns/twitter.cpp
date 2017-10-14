@@ -1,6 +1,7 @@
 #include "twitter.h"
 #include <QUrl>
 #include <QNetworkAccessManager>
+#include <QDesktopServices>
 
 #define STR__(x) #x
 #define STR_(x) STR__(x) // うーむ、

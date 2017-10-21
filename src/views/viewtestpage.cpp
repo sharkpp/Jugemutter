@@ -28,7 +28,7 @@ void ViewTestPage::on_testRun_clicked()
     qDebug() << "compare =" << QStringList compare; \
     qDebug() << "--------------------------------------------------";*/ \
     for (int flags = 1; flags; flags--, \
-      cursor.insertText( QString("\nL%1 OK [\"%2\"]").arg(__LINE__).arg((QStringList compare).join("\", \"")), formatOK ) ) { \
+      cursor.insertText( QString("\nL%1 OK [\"%2\"]").arg(__LINE__).arg((QStringList compare).join("\", \"").replace("\n","\\n")), formatOK ) ) { \
         QStringList comp = QStringList compare; \
         QStringList tmp1 = QStringList prefix; \
         QList<TwitterTextSplitter::TextTypeValue> list1; \
@@ -51,7 +51,7 @@ void ViewTestPage::on_testRun_clicked()
         } \
         if (tmp3 != comp) { \
             QString s; \
-            cursor.insertText( QString("\nL%1 NG [\"%2\"] != [\"%3\"]").arg(__LINE__).arg(tmp3.join("\", \"")).arg(comp.join("\", \"")) , formatNG ); \
+            cursor.insertText( QString("\nL%1 NG [\"%2\"] != [\"%3\"]").arg(__LINE__).arg(tmp3.join("\", \"").replace("\n","\\n")).arg(comp.join("\", \"").replace("\n","\\n")) , formatNG ); \
             break; \
         } \
     } \
@@ -101,6 +101,10 @@ void ViewTestPage::on_testRun_clicked()
     TEST1(({"+","",""}), "あいうえおかきくけこ", ({"*","@",""}), ({"+あいう*@","+えおか*@","+きくけこ*"}), 6);
     TEST1(({"+","",""}), "あいうえおかきくけこ", ({"*","@@",""}), ({"+あい*@@","+うえ*@@","+おか*@@","+きくけこ*"}), 6);
 
+    TEST1(({"","",""}), "あい\nうえ\nおか\nきく\nけこ", ({"","",""}), ({"あい\nうえ\nおか\nきく\nけこ"}), 64);
+    TEST1(({"","",""}), "あい\nうえ\nおか\nきく\nけこ\n", ({"","",""}), ({"あい\nうえ\nおか\nきく\nけこ"}), 64);
+
+    TEST1(({"","",""}), "あい\nうえ\nおか\nきく\nけこ", ({"","",""}), ({"あい\nうえ","おか\nきく","けこ"}), 7);
 
 
 }
